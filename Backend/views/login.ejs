@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .container {
+            /* border:2px solid red; */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: skyblue;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        }
+
+        .signup {
+            /* border:2px solid red; */
+            width: 25vw;
+            height: 35vw;
+            padding: 3vw;
+            display: flex;
+            flex-direction: column;
+            gap: 2vw;
+            background-color: white;
+            border-radius: 1vw;
+            box-shadow: 0px 0px 6px black;
+
+        }
+
+        .email {
+            /* border:2px solid green; */
+            display: flex;
+            flex-direction: column;
+            gap: 1vw;
+        }
+
+        .signup-btn {
+            /* border:2px solid blue; */
+            padding-bottom: 5vw;
+            /* height: 3vw; */
+
+        }
+
+        .signup-btn>button {
+            width: 100%;
+            /* height: fit-content; */
+        }
+
+        input {
+            height: 3vw;
+        }
+
+        .signup-btn>button {
+            height: 3vw;
+            border-radius: 1vw;
+            background-color: #ff4d8d;
+            color: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0px 0px 4px black;
+            /* padding-bottom: 2vw; */
+
+
+        }
+
+        .text {
+            padding-bottom: 2vw;
+            color: black;
+            font-weight: 700;
+        }
+
+        #password{
+            padding-bottom: 3vw;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="signup">
+            <div class="text">LOGIN</div>
+
+            <form action="/submit-login" method="post">
+                   <div class="email">Email<input type="email" name="email"></div>
+            <div id=password class="email ">Password<input type="password" name="password"></div>
+            <div class="signup-btn"> <button type="submit">LOGIN</button></div>
+
+            </form>
+            
+         
+        </div>
+
+    </div>
+</body>
+
+</html>

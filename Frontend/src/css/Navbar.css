@@ -1,0 +1,462 @@
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  width: 100%;
+  height: 86px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 45px;
+
+  background: rgba(255, 255, 255, 0.95);
+
+  border-bottom: 1px solid #e8e9f3;
+
+  position: relative;
+  z-index: 1000;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  text-decoration: none;
+
+  color: #101936;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+
+  border-radius: 13px;
+
+  background: linear-gradient(
+    135deg,
+    #35bdf6,
+    #6040e8
+  );
+
+  box-shadow:
+    0 8px 18px rgba(82, 59, 225, 0.18);
+}
+
+.logo-text h2 {
+  margin: 0;
+
+  font-size: 25px;
+
+  line-height: 1;
+
+  font-weight: 750;
+
+  color: #101936;
+}
+
+.logo-text span {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 12px;
+
+  color: #66708d;
+}
+
+
+/* =========================
+   DESKTOP NAV
+========================= */
+
+.desktop-nav {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 40px;
+}
+
+.nav-link {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  text-decoration: none;
+
+  color: #151b35;
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #5635e7;
+}
+
+.nav-link.active {
+  color: #5435e8;
+}
+
+.nav-link.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 2px;
+
+  border-radius: 5px;
+
+  background: #5735e8;
+}
+
+
+/* =========================
+   RIGHT
+========================= */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+
+  gap: 17px;
+}
+
+
+/* =========================
+   THEME TOGGLE
+========================= */
+
+.theme-toggle {
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 3px;
+
+  gap: 2px;
+
+  border-radius: 25px;
+
+  background: #f5f5fb;
+
+  border: 1px solid #e7e7f1;
+}
+
+.theme-btn {
+  width: 39px;
+  height: 35px;
+
+  border: none;
+
+  border-radius: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  color: #303750;
+
+  background: transparent;
+
+  transition: 0.2s ease;
+}
+
+.theme-btn.selected {
+  background: white;
+
+  color: #ff9b32;
+
+  box-shadow:
+    0 2px 7px rgba(30, 30, 80, 0.08);
+}
+
+.theme-btn:hover {
+  color: #5635e7;
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-btn {
+  height: 43px;
+
+  min-width: 108px;
+
+  padding: 0 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+
+  border-radius: 8px;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  background: linear-gradient(
+    135deg,
+    #5530e8,
+    #7043eb
+  );
+
+  box-shadow:
+    0 7px 17px rgba(85, 48, 232, 0.18);
+
+  transition: 0.25s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 11px 22px rgba(85, 48, 232, 0.25);
+}
+
+
+/* =========================
+   SIGNUP
+========================= */
+
+.signup-btn {
+  height: 43px;
+
+  min-width: 108px;
+
+  padding: 0 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+
+  border-radius: 8px;
+
+  color: #5235df;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  background: white;
+
+  border: 1px solid #684ce9;
+
+  transition: 0.25s ease;
+}
+
+.signup-btn:hover {
+  color: white;
+
+  background: #5938e8;
+}
+
+
+/* =========================
+   MOBILE BUTTON
+========================= */
+
+.mobile-menu-btn {
+  display: none;
+
+  width: 42px;
+  height: 42px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e1e2ed;
+
+  border-radius: 10px;
+
+  background: white;
+
+  color: #20263d;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+.mobile-menu {
+  display: none;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+
+  .navbar {
+    padding: 0 25px;
+  }
+
+  .desktop-nav {
+    gap: 22px;
+  }
+
+  .nav-right {
+    gap: 9px;
+  }
+
+  .login-btn,
+  .signup-btn {
+    min-width: auto;
+
+    padding: 0 18px;
+  }
+
+}
+
+
+@media (max-width: 850px) {
+
+  .navbar {
+    height: 75px;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .theme-toggle {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .mobile-menu {
+    position: absolute;
+
+    top: 75px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 15px 20px 22px;
+
+    background: white;
+
+    border-bottom: 1px solid #e6e7f0;
+
+    box-shadow:
+      0 15px 30px rgba(30, 30, 80, 0.08);
+  }
+
+  .mobile-nav-link {
+    padding: 15px;
+
+    text-decoration: none;
+
+    color: #20263d;
+
+    font-size: 15px;
+
+    border-radius: 9px;
+  }
+
+  .mobile-nav-link:hover {
+    background: #f5f3ff;
+
+    color: #5735e8;
+  }
+
+  .mobile-nav-link.active {
+    color: #5735e8;
+
+    background: #f2efff;
+
+    font-weight: 600;
+  }
+
+  .mobile-auth {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 10px;
+  }
+
+  .mobile-auth .login-btn,
+  .mobile-auth .signup-btn {
+    flex: 1;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .navbar {
+    padding: 0 15px;
+  }
+
+  .logo-text span {
+    display: none;
+  }
+
+  .logo-text h2 {
+    font-size: 22px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-right .login-btn,
+  .nav-right .signup-btn {
+    display: none;
+  }
+
+}
