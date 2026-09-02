@@ -63,6 +63,7 @@ const healthData = [
 const activityData = [15, 22, 17, 31, 24, 38, 25, 43, 30, 35, 28, 45];
 // const deviceId = "ESP32_001";
 function Dashboard() {
+   const [menuOpen, setMenuOpen] = useState(false);
   const [healthd, setHealthd] = useState({
     // deviceId: "",
     heartRate: "",
