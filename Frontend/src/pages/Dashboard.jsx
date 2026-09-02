@@ -107,16 +107,22 @@ function Dashboard() {
     Hdata();
   }, []);
 
-  return (
+   return (
     <div className="dashboard">
       {/* SIDEBAR */}
-      <Sidebar />
+     <Sidebar menuOpen={menuOpen} />
 
       {/* MAIN CONTENT */}
       <main className="main">
         {/* HEADER */}
         <header className="header">
           <div>
+
+          <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+               
+                 <Menu size={28} />
+          </button>
+
             <h1>
               Good Morning, Sonu! <span>👋</span>
             </h1>
