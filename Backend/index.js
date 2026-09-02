@@ -101,17 +101,16 @@ app.get(
         { expiresIn: "7d" }
       );
 
-  res.cookie("token", token, {
+res.cookie("token", token, {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
 });
-      
 // if(req.user.role==="admin")
 // {
 //   return res.redirect("http://localhost:5173/dashboard");
 // }
-      res.redirect("http://localhost:5173/patient");
+      res.redirect("https://health-track-2f.onrender.com/patient");
 
     } catch (err) {
       console.log("ERROR:", err);
