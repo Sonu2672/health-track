@@ -73,7 +73,7 @@ function Dashboard() {
   useEffect(() => {
     const Hdata = async () => {
     const response = await fetch(
-      "http://localhost:5000/api/health/getdata",
+      "https://health-track-2b.onrender.com/api/health/getdata",
       {
         method: "GET",
         credentials: "include",
