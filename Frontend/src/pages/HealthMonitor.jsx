@@ -2,6 +2,11 @@ import React from "react";
 import Sidebar from "../components/Sidebar"
 import { useState, useEffect } from "react";
 import {
+
+  Menu
+  // baaki icons
+} from "lucide-react";
+import {
   ArrowLeft,
   HeartPulse,
   Droplets,
@@ -29,6 +34,7 @@ import "../App.css";
 
 
 function HealthMonitor() {
+  const [menuOpen, setMenuOpen] = useState(false);
     const [riskScore,setRiskScore]=useState(null);
     const [riskLevel,setRiskLevel]=useState("");
 
@@ -163,7 +169,7 @@ const cards = [
 
       {/* SIDEBAR */}
 
-      <Sidebar/>
+      <Sidebar menuOpen={menuOpen} />
 
       {/* MAIN */}
       <main className="hm-main">
@@ -174,7 +180,10 @@ const cards = [
           <div className="hm-heading">
 
             <div className="hm-title-row">
-              <ArrowLeft size={17} />
+                <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+               
+                 <Menu size={28} />
+                 </button>
 
               <div>
                 <h1>Health Monitor</h1>
