@@ -1,0 +1,160 @@
+/* ==========================================================================
+   EXACT MATCH MAIN WEBSITE FOOTER (DARK THEME FROM THE DESIGN IMAGE)
+   ========================================================================== */
+.main-footer {
+  background-color: #1e1b4b; /* गहरा प्रीमियम डार्क इंडिगो/ब्लू थीम */
+  color: #94a3b8; /* लाइट म्यूटेड टेक्स्ट */
+  padding: 64px 48px 32px 48px;
+  width: 100%;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1.3fr; /* तीनों ब्लॉक्स का परफेक्ट रेशियो */
+  gap: 60px;
+  width: 100%;
+}
+
+/* LEFT SECTION */
+.footer-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.footer-logo-box {
+  width: 26px;
+  height: 26px;
+  background-color: #ffffff;
+  color: #1e1b4b;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+.footer-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+.footer-brand-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 24px;
+}
+.footer-copyright {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* CENTER LINKS SECTION */
+.footer-links-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+.footer-links-col h4, .footer-subscribe-section h4 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
+}
+.footer-links-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer-links-col a {
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.footer-links-col a:hover {
+  color: #ffffff;
+}
+
+/* RIGHT SUBSCRIBE SECTION */
+.subscribe-text {
+  font-size: 14px;
+  margin-bottom: 14px;
+  color: #cbd5e1;
+}
+.footer-subscribe-form {
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  background-color: #ffffff;
+  padding: 4px;
+  border-radius: 8px;
+  gap: 4px;
+}
+.footer-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+  color: #0f172a;
+}
+.footer-sub-btn {
+  background-color: #4f46e5; /* इन-बिल्ट पर्पल बटन */
+  color: #ffffff;
+  border: none;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.footer-sub-btn:hover {
+  background-color: #4338ca;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 18px;
+}
+.footer-socials a {
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+.footer-socials a:hover {
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   FOOTER MEDIA QUERIES (RESPONSIVE SETUP)
+   ========================================================================== */
+@media (max-width: 968px) {
+  .footer-container {
+    grid-template-columns: 1fr; /* टैबलेट और मोबाइल पर सब एक के नीचे एक आ जाएगा */
+    gap: 40px;
+  }
+  .main-footer {
+    padding: 40px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-links-grid {
+    grid-template-columns: 1fr; /* छोटे फोन पर लिंक्स भी सिंगल कॉलम हो जाएंगे */
+    gap: 24px;
+  }
+}
