@@ -14,9 +14,10 @@ import {
 import {  Stethoscope } from "lucide-react";
 import "../css/Sidebar.css";
 
-const Sidebar = () => {
+const Sidebar = ({ menuOpen }) => {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
+      {/* <div className={`sidebar ${menuOpen ? "open" : ""}`}></div> */}
 
       {/* Brand */}
       <div className="brand">
