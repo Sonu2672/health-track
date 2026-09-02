@@ -179,3 +179,33 @@
 a {
   text-decoration: none;
 }
+
+
+.menu-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .menu-btn {
+    display: block !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    z-index: 9999;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+}
+
