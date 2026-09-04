@@ -89,7 +89,7 @@ Router.get("/islogin", auth , (req,res)=>
 Router.get("/islogout", (req, res) => {
   res.clearCookie("token", {
   httpOnly: true,
-  secure: false,
+  secure: true,
   sameSite: "lax",
   });
 
