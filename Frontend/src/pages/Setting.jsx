@@ -23,7 +23,7 @@ const Settings = ({setIslogin}) => {
 
 const navigate = useNavigate();
     const logouthandler = async () => {
-    const response = await fetch("http://localhost:5000/api/users/islogout", {
+    const response = await fetch("https://health-track-2b.onrender.com/api/users/islogout", {
       method: "GET",
       credentials: "include",
       headers: {
