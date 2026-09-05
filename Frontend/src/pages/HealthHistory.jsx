@@ -654,7 +654,7 @@ function HealthHistory() {
 const getHealthHistory = async () => {
   try {
     const response = await fetch(
-       `http://localhost:5000/api/health/history?days=${days}`,
+       `https://health-track-2b.onrender.com/api/health/history?days=${days}`
       {
         credentials: "include",
       }
