@@ -27,6 +27,7 @@
     "nodemailer": "^9.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "react-gauge-component": "^2.0.29",
     "twilio": "^5.11.2"
   },
   "devDependencies": {

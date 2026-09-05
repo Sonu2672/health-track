@@ -6,10 +6,11 @@ const healthSchema = new mongoose.Schema({
     required:true
   },
 
-  
+  // deviceid:string,
   heartRate: Number,
   spo2: Number,
   temp: Number,
+  riskScore:Number,
   
 
 }, {
