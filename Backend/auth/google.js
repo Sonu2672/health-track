@@ -14,36 +14,43 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleId: profile.id });
+        console.log("Google Profile:", profile);
+
+        const email = profile.emails?.[0]?.value;
+
+        if (!email) {
+          return done(new Error("Google email not found"), null);
+        }
+
+        let user = await User.findOne({
+          googleId: profile.id,
+        });
 
         if (!user) {
-          const nameParts = profile.displayName.trim().split(" ");
-          const firstName = nameParts[0];
-          const lastName = nameParts.slice(1).join(" ");
+          const nameParts = (profile.displayName || "")
+            .trim()
+            .split(/\s+/);
 
-            user = await User.create({
+          const firstName = nameParts[0] || "User";
+          const lastName = nameParts.slice(1).join(" ") || "";
+
+          user = await User.create({
             googleId: profile.id,
             firstname: firstName,
-            lastname: lastName ,
-            email: profile.emails[0].value,
-            
+            lastname: lastName,
+            email: email,
           });
+
+          console.log("New Google user created:", user.email);
+        } else {
+          console.log("Existing Google user found:", user.email);
         }
 
         return done(null, user);
       } catch (error) {
+        console.error("Google Auth Error:", error);
         return done(error, null);
       }
-    },
-  ),
+    }
+  )
 );
-
-// session (agar use kar raha hai)
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
-});
