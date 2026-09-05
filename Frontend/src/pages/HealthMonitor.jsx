@@ -450,6 +450,7 @@
 
 import React from "react";
 import Sidebar from "../components/Sidebar"
+import API_URL from "../config/api";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -473,13 +474,13 @@ import {
 } from "lucide-react";
 
 import "../App.css";
-
+// import Sidebar from "../components/Sidebar";
 
 
 
 
 function HealthMonitor() {
-
+const [menuOpen, setMenuOpen] = useState(false);
     const [dtrend, setDtrend] = useState({
   heartRateData: [],
   spo2Data: [],
@@ -499,7 +500,7 @@ function HealthMonitor() {
   useEffect(() => {
     const Hdata = async () => {
     const response = await fetch(
-     "https://health-track-2b.onrender.com/api/health/getdata",
+     `${API_URL}/api/health/getdata`,
       {
         method: "GET",
         credentials: "include",
@@ -628,8 +629,10 @@ const cards = [
 
       {/* SIDEBAR */}
 
-      <Sidebar/>
-
+   <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
       {/* MAIN */}
       <main className="hm-main">
 
@@ -639,7 +642,14 @@ const cards = [
           <div className="hm-heading">
 
             <div className="hm-title-row">
-              <ArrowLeft size={17} />
+
+              <button
+  className="menu-btn"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  <Menu size={28} />
+</button>
+              {/* <ArrowLeft size={17} /> */}
 
               <div>
                 <h1>Health Monitor</h1>
