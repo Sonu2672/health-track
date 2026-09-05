@@ -245,26 +245,10 @@ app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-
 app.get("/auth/google/callback", (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user, info) => {
-    // Exact error ko console aur screen dono par print karein
-    if (err) {
-      console.error("❌ DETAILED GOOGLE AUTH ERROR:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Google Auth Failed",
-        error: err.message || err,
-      });
-    }
-
-    if (!user) {
-      console.log("❌ USER NOT FOUND INFO:", info);
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-        info: info,
-      });
+    if (err || !user) {
+      return res.redirect("https://health-track-2f.onrender.com/login");
     }
 
     try {
@@ -281,17 +265,10 @@ app.get("/auth/google/callback", (req, res, next) => {
         { expiresIn: "7d" }
       );
 
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      return res.redirect("https://health-track-2f.onrender.com/patient");
+      // ✅ TOKEN KO URL ME BHEJ DEIN
+      return res.redirect(`https://health-track-2f.onrender.com/patient?token=${token}`);
     } catch (error) {
-      console.error("❌ JWT COOKIE ERROR:", error);
-      return res.status(500).json({ error: error.message });
+      return res.redirect("https://health-track-2f.onrender.com/login");
     }
   })(req, res, next);
 });
