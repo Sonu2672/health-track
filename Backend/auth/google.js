@@ -13,7 +13,7 @@ clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 callbackURL: process.env.CALLBACK_URL,
 },
 
-```
+
 async (accessToken, refreshToken, profile, done) => {
   try {
     // Get email safely
@@ -72,7 +72,6 @@ async (accessToken, refreshToken, profile, done) => {
     return done(error, null);
   }
 }
-```
 
 )
 );
