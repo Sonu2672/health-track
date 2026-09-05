@@ -125,7 +125,6 @@ app.get('/auth/google',
 
 
 
-
 app.get("/auth/google/callback", (req, res, next) => {
 console.log("🔥 GOOGLE CALLBACK HIT");
 
@@ -144,12 +143,13 @@ console.log("AUTH INFO:", info);
   }
 
   if (!user) {
-    console.log("❌ USER NOT FOUND AFTER GOOGLE LOGIN");
+    console.log("❌ USER NOT FOUND");
     return res.status(401).send("Google authentication failed");
   }
 
   try {
     console.log("✅ USER FOUND:", user.email);
+
     console.log(
       "JWT SECRET EXISTS:",
       Boolean(process.env.JWT_SECRET)
@@ -165,7 +165,9 @@ console.log("AUTH INFO:", info);
         lastname: user.lastname,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      {
+        expiresIn: "7d",
+      }
     );
 
     console.log("✅ JWT TOKEN CREATED");
@@ -192,4 +194,3 @@ console.log("AUTH INFO:", info);
 
 )(req, res, next);
 });
-
