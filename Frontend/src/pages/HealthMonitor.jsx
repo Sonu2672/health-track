@@ -450,7 +450,7 @@
 
 import React from "react";
 import Sidebar from "../components/Sidebar"
-import API_URL from "../config/api";
+// import API_URL from "../config/api";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
