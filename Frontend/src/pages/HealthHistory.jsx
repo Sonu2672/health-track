@@ -474,7 +474,7 @@
 // import React, { useState } from "react";
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-
+// import API_URL from "../config/api";
 import {
   HeartPulse,
   Activity,
@@ -483,6 +483,7 @@ import {
   Footprints,
   Moon,
   ArrowRight,
+  Menu
 } from "lucide-react";
 
 import {
@@ -635,6 +636,7 @@ const metrics = [
   },
 ];
 function HealthHistory() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const [period, setPeriod] = useState("15 Days");
 
@@ -654,7 +656,7 @@ function HealthHistory() {
 const getHealthHistory = async () => {
   try {
     const response = await fetch(
-       `https://health-track-2b.onrender.com/api/health/history?days=${days}`,
+       "https://health-track-2b.onrender.com/api/health/history?days=${days}",
       {
         credentials: "include",
       }
@@ -776,54 +778,47 @@ const summary = getMetricSummary();
     <div className="dashboard-layout">
 
       {/* SIDEBAR */}
-      <Sidebar />
+        <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
 
 
       {/* MAIN CONTENT */}
       <main className="history-page">
 
         {/* HEADER */}
+<header className="history-header">
 
-        <header className="history-header">
+  <div className="header-left">
 
-          <div>
+    <button
+      className="menu-btn"
+      onClick={() => setMenuOpen(!menuOpen)}
+    >
+      <Menu size={28} />
+    </button>
 
-            <h1>
-              Health History
-            </h1>
+    <div>
+      <h1>Health History</h1>
+      <p>View your health trends over time</p>
+    </div>
 
-            <p>
-              View your health trends over time
-            </p>
+  </div>
 
-          </div>
+  <div className="period-tabs">
+    {["7 Days", "15 Days", "30 Days"].map((item) => (
+      <button
+        key={item}
+        className={period === item ? "active" : ""}
+        onClick={() => setPeriod(item)}
+      >
+        {item}
+      </button>
+    ))}
+  </div>
 
-
-          {/* PERIOD FILTER */}
-
-          <div className="period-tabs">
-
-            {["7 Days", "15 Days", "30 Days"].map(
-              (item) => (
-
-                <button
-                  key={item}
-                  className={
-                    period === item
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() => setPeriod(item)}
-                >
-                  {item}
-                </button>
-
-              )
-            )}
-
-          </div>
-
-        </header>
+</header>
 
 
         {/* METRIC TABS */}
