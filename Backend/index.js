@@ -123,71 +123,59 @@ app.get('/auth/google',
 //   }
 // );
 
-
 app.get("/auth/google/callback", (req, res, next) => {
-console.log("🔥 GOOGLE CALLBACK HIT");
+  console.log("🔥 GOOGLE CALLBACK HIT");
 
-passport.authenticate(
-"google",
-{ session: false },
-(err, user, info) => {
-console.log("AUTH ERROR:", err);
-console.log("AUTH USER:", user);
-console.log("AUTH INFO:", info);
+  passport.authenticate("google", { session: false }, (err, user, info) => {
+    console.log("AUTH ERROR:", err);
+    console.log("AUTH USER:", user);
+    console.log("AUTH INFO:", info);
 
+    if (err) {
+      console.error("❌ GOOGLE AUTH ERROR:", err);
+      return res.status(500).send("Google Authentication Error");
+    }
 
-  if (err) {
-    console.error("❌ GOOGLE AUTH ERROR:", err);
-    return res.status(500).send("Google Authentication Error");
-  }
+    if (!user) {
+      console.log("❌ USER NOT FOUND");
+      return res.status(401).send("Google authentication failed");
+    }
 
-  if (!user) {
-    console.log("❌ USER NOT FOUND");
-    return res.status(401).send("Google authentication failed");
-  }
+    try {
+      console.log("✅ USER FOUND:", user.email);
 
-  try {
-    console.log("✅ USER FOUND:", user.email);
+      console.log("JWT SECRET EXISTS:", Boolean(process.env.JWT_SECRET));
 
-    console.log(
-      "JWT SECRET EXISTS:",
-      Boolean(process.env.JWT_SECRET)
-    );
+      const token = jwt.sign(
+        {
+          googleId: user.googleId || user.id,
+          id: user._id,
+          role: user.role,
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "7d",
+        }
+      );
 
-    const token = jwt.sign(
-      {
-        googleId: user.googleId || user.id,
-        id: user._id,
-        role: user.role,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+      console.log("✅ JWT TOKEN CREATED");
 
-    console.log("✅ JWT TOKEN CREATED");
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      console.log("✅ COOKIE SET");
 
-    console.log("✅ COOKIE SET");
-
-    return res.redirect(
-      "https://health-track-2f.onrender.com/patient"
-    );
-
-  } catch (error) {
-    console.error("❌ CALLBACK ERROR:", error);
-    return res.status(500).send("Internal Server Error");
-  }
-}
-  )(req, res, next);
-  }
+      return res.redirect("https://health-track-2f.onrender.com/patient");
+    } catch (error) {
+      console.error("❌ CALLBACK ERROR:", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  })(req, res, next); // Passport middleware invocation
+});
