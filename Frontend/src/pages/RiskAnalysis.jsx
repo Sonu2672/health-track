@@ -343,13 +343,15 @@ import {
   ArrowLeft,
   CircleAlert,
   CircleCheck,
+  Menu
 } from "lucide-react";
 
 import "../App.css";
-
+import API_URL from "../config/api";
 
 
 function RiskAnalysis() {
+  const [menuOpen, setMenuOpen] = useState(false);
    const [riskFactors, setRiskFactors] = useState([]);
 
     const [healthd, setHealthd] = useState({
@@ -366,7 +368,7 @@ function RiskAnalysis() {
     useEffect(() => {
       const Hdata = async () => {
       const response = await fetch(
-        "https://health-track-2b.onrender.com/api/health/getdata",
+          "https://health-track-2b.onrender.com/api/health/getdata",
         {
           method: "GET",
           credentials: "include",
@@ -414,7 +416,17 @@ function RiskAnalysis() {
     <div className="risk-page">
 
       {/* SIDEBAR */}
-      <Sidebar/>
+  {menuOpen && (
+    <div
+      className="sidebar-overlay"
+      onClick={() => setMenuOpen(false)}
+    />
+  )}
+
+  <Sidebar
+    isOpen={menuOpen}
+    closeSidebar={() => setMenuOpen(false)}
+  />
 
 
       {/* MAIN */}
@@ -424,8 +436,14 @@ function RiskAnalysis() {
         <header className="risk-header">
 
           <div className="risk-heading">
+                       <button
+  className="menu-btn"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  <Menu size={28} />
+</button>
 
-            <ArrowLeft size={17} />
+            {/* <ArrowLeft size={17} /> */}
 
             <div>
               <h1>AI Risk Analysis</h1>
