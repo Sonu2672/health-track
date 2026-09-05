@@ -1,181 +1,53 @@
-* {
-  box-sizing: border-box;
-}
-
-.sidebar {
-  width: 230px;
-  height: 100vh;
-  padding: 24px 15px;
-
-  display: flex;
-  flex-direction: column;
-
-  background: #ffffff;
-  border-right: 1px solid #eeeeee;
-}
-
-
-/* ================= BRAND ================= */
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 4px 8px 30px;
-}
-
-.brand-icon {
-  width: 38px;
-  height: 38px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 10px;
-
-  background: #f1eaff;
-  color: #6d3bc1;
-}
-
-.brand h2 {
-  margin: 0 0 2px;
-
-  font-size: 19px;
-  color: #222;
-}
-
-.brand span {
-  font-size: 9px;
-  line-height: 1.25;
-  color: #777;
-}
-
-
-/* ================= NAVIGATION ================= */
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.nav-item {
-  min-height: 42px;
-  padding: 0 12px;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  border-radius: 7px;
-
-  color: #555;
-  font-size: 12px;
-
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.nav-item:hover {
-  background: #f6f2ff;
-  color: #5930a6;
-}
-
-.nav-item.active {
-  background: #eee6ff;
-  color: #5b2eb2;
-  font-weight: 600;
-}
-
-
-/* Alert Number */
-
-.alert-count {
-  width: 19px;
-  height: 19px;
-
-  margin-left: auto;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background: #ed3434;
-  color: #ffffff;
-
-  font-size: 9px;
-}
-
-
-/* ================= BOTTOM CARD ================= */
-
-.sidebar-bottom {
-  margin-top: auto;
-}
-
-.safe-card {
-  position: relative;
-
-  min-height: 145px;
-  padding: 17px 14px;
-
-  overflow: hidden;
-
-  border-radius: 12px;
-
-  background: #f5efff;
-  border: 1px solid #e4d7fa;
-}
-
-.safe-title {
-  width: 120px;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  color: #43217e;
-}
-
-.safe-card p {
-  width: 125px;
-
-  margin-top: 7px;
-
-  font-size: 9px;
-  line-height: 1.5;
-
-  color: #777;
-}
-
-.safe-illustration {
-  position: absolute;
-
-  right: -4px;
-  bottom: -4px;
-
-  color: #8b62d0;
-  opacity: 0.7;
-}
-
-
-/* ================= RESPONSIVE ================= */
+/* ================= MOBILE SIDEBAR ================= */
 
 @media (max-width: 768px) {
+
   .sidebar {
-    width: 200px;
+    position: fixed;
+    top: 0;
+    left: -230px;
+
+    width: 230px;
+    height: 100vh;
+
+    z-index: 9999;
+
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 10px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
   }
 }
 
-@media (max-width: 600px) {
-  .sidebar {
+
+/* Desktop par hamburger hide rahega */
+
+@media (min-width: 769px) {
+  .menu-btn {
     display: none;
   }
 }
 
-a {
+.sidebar a {
   text-decoration: none;
+  color: inherit;
 }
