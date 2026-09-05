@@ -297,9 +297,11 @@ import {
   Stethoscope,
   ShieldCheck,
   Headphones,
+  Menu
 } from "lucide-react";
 
 const ConsultDoctor = ({ setIslogin }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
     const [search, setSearch] = useState("");
@@ -726,15 +728,34 @@ const displayedDoctors = filteredDoctors.slice(0, 3);
     <div className="app-layout">
 
       {/* SIDEBAR */}
-      <Sidebar setIslogin={setIslogin} />
+{menuOpen && (
+  <div
+    className="sidebar-overlay"
+    onClick={() => setMenuOpen(false)}
+  />
+)}
+
+<Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
 
       {/* MAIN CONTENT */}
       <main className="consult-page">
         <div className="consult-container">
-
+            
           <div className="consult-header">
             <div>
-              <h1>Consult Doctor</h1>
+                        <button
+      className="menu-btn"
+      onClick={() => setMenuOpen(!menuOpen)}
+    >
+      <Menu size={28} />
+    </button>
+            </div>
+          
+            <div>
+              <h1> Consult Doctor</h1>
               <p>Connect with experienced doctors and get expert advice</p>
             </div>
           </div>
