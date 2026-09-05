@@ -537,7 +537,7 @@ import "../App.css";
 import Sidebar from "../components/Sidebar";
 import { TriangleAlert,Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import API_URL from "../config/api";
+// import API_URL from "../config/api";
 // import { useEffect } from "react";
 import {
   LayoutDashboard,
