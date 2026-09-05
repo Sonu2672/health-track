@@ -329,10 +329,10 @@ function Profile() {
 
         {/* LOGOUT */}
 
-        <button className="bottom-logout">
+        {/* <button className="bottom-logout">
           <LogOut size={16} />
           Logout
-        </button>
+        </button> */}
 
       </main>
 
