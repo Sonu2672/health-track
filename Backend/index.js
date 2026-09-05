@@ -135,7 +135,7 @@ console.log("AUTH ERROR:", err);
 console.log("AUTH USER:", user);
 console.log("AUTH INFO:", info);
 
-```
+
   if (err) {
     console.error("❌ GOOGLE AUTH ERROR:", err);
     return res.status(500).send("Google Authentication Error");
@@ -189,7 +189,3 @@ console.log("AUTH INFO:", info);
     return res.status(500).send("Internal Server Error");
   }
 }
-```
-
-)(req, res, next);
-});
