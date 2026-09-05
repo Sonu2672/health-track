@@ -535,8 +535,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import "../App.css";
 import Sidebar from "../components/Sidebar";
-import { TriangleAlert } from "lucide-react";
+import { TriangleAlert,Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../config/api";
 // import { useEffect } from "react";
 import {
   LayoutDashboard,
@@ -596,6 +597,7 @@ const activityData = [15, 22, 17, 31, 24, 38, 25, 43, 30, 35, 28, 45];
 // const deviceId = "ESP32_001";
 function Dashboard() {
 const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [healthData,setHealthData]=useState([]);
   const [healthd, setHealthd] = useState({
     // deviceId: "",
@@ -658,28 +660,42 @@ setHealthData(data.datatimers);
   return (
     <div className="dashboard">
       {/* SIDEBAR */}
-      <Sidebar />
+    <Sidebar isOpen={menuOpen} />
 
       {/* MAIN CONTENT */}
       <main className="main">
         {/* HEADER */}
-        <header className="header">
-          <div>
-            <h1>
-              Good Morning, Sonu! <span>👋</span>
-            </h1>
+    <header className="header">
+  <div className="header-left">
 
-            <p>Here's your health overview</p>
-          </div>
+    <button
+      className="menu-btn"
+      onClick={() => setMenuOpen(!menuOpen)}
+    >
+      <Menu size={28} />
+    </button>
 
-          <div className="header-right">
-          <div  onClick={() => navigate("/alerts")}LinkclassName="notification">
-  <TriangleAlert size={28} />
-  {/* <span>ALERT</span> */}
-</div>
-            <div className="profile-avatar">A</div>
-          </div>
-        </header>
+    <div>
+      <h1>
+        Good Morning, Sonu! <span>👋</span>
+      </h1>
+
+      <p>Here's your health overview</p>
+    </div>
+
+  </div>
+
+  <div className="header-right">
+    <div
+      onClick={() => navigate("/alerts")}
+      className="notification"
+    >
+      <TriangleAlert size={28} />
+    </div>
+
+    <div className="profile-avatar">A</div>
+  </div>
+</header>
 
         {/* TOP HEALTH CARDS */}
         <section className="health-cards">
