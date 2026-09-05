@@ -129,7 +129,7 @@ import {useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { HeartPulse, Activity, Thermometer } from "lucide-react";
-import API_URL from "../config/api";
+// import API_URL from "../config/api";
 const Patient = () => {
 
    const [heartRate,setheartRate]=useState(null);
