@@ -247,30 +247,27 @@ app.get(
 );
 
 app.get("/auth/google/callback", (req, res, next) => {
-  console.log("🔥 GOOGLE CALLBACK HIT");
-
   passport.authenticate("google", { session: false }, (err, user, info) => {
-    console.log("AUTH ERROR:", err);
-    console.log("AUTH USER:", user);
-    console.log("AUTH INFO:", info);
-
+    // Exact error ko console aur screen dono par print karein
     if (err) {
-      console.error("❌ GOOGLE AUTH ERROR:", err);
-      return res.status(500).send("Google Authentication Error");
+      console.error("❌ DETAILED GOOGLE AUTH ERROR:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Google Auth Failed",
+        error: err.message || err,
+      });
     }
 
     if (!user) {
-      console.log("❌ USER NOT FOUND");
-      return res.status(401).send("Google authentication failed");
+      console.log("❌ USER NOT FOUND INFO:", info);
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+        info: info,
+      });
     }
 
     try {
-      console.log("✅ USER FOUND:", user.email);
-
-      if (!process.env.JWT_SECRET) {
-        throw new Error("JWT_SECRET is missing in environment variables!");
-      }
-
       const token = jwt.sign(
         {
           googleId: user.googleId || user.id,
@@ -281,12 +278,8 @@ app.get("/auth/google/callback", (req, res, next) => {
           lastname: user.lastname,
         },
         process.env.JWT_SECRET,
-        {
-          expiresIn: "7d",
-        }
+        { expiresIn: "7d" }
       );
-
-      console.log("✅ JWT TOKEN CREATED");
 
       res.cookie("token", token, {
         httpOnly: true,
@@ -295,12 +288,10 @@ app.get("/auth/google/callback", (req, res, next) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      console.log("✅ COOKIE SET");
-
       return res.redirect("https://health-track-2f.onrender.com/patient");
     } catch (error) {
-      console.error("❌ CALLBACK ERROR:", error);
-      return res.status(500).send("Internal Server Error");
+      console.error("❌ JWT COOKIE ERROR:", error);
+      return res.status(500).json({ error: error.message });
     }
   })(req, res, next);
 });
