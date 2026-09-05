@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from '../components/Sidebar';
+import { useState, useEffect } from "react";
 import {
   HeartPulse,
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
   Wind,
   CloudFog,
   CircleCheck,
+  Menu
 } from "lucide-react";
 
 import "../App.css";
@@ -37,12 +39,16 @@ const precautions = [
 ];
 
 function Environment() {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div className="environment-page">
 
       {/* ================= SIDEBAR ================= */}
 
-      <Sidebar/>
+      <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
 
       {/* ================= MAIN ================= */}
 
@@ -51,7 +57,15 @@ function Environment() {
         {/* HEADER */}
 
         <header className="environment-header">
-
+          <div>
+                  <button
+  className="menu-btn"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  <Menu size={28} />
+</button>
+          </div>
+              
           <div>
             <h1>Environment</h1>
 

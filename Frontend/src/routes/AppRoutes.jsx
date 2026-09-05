@@ -142,7 +142,8 @@ import Profile from '../pages/Profile';
 import Setting from '../pages/Setting';
 import Doctor  from "../pages/Doctor"
 import Appointment from "../pages/Appointment"
-
+import API_URL from "../config/api";
+import DashboardLayout from "../pages/DashboardLayout";
 import {useState,useEffect} from "react";
 
 function AppRoutes() {
@@ -152,7 +153,7 @@ function AppRoutes() {
   useEffect(() => {
     const checklogin = async () => {
       try {
-         const response = await fetch("https://health-track-2b.onrender.com/api/users/islogin", {
+         const response = await fetch(`${API_URL}/api/users/islogin`, {
           method: "GET",
           credentials: "include",
         });
@@ -177,7 +178,7 @@ function AppRoutes() {
 // 
   return (
     <BrowserRouter>
-      <Routes>
+      <Routes element={<DashboardLayout />}>
         <Route path="/" element={<Home/>} />
          <Route path="/features" element={<Features/>} />
         <Route path="/howitworks" element={<HowItWorks />} />
@@ -188,7 +189,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login setIslogin={setIslogin} />} />
        <Route path="/patient" element={islogin ? <Patient setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />}/>
 
-        <Route path="/dashboard" element={islogin ? <Dashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />}/>
+         <Route path="/dashboard" element={islogin ? <Dashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
         <Route path="/monitor" element={islogin ? <HealthMonitor setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
         <Route path="/risk" element={islogin ? <RiskAnalysis setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />
         <Route path="/alerts" element={islogin ? <Alerts setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />

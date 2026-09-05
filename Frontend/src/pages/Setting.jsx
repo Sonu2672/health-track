@@ -11,19 +11,26 @@ import {
   Moon,
   ChevronRight,
   LogOut,
+  Menu
 } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
 import "../App.css";
+import API_URL from "../config/api";
+
+
+
+
 
 const Settings = ({setIslogin}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [healthAlerts, setHealthAlerts] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
 const navigate = useNavigate();
     const logouthandler = async () => {
-    const response = await fetch("https://health-track-2b.onrender.com/api/users/islogout", {
+    const response = await fetch(`${API_URL}/api/users/islogout`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -47,13 +54,22 @@ const navigate = useNavigate();
     <div className="settings-layout">
 
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
 
       {/* Main Content */}
       <main className="settings-main">
 
         {/* Header */}
         <div className="settings-header">
+                        <button
+            className="menu-btn"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <Menu size={28} />
+          </button>
           <div>
             <h1>Settings</h1>
             <p>Manage your preferences and account settings</p>

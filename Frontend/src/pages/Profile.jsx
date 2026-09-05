@@ -19,12 +19,14 @@ import {
   CalendarDays,
   ChevronRight,
   Watch,
+  Menu
 } from "lucide-react";
 
 import "../App.css";
 
 
 function Profile() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const [preferences, setPreferences] = useState({
     health: true,
@@ -47,7 +49,10 @@ function Profile() {
 
       {/* ================= SIDEBAR ================= */}
 
-     <Sidebar/>
+  <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
 
 
       {/* ================= MAIN ================= */}
@@ -57,7 +62,15 @@ function Profile() {
         {/* HEADER */}
 
         <div className="profile-header">
-
+          <div>
+                     <button
+  className="menu-btn"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  <Menu size={28} />
+</button>
+          </div>
+         
           <h1>Profile</h1>
 
           <p>

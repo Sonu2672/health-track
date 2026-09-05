@@ -200,6 +200,7 @@ import "../App.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import API_URL from "../config/api";
 function Login({ setIslogin,setIsadmin }) {
   const navigate = useNavigate();
 
@@ -218,7 +219,7 @@ function Login({ setIslogin,setIsadmin }) {
     e.preventDefault();
 
     const response = await fetch(
-    "https://health-track-2b.onrender.com/api/users/login",
+    `${API_URL}/api/users/login`,
       {
         method: "POST",
         credentials: "include",
@@ -258,7 +259,7 @@ function Login({ setIslogin,setIsadmin }) {
     e.preventDefault();
 
     const response = await fetch(
-      "http://localhost:5000/api/users/signup",
+      `${API_URL}/api/users/signup`,
       {
         method: "POST",
         credentials: "include",
@@ -361,7 +362,7 @@ function Login({ setIslogin,setIsadmin }) {
           <button
             onClick={() => {
               window.location.href =
-                "http://localhost:5000/auth/google";
+                `${API_URL}/auth/google`;
             }}
           >
             Login with Google

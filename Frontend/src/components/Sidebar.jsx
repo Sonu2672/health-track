@@ -162,9 +162,9 @@ import {
 import {  Stethoscope } from "lucide-react";
 import "../css/Sidebar.css";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
-    <aside className="sidebar">
+  <aside className={`sidebar ${isOpen ? "open" : ""}`}>
 
       {/* Brand */}
       <div className="brand">

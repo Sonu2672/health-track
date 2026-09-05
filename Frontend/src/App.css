@@ -2749,6 +2749,9 @@ body {
 }
 
 /* ---HEALTH HISTORY CSS */
+
+
+
 * {
   box-sizing: border-box;
 }
@@ -3290,6 +3293,66 @@ body {
 
 
 
+
+/* =========================
+   MOBILE SIDEBAR FIX
+========================= */
+
+@media (max-width: 768px) {
+
+  .dashboard-layout {
+    display: block !important;
+  }
+
+  .history-page {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 20px 15px !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -230px !important;
+
+    width: 230px !important;
+    height: 100vh !important;
+
+    z-index: 99999 !important;
+
+    transition: left 0.3s ease !important;
+  }
+
+  .sidebar.open {
+    left: 0 !important;
+  }
+
+  .menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    padding: 5px;
+    margin-right: 10px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (min-width: 769px) {
+  .menu-btn {
+    display: none !important;
+  }
+}
+
 /* Enviroment.jsx */
 * {
   box-sizing: border-box;
@@ -3468,6 +3531,7 @@ body {
 
 .environment-header {
   margin-bottom: 17px;
+  display:flex;
 }
 
 .environment-header h1 {
@@ -6522,6 +6586,8 @@ body {
 
 .profile-header {
   margin-bottom: 22px;
+  display:flex;
+  justify-Content:space-between
 }
 
 .profile-header h1 {
@@ -7255,6 +7321,7 @@ body {
   .settings-main {
     padding: 25px 20px;
   }
+  
 }
 
 @media (max-width: 600px) {
@@ -7455,6 +7522,7 @@ body {
 
 .consult-header {
   margin-bottom: 25px;
+  display:flex;
 }
 
 .consult-header h1 {
@@ -8689,3 +8757,8 @@ button,
 input {
   font-size: clamp(14px, 1.2vw, 16px);
 }
+
+
+
+
+/* sidebar overlay */

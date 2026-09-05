@@ -1,0 +1,19 @@
+.menu-button {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+/* Sirf mobile view */
+@media (max-width: 768px) {
+  .menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

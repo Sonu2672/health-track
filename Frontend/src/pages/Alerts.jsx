@@ -15,6 +15,7 @@ import {
   Activity,
   CheckCircle2,
   ArrowLeft,
+  Menu,
   X,
 } from "lucide-react";
 
@@ -65,7 +66,7 @@ const alertsData = [
 
 function Alerts() {
   const [filter, setFilter] = useState("All Alerts");
-
+const [menuOpen, setMenuOpen] = useState(false);
   const filteredAlerts =
     filter === "All Alerts"
       ? alertsData
@@ -77,7 +78,10 @@ function Alerts() {
     <div className="alerts-page">
 
       {/* SIDEBAR */}
-     <Sidebar/>
+   <Sidebar
+  isOpen={menuOpen}
+  closeSidebar={() => setMenuOpen(false)}
+/>
       {/* MAIN */}
       <main className="alerts-main">
 
@@ -85,8 +89,14 @@ function Alerts() {
         <header className="alerts-header">
 
           <div className="alerts-heading">
+                          <button
+              className="menu-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <Menu size={28} />
+            </button>
 
-            <ArrowLeft size={17} />
+            {/* <ArrowLeft size={17} /> */}
 
             <div>
               <h1>Alerts</h1>

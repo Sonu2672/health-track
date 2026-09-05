@@ -129,7 +129,7 @@ import {useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { HeartPulse, Activity, Thermometer } from "lucide-react";
-
+import API_URL from "../config/api";
 const Patient = () => {
 
    const [heartRate,setheartRate]=useState(null);
@@ -138,7 +138,7 @@ const Patient = () => {
 const navigate = useNavigate();
   const pSubmit=async()=>{
         const response = await fetch(
-      "https://health-track-2b.onrender.com/api/health/healthdata",
+      `${API_URL}/api/health/healthdata`,
       {
         method: "POST",
         credentials: "include",
