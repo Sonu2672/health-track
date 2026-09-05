@@ -154,7 +154,7 @@ import connectDB from "./config/Db.js";
 import healthRoutes from "./route/healthRoutes.js";
 import userRoutes from "./route/userRoutes.js";
 import  receiveDeviceData from "./route/healthRoutes.js";
-
+// import VITE_FRONTEND_URL from "../config/api.js"
 import doctorRoutes from "./route/doctorRoutes.js";
 
 import dns from "dns";
@@ -187,7 +187,6 @@ app.use(passport.initialize());
 
 app.use("/api/users", userRoutes);
 app.use("/api/health",healthRoutes);
-app.use("/api/devicedata",receiveDeviceData)
 app.use("/api/doctors", doctorRoutes);
 // app.use("/api/admin", adminRoutes);
 
@@ -195,7 +194,8 @@ app.use("/api/doctors", doctorRoutes);
 // app.use("/api/user", userRoutes);
 // app.use("/api/profile",profileRoutes);
 
-
+//esp32 calling my api
+app.use("/api/devicedata",receiveDeviceData)
 
 
 

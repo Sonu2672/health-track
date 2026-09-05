@@ -13,7 +13,8 @@ import {healthData,getData,receiveDeviceData,getHealthHistory} from "../controll
 // Router.post("/healthdata",auth,healthData);
 Router.get("/getdata",auth,getData)
 Router.post("/healthdata",auth,healthData);
-Router.post("/",auth,receiveDeviceData)
 Router.get("/history", auth, getHealthHistory);
 
+//esp32 api
+Router.post("/",auth,receiveDeviceData)
 export default Router;

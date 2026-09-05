@@ -628,31 +628,7 @@ res.status(200).json({
 
 
 
-// Esp32 
-export const receiveDeviceData = async (req, res) => {
-  try {
-    const { deviceId, heartRate, spo2, temp } = req.body;
 
-    const newHealthData = await health.create({
-      userid: userId,
-      deviceid,
-      heartRate,
-      spo2,
-      temp,
-    });
-
-    res.status(201).json({
-      success: true,
-      data: newHealthData,
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 
 
@@ -758,6 +734,63 @@ export const getHealthHistory = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Esp32 data
+export const receiveDeviceData = async (req, res) => {
+  try {
+    const { deviceId, heartRate, spo2, temp } = req.body;
+
+    // Device ID se device find karo
+    const device = await health.findOne({ deviceId });
+
+    if (!device) {
+      return res.status(404).json({
+        message: "Device not registered"
+      });
+    }
+
+    // Device se associated user mil gaya
+    const userId = device.userid;
+
+    // Health data save karo
+    const newHealthData = await health.create({
+      userid: userId,
+      deviceId: deviceId,
+      heartRate,
+      spo2,
+      temp
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newHealthData
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message
     });
   }
 };

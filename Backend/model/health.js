@@ -11,6 +11,11 @@ const healthSchema = new mongoose.Schema({
   spo2: Number,
   temp: Number,
   riskScore:Number,
+
+  // deviceId: {
+  //     type: String,
+  //     required: true,
+  //   },
   
 
 }, {
