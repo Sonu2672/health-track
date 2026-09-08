@@ -16,31 +16,31 @@ export const login = async (req, res) => {
 
     const userd = await user.findOne({ email });
      
-    if(userd.role==="admin")
-    {
+//     if(userd.role==="admin")
+//     {
      
 
-      const token = jwt.sign(
+//       const token = jwt.sign(
 
-      { 
-        id: userd._id,
-        role:userd.role,
-        email:userd.email, 
-       },   
-                               //header+payload
-      process.env.JWT_SECRET, //signature
-      { expiresIn: "1d" }
-    );
+//       { 
+//         id: userd._id,
+//         // role:userd.role,
+//         email:userd.email, 
+//        },   
+//                                //header+payload
+//       process.env.JWT_SECRET, //signature
+//       { expiresIn: "1d" }
+//     );
 
- res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 24 * 60 * 60 * 1000,
-});
+//  res.cookie("token", token, {
+//   httpOnly: true,
+//   secure: false,
+//   sameSite: "lax",
+//   maxAge: 24 * 60 * 60 * 1000,
+// });
 
- return res.status(200).json({message:"admin"});
-    }
+//  return res.status(200).json({message:"admin"});
+//     }
 
     console.log(userd);
     if (!userd) {
@@ -58,14 +58,14 @@ export const login = async (req, res) => {
 
 res.cookie("token", token, {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: false,
+  sameSite: "lax",
   maxAge: 24 * 60 * 60 * 1000,
 });
       console.log("Cookie set:", userd._id);
       return res.status(200).json({ message: "login successfully" });
     }
-    res.json({ message: "Wrong Password" });
+    return res.json({ message: "Wrong Password" });
   } catch (err) {
     res.json({ message: "error", err });
   }
@@ -75,64 +75,61 @@ res.cookie("token", token, {
 
 
 
-// export const Signup = async (req, res) => {
-//   const { firstname, email, password } = req.body;
-//   // console.log(data);
-
-//   try {
-//     const result = validationResult(req);
-
-//     if (!result.isEmpty()) {
-//       return res.status(400).json({ errors: result.array() });
-//     }
-//     const hpassword = await bcrypt.hash(password, 5);
-//     await user.create({ firstname, email, password: hpassword });
-//     res.json({ message: "signup successfully" });
-//   } catch (err) {
-//     res.json({ message: "something error in signup" });
-//   }
-// };
-
 export const Signup = async (req, res) => {
-  const { firstname, lastname, email, password } = req.body;
-
   try {
+    const { firstname, lastname, email, password } = req.body;
+
+    // 1️⃣ Validation
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
       return res.status(400).json({
-        message: result.array()[0].msg
+        success: false,
+        message: result.array()[0].msg,
       });
     }
 
-    // 🔥 1. Check if email already exists
+    // 2️⃣ Check existing email
     const existingUser = await user.findOne({ email });
 
     if (existingUser) {
       return res.status(409).json({
-        message: "Email already exists"
+        success: false,
+        message: "Email already exists",
       });
     }
 
-    // 🔥 2. Hash password
+    // 3️⃣ Hash password
     const hpassword = await bcrypt.hash(password, 10);
 
-    // 🔥 3. Create user
-    await user.create({
+    // 4️⃣ Create user
+    const newUser = await user.create({
       firstname,
       lastname,
       email,
       password: hpassword,
-      
     });
 
+    // 5️⃣ Success response
     return res.status(201).json({
-      message: "Signup successful"
+      success: true,
+      message: "Signup successful",
+      user: {
+        id: newUser._id,
+        firstname: newUser.firstname,
+        lastname: newUser.lastname,
+        email: newUser.email,
+      },
     });
 
   } catch (err) {
+    console.error("❌ SIGNUP ERROR FULL:", err);
+    console.error("❌ MESSAGE:", err.message);
+    console.error("❌ STACK:", err.stack);
+
     return res.status(500).json({
-      message: "Something went wrong during signup"
+      success: false,
+      message: err.message || "Internal Server Error",
     });
   }
 };

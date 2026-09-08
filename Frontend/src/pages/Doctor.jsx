@@ -746,7 +746,7 @@ const displayedDoctors = filteredDoctors.slice(0, 3);
             
           <div className="consult-header">
             <div>
-                        <button
+     <button
       className="menu-btn"
       onClick={() => setMenuOpen(!menuOpen)}
     >

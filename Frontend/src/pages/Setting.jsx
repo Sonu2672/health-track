@@ -16,7 +16,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import "../App.css";
-import API_URL from "../config/api";
+// import API_URL from "../config/api";
 
 
 
@@ -30,7 +30,7 @@ const Settings = ({setIslogin}) => {
 
 const navigate = useNavigate();
     const logouthandler = async () => {
-    const response = await fetch(`${API_URL}/api/users/islogout`, {
+    const response = await fetch("http://localhost:5000/api/users/islogout", {
       method: "GET",
       credentials: "include",
       headers: {

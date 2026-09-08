@@ -1,24 +1,43 @@
 import mongoose from "mongoose";
-const healthSchema = new mongoose.Schema({
-  userid: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required:true
+
+const healthSchema = new mongoose.Schema(
+  {
+    deviceId: {
+      type: String,
+      required: true,
+      
+      trim: true,
+    },
+
+    userid: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    heartRate: {
+      type: Number,
+      default: 0,
+    },
+
+    spo2: {
+      type: Number,
+      default: 0,
+    },
+
+    temp: {
+      type: Number,
+      default: 0,
+    },
+
+    riskScore: {
+      type: Number,
+      default: 0,
+    },
   },
+  {
+    timestamps: true,
+  }
+);
 
-  // deviceid:string,
-  heartRate: Number,
-  spo2: Number,
-  temp: Number,
-  riskScore:Number,
-
-  // deviceId: {
-  //     type: String,
-  //     required: true,
-  //   },
-  
-
-}, {
-  timestamps: true
-});
 export default mongoose.model("health", healthSchema);

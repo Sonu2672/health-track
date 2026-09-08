@@ -1,629 +1,677 @@
 
-// import health from "../model/health.js";
-// import jwt from "jsonwebtoken";
-
-
-
-// //   export const healthData=async(req,res)=>{
-// //     try{
-        
-// //        const { deviceId, heartRate, spo2, temperature } = req.body;
-// //        const hd=await health.create({ userid:req.user.id,deviceId:deviceId, heartRate:heartRate, spo2:spo2, temperature:temperature})
-// //        console.log(req.body);
-// //       res.status(201).json({
-// //       hd,
-// //       success: true,
-// //       message: "Data received successfully"})
-// //     }
-
-// //     catch(err)
-// //     {
-// //       res.status(500).json({
-// //       success: false,
-// //       message: err.message
-// //     });
-// //     }
-// // }
-
-
-
-
-
-//   export const healthData=async(req,res)=>{
-//     try{
-//         // const pname=req.user.firstname;
-//        const { heartRate,spo2,temp } = req.body;
-//        const hd=await health.create({ userid:req.user.id,heartRate:heartRate,spo2:spo2,temp:temp})
-//        console.log(req.body);
-//       res.status(201).json({
-//         hd
-//     })
-
-   
-// }
-
-//  catch(err)
-//     {
-//       res.status(500).json({
-//       success: false,
-//       message: err.message
-//     });
-//     }
-//   }
-
-
-
-
-//   export const getData=async(req,res)=>{
-//     try{
-        
-//        const hd = await health.findOne({ userid: req.user.id }).sort({ createdAt: -1 });
-       
-//           const {heartRate,spo2,temp}=hd;
-
-      
-
-// let riskScore = 0;
-
-// // HEART RATE
-//   if (heartRate < 40 || heartRate > 180) {
-//     riskScore += 100;
-//   } else if (heartRate < 50 || heartRate > 140) {
-//     riskScore += 80;
-//   } else if (heartRate < 60 || heartRate > 120) {
-//     riskScore += 60;
-//   } else if (heartRate < 60 || heartRate > 100) {
-//     riskScore += 30;
-//   }
-
-// // SPO2
-//   if (spo2 < 80) {
-//     riskScore += 100;
-//   } else if (spo2 < 85) {
-//     riskScore += 80;
-//   } else if (spo2 < 90) {
-//     riskScore += 60;
-//   } else if (spo2 < 95) {
-//     riskScore += 30;
-//   }
-
-// // TEMPERATURE
-//     if (temp < 32 || temp > 42) {
-//       riskScore += 100;
-//     } else if (temp < 34 || temp > 40) {
-//       riskScore += 80;
-//     } else if (temp < 35 || temp > 39) {
-//       riskScore += 60;
-//     } else if (temp < 36.1 || temp > 37.2) {
-//       riskScore += 30;
-//     }
-
-// riskScore = Math.min(riskScore, 100);
-
-// console.log(riskScore);
-
-// let riskLevel;
-
-//     if (riskScore === 0) {
-//       riskLevel = "Normal";
-//     } else if (riskScore <= 30) {
-//       riskLevel = "Low Risk";
-//     } else if (riskScore <= 60) {
-//       riskLevel = "Moderate Risk";
-//     } else if (riskScore <= 80) {
-//       riskLevel = "High Risk";
-//     } else {
-//       riskLevel = "Critical Risk";
-//     }
- 
-
-
-
-
-//   const recommendations = [];
-
-//   // 🌡️ HIGH BODY TEMPERATURE
-//   if (temp >= 38) {
-//     recommendations.push(
-//       "Move to a cool, shaded or indoor area",
-//       "Drink water or oral fluids if appropriate",
-//       "Avoid strenuous physical activity",
-//       "Wear light and breathable clothing",
-//       "Monitor body temperature regularly"
-//     );
-//   }
-
-//   // 🔥 VERY HIGH TEMPERATURE
-//   if (temp >= 39) {
-//     recommendations.push(
-//       "Seek medical evaluation, especially if symptoms are severe or worsening"
-//     );
-//   }
-
-//   // 💓 HIGH HEART RATE
-//   if (heartRate > 100) {
-//     recommendations.push(
-//       "Sit down and rest in a comfortable position",
-//       "Avoid strenuous physical activity",
-//       "Monitor your heart rate regularly"
-//     );
-//   }
-
-//   // 🚨 VERY HIGH HEART RATE
-//   if (heartRate >= 130) {
-//     recommendations.push(
-//       "Seek prompt medical attention, particularly if accompanied by concerning symptoms"
-//     );
-//   }
-
-//   // 💓 LOW HEART RATE
-//   if (heartRate < 60) {
-//     recommendations.push(
-//       "Rest and monitor your condition",
-//       "Avoid sudden or strenuous physical activity"
-//     );
-//   }
-
-//   // 🚨 VERY LOW HEART RATE
-//   if (heartRate < 45) {
-//     recommendations.push(
-//       "Seek urgent medical attention if you feel faint, weak, or unwell"
-//     );
-//   }
-
-//   // 🫁 LOW SPO2
-//   if (spo2 < 95) {
-//     recommendations.push(
-//       "Rest and avoid strenuous activity",
-//       "Ensure the sensor reading is taken correctly",
-//       "Continue monitoring oxygen saturation"
-//     );
-//   }
-
-//   // 🚨 CRITICAL SPO2
-//   if (spo2 < 90) {
-//     recommendations.push(
-//       "Seek immediate medical attention",
-//       "Do not ignore breathing difficulty or worsening symptoms"
-//     );
-//   }
-
-//   // 🟢 NORMAL CONDITION
-//   if (
-//     heartRate >= 60 &&
-//     heartRate <= 100 &&
-//     spo2 >= 95 &&
-//     temp >= 36 &&
-//     temp < 38
-//   ) {
-//     recommendations.push(
-//       "All monitored parameters are currently within the configured range",
-//       "Continue regular health monitoring",
-//       "Maintain adequate hydration and rest"
-//     );
-//   }
-
-//   // 🔴 OVERALL HIGH RISK
-//   if (riskLevel === "High" || riskLevel === "Critical") {
-//     recommendations.push(
-//       "Inform a family member or caregiver if you feel unwell",
-//       "Monitor your health parameters more frequently"
-//     );
-  
-//   }
-
-  
-//       res.status(201).json({
-//       hd,
-//       riskScore,
-//       riskLevel,
-//       recommendations,
-      
-//       success: true,
-//       message: "Data received successfully"})
-    
-//       }
-
-
-//     catch(err)
-//     {
-//       res.status(500).json({
-//       success: false,
-//       message: err.message
-//     });
-//     }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import health from "../model/health.js";
+import device from "../model/device.js"
 import jwt from "jsonwebtoken";
 
 
 
 
+// export const healthData = async (req, res) => {
+//   try {
+//     const {
+//       deviceId,
+//       heartRate,
+//       spo2,
+//       temp,
+//     } = req.body;
+  
+//     console.log("hi= " , deviceId,
+//       heartRate,
+//       spo2,
+//       temp,)
 
-  export const healthData=async(req,res)=>{
-    try{
-        // const pname=req.user.firstname;
-       const { heartRate,spo2,temp } = req.body;
-       const hd=await health.create({ userid:req.user.id,heartRate:heartRate,spo2:spo2,temp:temp})
-       console.log(req.body);
-      res.status(201).json({
-        hd
-    })
+    
+//     if (!deviceId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Device ID is required",
+//       });
+//     }
 
-   
-}
+//     // Registered device find karo
+//     const existingDevice = await device.findOne({ deviceId });
 
- catch(err)
-    {
-      res.status(500).json({
-      success: false,
-      message: err.message
+//     if (!existingDevice) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Device is not registered",
+//       });
+//     }
+
+//     // Device registration se userid milega
+//     const userid = existingDevice.userid;
+
+//     console.log("DEVICE ID:", deviceId);
+//     console.log("FETCHED USER ID:", userid);
+
+//     // 🔥 Har ESP32 reading ka NEW health document
+//     const newHealthData = await health.create({
+//       deviceId,
+//       userid,
+//       heartRate: Number(heartRate ?? 0),
+//       spo2: Number(spo2 ?? 0),
+//       temp: Number(temp ?? 0),
+//     });
+
+
+//     console.log("✅ NEW HEALTH READING:", newHealthData,heartRate,spo2,temp);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Health data saved successfully",
+//       data: newHealthData,
+//     });
+
+//   } catch (error) {
+//     console.error("❌ HEALTH DATA ERROR:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
+
+
+
+
+export const healthData = async (req, res) => {
+   console.log("🔥🔥🔥 HEALTHDATA CONTROLLER HIT 🔥🔥🔥");
+  try {
+    console.log("🔥 HEALTH DATA API HIT");
+
+    const {
+      deviceId,
+      heartRate,
+      spo2,
+      temp,
+    } = req.body;
+
+    console.log("📦 REQUEST BODY:", req.body);
+
+    if (!deviceId) {
+      console.log("❌ DEVICE ID MISSING");
+
+      return res.status(400).json({
+        success: false,
+        message: "Device ID is required",
+      });
+    }
+
+    console.log("🔍 FINDING DEVICE:", deviceId);
+
+    const existingDevice = await device.findOne({ deviceId });
+
+    console.log("📱 EXISTING DEVICE:", existingDevice);
+
+    if (!existingDevice) {
+      console.log("❌ DEVICE NOT REGISTERED");
+
+      return res.status(404).json({
+        success: false,
+        message: "Device is not registered",
+      });
+    }
+
+    const userid = existingDevice.userid;
+
+    console.log("👤 USER ID:", userid);
+
+    const healthPayload = {
+      deviceId,
+      userid,
+      heartRate: Number(heartRate ?? 0),
+      spo2: Number(spo2 ?? 0),
+      temp: Number(temp ?? 0),
+    };
+
+    console.log("💾 SAVING HEALTH DATA:", healthPayload);
+
+    const newHealthData = await health.create(healthPayload);
+
+    console.log("✅ SAVED TO MONGODB:", newHealthData);
+
+    return res.status(200).json({
+      success: true,
+      message: "Health data saved successfully",
+      data: newHealthData,
     });
-    }
+
+  } catch (error) {
+    console.error("❌ HEALTH DATA ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
+};
 
 
 
+export const gethealthdata = async (req, res) => {
+  try {
+    // ==========================================
+    // GET LOGGED-IN USER ID
+    // ==========================================
 
-  export const getData=async(req,res)=>{
-    try{
-        
-       const hd = await health.findOne({ userid: req.user.id }).sort({ createdAt: -1 });
-      
-        
-          const {heartRate,spo2,temp}=hd;
-          //  const lasthr = await health.findOne({ userid: req.user.id }).sort({ createdAt: -1 }).skip(1);
-              
-          //   const  change1=((hd.heartRate-lasthr.heartRate)/lasthr)*100
-          //    const change2=((hd.spo2Rate-lasthr.spo2Rate)/lasthr)*100
-          //     const   change3=((hd.tempRate-lasthr.tempRate)/lasthr)*100
-          //     const change = {
-          //       heartRate: change1,
-          //       spo2: change2,
-          //       temp: change3,
-          //            };
-        // const healthMonitorData=[];   
-       
-        const healthData = await health
-  .find({ userid: req.user.id })
-  .select("heartRate spo2 temp -_id");
+    const userid = req.user.id;
 
-const heartRateData = healthData.map((item) => item.heartRate);
+    console.log("GET USER ID:", userid);
 
-const spo2Data = healthData.map((item) => item.spo2);
+    // ==========================================
+    // GET LATEST DEVICE DATA
+    // ==========================================
 
-const tempData = healthData.map((item) => item.temp);
-      
+    const hd = await health
+      .findOne({ userid })
+      .sort({ createdAt: -1 });
 
-         
-      //findone single object aaray return karta or find pura object aray return karta
+    console.log("LATEST DEVICE DATA:", hd);
 
-let riskScore = 0;
+    // ==========================================
+    // NO DEVICE DATA
+    // ==========================================
 
-// HEART RATE
-  if (heartRate < 40 || heartRate > 180) {
-    riskScore += 100;
-  } else if (heartRate < 50 || heartRate > 140) {
-    riskScore += 80;
-  } else if (heartRate < 60 || heartRate > 120) {
-    riskScore += 60;
-  } else if (heartRate < 60 || heartRate > 100) {
-    riskScore += 30;
-  }
+    if (!hd) {
+      return res.status(200).json({
+        success: true,
+        message: "No device data found",
 
-// SPO2
-  if (spo2 < 80) {
-    riskScore += 100;
-  } else if (spo2 < 85) {
-    riskScore += 80;
-  } else if (spo2 < 90) {
-    riskScore += 60;
-  } else if (spo2 < 95) {
-    riskScore += 30;
-  }
+        hd: null,
 
-// TEMPERATURE
-    if (temp < 32 || temp > 42) {
-      riskScore += 100;
-    } else if (temp < 34 || temp > 40) {
-      riskScore += 80;
-    } else if (temp < 35 || temp > 39) {
-      riskScore += 60;
-    } else if (temp < 36.1 || temp > 37.2) {
-      riskScore += 30;
+        riskScore: 0,
+        riskLevel: "No Data",
+        prediction: null,
+
+        recommendations: [],
+        datatimers: [],
+
+        heartRateData: [],
+        spo2Data: [],
+        tempData: [],
+
+        riskFactors: [],
+      });
     }
 
-riskScore = Math.min(riskScore, 100);
+    // ==========================================
+    // LATEST SENSOR VALUES
+    // ==========================================
 
-console.log(riskScore);
+    const heartRate = Number(hd.heartRate ?? 0);
+    const spo2 = Number(hd.spo2 ?? 0);
+    const temp = Number(hd.temp ?? 0);
 
-let riskLevel;
+    console.log("SENSOR VALUES:");
+    console.log("Heart Rate:", heartRate);
+    console.log("SpO2:", spo2);
+    console.log("Temperature:", temp);
 
-    if (riskScore === 0) {
-      riskLevel = "Normal";
-    } else if (riskScore <= 30) {
-      riskLevel = "Low Risk";
-    } else if (riskScore <= 60) {
-      riskLevel = "Moderate Risk";
-    } else if (riskScore <= 80) {
-      riskLevel = "High Risk";
-    } else {
-      riskLevel = "Critical Risk";
+    // ==========================================
+    // 🤖 ML MODEL PREDICTION
+    // ==========================================
+
+    let riskScore = 0;
+    let riskLevel = "ML Unavailable";
+    let prediction = null;
+    let mlAvailable = false;
+
+    try {
+      console.log("🤖 Sending data to ML model...");
+
+      const mlUrl = `${process.env.ML_API_URL}/predict`;
+
+      console.log("🤖 ML URL:", mlUrl);
+
+      const mlResponse = await fetch(mlUrl, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          heartRate,
+          spo2,
+          temp,
+        }),
+      });
+
+      console.log("ML API STATUS:", mlResponse.status);
+
+      if (!mlResponse.ok) {
+        throw new Error(
+          `ML API returned status ${mlResponse.status}`
+        );
+      }
+
+      const mlData = await mlResponse.json();
+
+      console.log("🤖 ML RESPONSE:", mlData);
+
+      // ==========================================
+      // GET ML RESULT
+      // ==========================================
+
+      if (
+        mlData.riskScore === undefined ||
+        mlData.riskLevel === undefined
+      ) {
+        throw new Error(
+          "Invalid ML response: riskScore or riskLevel missing"
+        );
+      }
+
+      riskScore = Number(mlData.riskScore);
+
+      riskLevel = String(mlData.riskLevel);
+
+      prediction =
+        mlData.prediction !== undefined
+          ? Number(mlData.prediction)
+          : null;
+
+      // ==========================================
+      // VALIDATE RISK SCORE
+      // ==========================================
+
+      if (Number.isNaN(riskScore)) {
+        throw new Error("Invalid riskScore received from ML model");
+      }
+
+      riskScore = Math.max(
+        0,
+        Math.min(100, Math.round(riskScore))
+      );
+
+      mlAvailable = true;
+
+      console.log("🤖 ML PREDICTION:", prediction);
+      console.log("🤖 ML RISK SCORE:", riskScore);
+      console.log("🤖 ML RISK LEVEL:", riskLevel);
+
+    } catch (mlError) {
+      console.error(
+        "❌ ML API ERROR:",
+        mlError.message
+      );
+
+      // IMPORTANT:
+      // ML fail hone par Normal mat dikhao.
+      riskScore = 0;
+      riskLevel = "ML Unavailable";
+      prediction = null;
+      mlAvailable = false;
     }
- 
 
- hd.riskScore = riskScore;
+    // ==========================================
+    // FINAL ML RESULT
+    // ==========================================
+
+    console.log(
+      "🤖 FINAL ML RISK SCORE:",
+      riskScore
+    );
+
+    console.log(
+      "🤖 FINAL RISK LEVEL:",
+      riskLevel
+    );
+
+    console.log(
+      "🤖 ML AVAILABLE:",
+      mlAvailable
+    );
+
+    // ==========================================
+    // SAVE ML RESULT IN MONGODB
+    // ==========================================
+
+    hd.riskScore = riskScore;
+    hd.riskLevel = riskLevel;
+
     await hd.save();
 
+    console.log("✅ ML RESULT SAVED TO MONGODB");
 
-  const recommendations = [];
+    // ==========================================
+    // GET ALL USER DEVICE DATA
+    // ==========================================
 
-  // 🌡️ HIGH BODY TEMPERATURE
-  if (temp >= 38) {
-    recommendations.push(
-      "Move to a cool, shaded or indoor area",
-      "Drink water or oral fluids if appropriate",
-      "Avoid strenuous physical activity",
-      "Wear light and breathable clothing",
-      "Monitor body temperature regularly"
+    const allData = await health
+      .find({ userid })
+      .sort({ createdAt: 1 });
+
+    console.log(
+      "TOTAL DEVICE RECORDS:",
+      allData.length
     );
-  }
 
-  // 🔥 VERY HIGH TEMPERATURE
-  if (temp >= 39) {
-    recommendations.push(
-      "Seek medical evaluation, especially if symptoms are severe or worsening"
-    );
-  }
+    // ==========================================
+    // HEART RATE DATA
+    // ==========================================
 
-  // 💓 HIGH HEART RATE
-  if (heartRate > 100) {
-    recommendations.push(
-      "Sit down and rest in a comfortable position",
-      "Avoid strenuous physical activity",
-      "Monitor your heart rate regularly"
-    );
-  }
+    const heartRateData = allData.map((item) => ({
+      time: new Date(
+        item.createdAt
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
 
-  // 🚨 VERY HIGH HEART RATE
-  if (heartRate >= 130) {
-    recommendations.push(
-      "Seek prompt medical attention, particularly if accompanied by concerning symptoms"
-    );
-  }
+      value: Number(item.heartRate ?? 0),
+    }));
 
-  // 💓 LOW HEART RATE
-  if (heartRate < 60) {
-    recommendations.push(
-      "Rest and monitor your condition",
-      "Avoid sudden or strenuous physical activity"
-    );
-  }
+    // ==========================================
+    // SPO2 DATA
+    // ==========================================
 
-  // 🚨 VERY LOW HEART RATE
-  if (heartRate < 45) {
-    recommendations.push(
-      "Seek urgent medical attention if you feel faint, weak, or unwell"
-    );
-  }
+    const spo2Data = allData.map((item) => ({
+      time: new Date(
+        item.createdAt
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
 
-  // 🫁 LOW SPO2
-  if (spo2 < 95) {
-    recommendations.push(
-      "Rest and avoid strenuous activity",
-      "Ensure the sensor reading is taken correctly",
-      "Continue monitoring oxygen saturation"
-    );
-  }
+      value: Number(item.spo2 ?? 0),
+    }));
 
-  // 🚨 CRITICAL SPO2
-  if (spo2 < 90) {
-    recommendations.push(
-      "Seek immediate medical attention",
-      "Do not ignore breathing difficulty or worsening symptoms"
-    );
-  }
+    // ==========================================
+    // TEMPERATURE DATA
+    // ==========================================
 
-  // 🟢 NORMAL CONDITION
-  if (
-    heartRate >= 60 &&
-    heartRate <= 100 &&
-    spo2 >= 95 &&
-    temp >= 36 &&
-    temp < 38
-  ) {
-    recommendations.push(
-      "All monitored parameters are currently within the configured range",
-      "Continue regular health monitoring",
-      "Maintain adequate hydration and rest"
-    );
-  }
+    const tempData = allData.map((item) => ({
+      time: new Date(
+        item.createdAt
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
 
-  // 🔴 OVERALL HIGH RISK
-  // 🔴 OVERALL HIGH RISK
-if (riskLevel === "High Risk" || riskLevel === "Critical Risk") {
-  recommendations.push(
-    "Inform a family member or caregiver if you feel unwell",
-    "Monitor your health parameters more frequently"
-  );
-}
+      value: Number(item.temp ?? 0),
+    }));
 
+    // ==========================================
+    // HEALTH TREND DATA
+    // ==========================================
 
-// GRAPH DATA
-const hdr = await health
-  .find({ userid: req.user.id })
-  .sort({ createdAt: 1 });
+    const datatimers = allData.map((item) => {
+      const hr = Number(item.heartRate ?? 0);
+      const oxygen = Number(item.spo2 ?? 0);
+      const temperature = Number(item.temp ?? 0);
 
-const datatimers = hdr.map((item) => {
+      let score = 0;
 
-  const hr = Number(item.heartRate);
-  const oxygen = Number(item.spo2);
-  const temperature = Number(item.temp);
+      // HEART RATE
+      if (hr < 40 || hr > 180) {
+        score += 100;
+      } else if (hr < 50 || hr > 140) {
+        score += 80;
+      } else if (hr < 60 || hr > 120) {
+        score += 60;
+      } else if (hr > 100) {
+        score += 30;
+      }
 
-  let score = 0;
+      // SPO2
+      if (oxygen < 80) {
+        score += 100;
+      } else if (oxygen < 85) {
+        score += 80;
+      } else if (oxygen < 90) {
+        score += 60;
+      } else if (oxygen < 95) {
+        score += 30;
+      }
 
-  // ❤️ HEART RATE
-  if (hr < 40 || hr > 180) {
-    score += 100;
-  } 
-  else if (hr < 50 || hr > 140) {
-    score += 80;
-  } 
-  else if (hr < 60 || hr > 120) {
-    score += 60;
-  } 
-  else if (hr > 100) {
-    score += 30;
-  }
+      // TEMPERATURE
+      if (
+        temperature < 32 ||
+        temperature > 42
+      ) {
+        score += 100;
+      } else if (
+        temperature < 34 ||
+        temperature > 40
+      ) {
+        score += 80;
+      } else if (
+        temperature < 35 ||
+        temperature > 39
+      ) {
+        score += 60;
+      } else if (
+        temperature < 36.1 ||
+        temperature > 37.2
+      ) {
+        score += 30;
+      }
 
-  // 🫁 SPO2
-  if (oxygen < 80) {
-    score += 100;
-  } 
-  else if (oxygen < 85) {
-    score += 80;
-  } 
-  else if (oxygen < 90) {
-    score += 60;
-  } 
-  else if (oxygen < 95) {
-    score += 30;
-  }
+      score = Math.min(score, 100);
 
-  // 🌡️ TEMPERATURE
-  if (temperature < 32 || temperature > 42) {
-    score += 100;
-  } 
-  else if (temperature < 34 || temperature > 40) {
-    score += 80;
-  } 
-  else if (temperature < 35 || temperature > 39) {
-    score += 60;
-  } 
-  else if (temperature < 36.1 || temperature > 37.2) {
-    score += 30;
-  }
+      return {
+        time: new Date(
+          item.createdAt
+        ).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
 
-  score = Math.min(score, 100);
-
-  const time = new Date(item.createdAt).toLocaleTimeString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  return {
-    time,
-    score,
-  };
-});
-
-// const datatimers = Object.values(hourlyData);
-
-
-const riskFactors = [];
-if (heartRate > 100) {
-  riskFactors.push({
-    title: "Elevated Heart Rate",
-    sub: `${heartRate} BPM`,
-    value: 60,
-  });
-}
-
-if (heartRate > 140) {
-  riskFactors.push({
-    title: "Very High Heart Rate",
-    sub: `${heartRate} BPM`,
-    value: 90,
-  });
-}
-
-if (spo2 < 95) {
-  riskFactors.push({
-    title: "Low Oxygen Level",
-    sub: `${spo2}% SpO₂`,
-    value: 60,
-  });
-}
-
-if (spo2 < 90) {
-  riskFactors.push({
-    title: "Critical Oxygen Level",
-    sub: `${spo2}% SpO₂`,
-    value: 90,
-  });
-}
-
-
-
-if (temp > 37.2) {
-  riskFactors.push({
-    title: "Elevated Body Temperature",
-    sub: `${temp}°C`,
-    value: 50,
-  });
-}
-
-if (temp >= 39) {
-  riskFactors.push({
-    title: "High Body Temperature",
-    sub: `${temp}°C`,
-    value: 90,
-  });
-}
-// RESPONSE HAMESHA SABSE BAHAR
-res.status(200).json({
-  hd,
-  riskScore,
-  riskLevel,
-  recommendations,
-  datatimers,
-  heartRateData,
-  spo2Data,
-  tempData,
-  riskFactors,
-  success: true,
-  message: "Data received successfully",
-});
-    }
-    
-
-
-    catch(err)
-    {
-      res.status(500).json({
-      success: false,
-      message: err.message
+        score,
+      };
     });
+
+    // ==========================================
+    // RECOMMENDATIONS
+    // ==========================================
+
+    const recommendations = [];
+
+    // TEMPERATURE
+    if (temp > 38) {
+      recommendations.push(
+        "Your body temperature is elevated. Rest and monitor your temperature."
+      );
+    } else if (temp < 35) {
+      recommendations.push(
+        "Your body temperature is lower than normal. Keep yourself warm and monitor it."
+      );
+    } else {
+      recommendations.push(
+        "Your body temperature is within the normal range."
+      );
     }
-}
+
+    // HEART RATE
+    if (heartRate > 100) {
+      recommendations.push(
+        "Your heart rate is elevated. Avoid strenuous activity and monitor your heart rate."
+      );
+    } else if (heartRate < 60) {
+      recommendations.push(
+        "Your heart rate is relatively low. Continue monitoring it, especially if you feel unwell."
+      );
+    } else {
+      recommendations.push(
+        "Your heart rate is within a normal range."
+      );
+    }
+
+    // SPO2
+    if (spo2 < 90) {
+      recommendations.push(
+        "Your SpO₂ level is low. Seek medical attention if this persists or you have breathing difficulty."
+      );
+    } else if (spo2 < 95) {
+      recommendations.push(
+        "Your SpO₂ is slightly below the usual range. Continue monitoring it."
+      );
+    } else {
+      recommendations.push(
+        "Your SpO₂ level is within a healthy range."
+      );
+    }
+
+    // ==========================================
+    // ML RISK RECOMMENDATION
+    // ==========================================
+
+    if (riskLevel === "Critical Risk") {
+      recommendations.push(
+        "Critical risk detected. Immediate medical attention is recommended."
+      );
+    } else if (riskLevel === "High Risk") {
+      recommendations.push(
+        "High health risk detected. Please monitor your vital signs closely."
+      );
+    } else if (riskLevel === "Moderate Risk") {
+      recommendations.push(
+        "Moderate risk detected. Continue monitoring your health parameters."
+      );
+    } else if (riskLevel === "Low Risk") {
+      recommendations.push(
+        "Low risk detected. Maintain healthy habits and continue monitoring."
+      );
+    } else if (riskLevel === "ML Unavailable") {
+      recommendations.push(
+        "ML risk prediction is currently unavailable. Please try again later."
+      );
+    } else {
+      recommendations.push(
+        "Your current health indicators look normal. Keep maintaining a healthy lifestyle."
+      );
+    }
+
+    // ==========================================
+    // RISK FACTORS
+    // ==========================================
+
+    const riskFactors = [];
+
+    // HEART RATE
+    if (heartRate > 100) {
+      riskFactors.push({
+        factor: "Heart Rate",
+        value: heartRate,
+        status: "High",
+      });
+    } else if (heartRate < 60) {
+      riskFactors.push({
+        factor: "Heart Rate",
+        value: heartRate,
+        status: "Low",
+      });
+    } else {
+      riskFactors.push({
+        factor: "Heart Rate",
+        value: heartRate,
+        status: "Normal",
+      });
+    }
+
+    // SPO2
+    if (spo2 < 90) {
+      riskFactors.push({
+        factor: "SpO₂",
+        value: spo2,
+        status: "Low",
+      });
+    } else if (spo2 < 95) {
+      riskFactors.push({
+        factor: "SpO₂",
+        value: spo2,
+        status: "Slightly Low",
+      });
+    } else {
+      riskFactors.push({
+        factor: "SpO₂",
+        value: spo2,
+        status: "Normal",
+      });
+    }
+
+    // TEMPERATURE
+    if (temp > 38) {
+      riskFactors.push({
+        factor: "Temperature",
+        value: temp,
+        status: "High",
+      });
+    } else if (temp < 35) {
+      riskFactors.push({
+        factor: "Temperature",
+        value: temp,
+        status: "Low",
+      });
+    } else {
+      riskFactors.push({
+        factor: "Temperature",
+        value: temp,
+        status: "Normal",
+      });
+    }
+
+    // ==========================================
+    // FINAL RESPONSE
+    // ==========================================
+
+    return res.status(200).json({
+      success: true,
+
+      message: "Data received successfully",
+
+      // Latest device data
+      hd,
+
+      // ML RESULT
+      riskScore,
+      riskLevel,
+      prediction,
+      mlAvailable,
+
+      // Recommendations
+      recommendations,
+
+      // Graph data
+      datatimers,
+
+      heartRateData,
+      spo2Data,
+      tempData,
+
+      // Risk factors
+      riskFactors,
+    });
+
+  } catch (error) {
+    console.error(
+      "❌ GET DEVICE DATA ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get device data",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -755,42 +803,42 @@ export const getHealthHistory = async (req, res) => {
 
 
 
-// Esp32 data
-export const receiveDeviceData = async (req, res) => {
-  try {
-    const { deviceId, heartRate, spo2, temp } = req.body;
+// // Esp32 data
+// export const receiveDeviceData = async (req, res) => {
+//   try {
+//     const { deviceId, heartRate, spo2, temp } = req.body;
 
-    // Device ID se device find karo
-    const device = await health.findOne({ deviceId });
+//     // Device ID se device find karo
+//     const device = await health.findOne({ deviceId });
 
-    if (!device) {
-      return res.status(404).json({
-        message: "Device not registered"
-      });
-    }
+//     if (!device) {
+//       return res.status(404).json({
+//         message: "Device not registered"
+//       });
+//     }
 
-    // Device se associated user mil gaya
-    const userId = device.userid;
+//     // Device se associated user mil gaya
+//     const userId = device.userid;
 
-    // Health data save karo
-    const newHealthData = await health.create({
-      userid: userId,
-      deviceId: deviceId,
-      heartRate,
-      spo2,
-      temp
-    });
+//     // Health data save karo
+//     const newHealthData = await health.create({
+//       userid: userId,
+//       deviceId: deviceId,
+//       heartRate,
+//       spo2,
+//       temp
+//     });
 
-    res.status(201).json({
-      success: true,
-      data: newHealthData
-    });
+//     res.status(201).json({
+//       success: true,
+//       data: newHealthData
+//     });
 
-  } catch (error) {
-    console.error(error);
+//   } catch (error) {
+//     console.error(error);
 
-    res.status(500).json({
-      message: error.message
-    });
-  }
-};
+//     res.status(500).json({
+//       message: error.message
+//     });
+//   }
+// };
