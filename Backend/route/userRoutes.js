@@ -16,11 +16,22 @@ Router.get("/islogin", auth , (req,res)=>
 {
     //token se nikalo ki ye admin hai ya ni agar admin hua tho msg bhjenge admin
     console.log("bhai",req.user);
-    // if(req.user.role==="admin")
-    // {
-    //   return res.json({message:"admin"});
-    // }
-    res.json({message:"already login"});
+    if(req.user.role==="admin")
+    {
+      return res.json({message:"admin"});
+    }
+
+     else if(req.user.role==="patient")
+    {
+      return res.json({message:"patient"});
+    }
+
+     else if(req.user.role==="doctor")
+    {
+      return res.json({message:"doctor"});
+    }
+
+    
 })
 
 

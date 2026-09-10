@@ -47,6 +47,7 @@ app.use(passport.initialize());
 app.use("/api/users", userRoutes);
 app.use("/api/health",healthRoutes);
 app.use("/api/doctors", doctorRoutes);
+
 // app.use("/api/admin", adminRoutes);
 
 

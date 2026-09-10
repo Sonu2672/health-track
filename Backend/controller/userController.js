@@ -1,9 +1,12 @@
 import user from "../model/user.js";
+import device from "../model/device.js";
+import doctor from "../model/doctor.js";
+// import device from "../model/device.js";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password ,role} = req.body;
 
   try {
     const result = validationResult(req);
@@ -12,46 +15,28 @@ export const login = async (req, res) => {
     if (!result.isEmpty()) {
       return res.status(400).json({ errors: result.array() });
     }
+    const deviceId = user.deviceId;
+
+    const deviceIdd=await device.findOne({deviceId});
+    
 
 
-    const userd = await user.findOne({ email });
-     
-//     if(userd.role==="admin")
-//     {
-     
-
-//       const token = jwt.sign(
-
-//       { 
-//         id: userd._id,
-//         // role:userd.role,
-//         email:userd.email, 
-//        },   
-//                                //header+payload
-//       process.env.JWT_SECRET, //signature
-//       { expiresIn: "1d" }
-//     );
-
-//  res.cookie("token", token, {
-//   httpOnly: true,
-//   secure: false,
-//   sameSite: "lax",
-//   maxAge: 24 * 60 * 60 * 1000,
-// });
-
-//  return res.status(200).json({message:"admin"});
-//     }
-
-    console.log(userd);
-    if (!userd) {
+      if(role==="doctor")
+      {
+    const doctord=await doctor.findOne({email});
+       if (!doctord) {
       return res.status(404).json({ message: "email doesnot exist" });
-    }
+           }
 
-    const checkpass = await bcrypt.compare(password, userd.password);
+        if(doctord.status==="accepted")
+        {
+    const checkpass = await bcrypt.compare(password, doctord.password);
     if (checkpass)
    {
      const token = jwt.sign(
-      { id: userd._id },      //header+payload
+      { id: doctord._id ,  
+        role: role},
+        //header+payload
       process.env.JWT_SECRET, //signature
       { expiresIn: "1d" }
     );
@@ -62,14 +47,103 @@ res.cookie("token", token, {
   sameSite: "lax",
   maxAge: 24 * 60 * 60 * 1000,
 });
+
+      console.log("Cookie set:", doctord._id);
+      return res.status(200).json({ message: "login successfully doctor" ,role,success: true,});
+}
+        }
+      return res.json({ message: "Wrong Password doctor "});
+     }
+
+
+
+
+       else if(role==="patient")
+      {
+            const userd = await user.findOne({ email });
+            
+      if (!userd) {
+      return res.status(404).json({ message: "email doesnot exist" ,role,success: true});
+      }
+       const checkpass = await bcrypt.compare(password, userd.password);
+    if (checkpass)
+   {
+     const token = jwt.sign(
+      { id: userd._id,
+        role: role
+       },      //header+payload
+      process.env.JWT_SECRET, //signature
+      { expiresIn: "1d" }
+    );
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
       console.log("Cookie set:", userd._id);
-      return res.status(200).json({ message: "login successfully" });
-    }
-    return res.json({ message: "Wrong Password" });
-  } catch (err) {
+      return res.status(200).json({ message: "login successfully patient",role,success: true});
+}
+    return res.json({ message: "Wrong Password patient "});
+      }
+
+
+
+         else if(role==="admin")
+      {
+         const userd = await user.findOne({ email });
+            
+      if (!userd) {
+      return res.status(404).json({ message: "email doesnot exist" });
+      }
+       const checkpass = await bcrypt.compare(password, userd.password);
+    if (checkpass)
+   {
+     const token = jwt.sign(
+      { id: userd._id ,
+        role: role},      //header+payload
+      process.env.JWT_SECRET, //signature
+      { expiresIn: "1d" }
+    );
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
+      console.log("Cookie set:", userd._id);
+      return res.status(200).json({ message: "login successfully admin sir" ,role,success: true});
+}
+    return res.json({ message: "Wrong Password admin sir" });
+      }
+
+  
+      }
+      catch (err) {
     res.json({ message: "error", err });
   }
-};
+    }
+  
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -77,7 +151,7 @@ res.cookie("token", token, {
 
 export const Signup = async (req, res) => {
   try {
-    const { firstname, lastname, email, password } = req.body;
+    const { firstname, lastname, email, password ,role} = req.body;
 
     // 1️⃣ Validation
     const result = validationResult(req);
@@ -108,6 +182,7 @@ export const Signup = async (req, res) => {
       lastname,
       email,
       password: hpassword,
+      role
     });
 
     // 5️⃣ Success response

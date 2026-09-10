@@ -241,6 +241,25 @@ function RiskAnalysis() {
 </section>
 
 
+{/* RECOMMENDATIONS */}
+<section className="risk-box">
+  <h3>AI Recommendations</h3>
+
+  <div className="recommendations">
+    {recom && recom.length > 0 ? (
+      recom.map((recommendation, index) => (
+        <div className="recommendation-item" key={index}>
+          <CircleCheck size={18} />
+          <span>{recommendation}</span>
+        </div>
+      ))
+    ) : (
+      <p>No recommendations available</p>
+    )}
+  </div>
+</section>
+
+
         {/* EMERGENCY WARNING */}
         <div className="medical-warning">
 

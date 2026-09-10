@@ -95,7 +95,7 @@ export const deviceRegister = async (req, res) => {
     if (!deviceId) {
       return res.status(400).json({
         success: false,
-        message: "Device ID is required",
+        message: "Device ID is required"
       });
     }
 

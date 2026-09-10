@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
+      required:true
       // required: function () {
       //   return !this.googleId;
       // },
@@ -36,6 +37,12 @@ const userSchema = new mongoose.Schema(
     //   type: String,
     //   default: null,
     // },
+
+   role: {
+  type: String,
+  enum: ["doctor", "admin", "patient"],
+  required: true
+   }
   },
   {
     timestamps: true,

@@ -1,15 +1,10 @@
 import express from "express";
 
-import {
-  getDoctors,
-  seedDoctors,
-} from "../controller/doctorController.js";
+import {doctorRegister,getdoctorRequest, doctorRequestStaus } from "../controller/doctorController.js";
 
-const Router= express.Router();
+const Router = express.Router();
 
-Router.get("/", getDoctors);
-
-// Sirf development ke liye
-Router.post("/seed", seedDoctors);
-
+Router.post("/doctorReg", doctorRegister);
+Router.get("/doctorRequest", getdoctorRequest);
+Router.post("/doctorReq", doctorRequestStaus);
 export default Router;

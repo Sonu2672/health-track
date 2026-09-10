@@ -88,6 +88,9 @@ export const healthData = async (req, res) => {
       heartRate,
       spo2,
       temp,
+      // envtemp,
+      // aqi,
+      // humidity
     } = req.body;
 
     console.log("📦 REQUEST BODY:", req.body);
@@ -126,6 +129,9 @@ export const healthData = async (req, res) => {
       heartRate: Number(heartRate ?? 0),
       spo2: Number(spo2 ?? 0),
       temp: Number(temp ?? 0),
+      // envtemp : Number(envtemp ?? 0),
+      // aqi : Number(aqi ?? 0),
+      // humidity : Number(humidity ?? 0)
     };
 
     console.log("💾 SAVING HEALTH DATA:", healthPayload);

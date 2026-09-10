@@ -134,12 +134,12 @@ function Navbar() {
 
         {/* Sign Up */}
 
-        <Link
+        {/* <Link
           to="/signup"
           className="signup-btn"
         >
           Sign Up
-        </Link>
+        </Link> */}
 
 
         {/* Mobile Menu Button */}

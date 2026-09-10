@@ -78,7 +78,14 @@ function Home() {
           <h1>
             Your Health.
             <br />
-            Our <span>Priority.</span>
+            Our <span style={{ 
+  fontSize: "18px", 
+  fontWeight: "600", 
+  width: "100px",
+  display: "inline-block"
+}}>
+  Priority.
+</span>
           </h1>
 
           <p className="hero-description">

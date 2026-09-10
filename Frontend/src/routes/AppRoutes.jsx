@@ -29,6 +29,12 @@ import Setting from '../pages/Setting';
 import Doctor  from "../pages/Doctor"
 import Appointment from "../pages/Appointment"
 import ConnectedDevice from "../pages/ConnectedDevice"
+
+import DoctorDashboard from "../role/DoctorDashboard"
+import AdminDashboard from "../role/AdminDashboard"
+import DoctorManagement from "../role/DoctorManagement"
+import PatientManagement from "../role/PatientManagement"
+
 import {useState,useEffect} from "react";
 
 function AppRoutes() {
@@ -46,11 +52,16 @@ function AppRoutes() {
         const data = await response.json();
         console.log(data.message);
 
-        // if (data.message === "admin") {
-        //   toast.success("Hlw Admin sir  🚀");
-        //   setIslogin(true);
-        // } else 
-        if (data.message === "already login") {
+        if (data.message === "admin") {
+          toast.success("Hlw Admin sir  🚀");
+          setIslogin(true);
+        } 
+
+        else  if (data.message === "patient") {
+          setIslogin(true);
+        }
+
+         else  if (data.message === "doctor") {
           setIslogin(true);
         }
       } catch (error) {
@@ -65,6 +76,19 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
+       {/* Role wise acess */}
+        <Route path="/admindash" element={islogin ? <AdminDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
+        <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
+        <Route path="/patientm" element={islogin ? <PatientManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin}/>} />
+        <Route path="/doctordash" element={islogin ? <DoctorDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
+
+
+
+
+
+
+
         <Route path="/"  element={islogin ? <Dashboard setIslogin={setIslogin} /> : <Home setIslogin={setIslogin} />} />
          <Route path="/features" element={<Features/>} />
         <Route path="/howitworks" element={<HowItWorks />} />

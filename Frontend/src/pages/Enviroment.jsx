@@ -40,6 +40,38 @@ const precautions = [
 
 function Environment() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [environmentData, setEnvironmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+   useEffect(() => {
+    const fetchEnvironmentData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/",
+          {
+            credentials: "include",
+          }
+        );
+
+        const data = await response.json();
+
+        console.log("ENVIRONMENT DATA:", data);
+
+        if (data.success) {
+          setEnvironmentData(data);
+        }
+      } catch (error) {
+        console.error("Environment API Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEnvironmentData();
+  }, []);
+
+
+
   return (
     <div className="environment-page">
 
