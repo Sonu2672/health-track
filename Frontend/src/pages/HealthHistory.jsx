@@ -1,28 +1,13 @@
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useState } from "react";
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-// import API_URL from "../config/api";
+
 import {
   HeartPulse,
   Activity,
   Thermometer,
   Droplets,
-  Footprints,
-  Moon,
   ArrowRight,
-  Menu
+  Menu,
 } from "lucide-react";
 
 import {
@@ -38,210 +23,264 @@ import {
 import "../App.css";
 
 
-// const historyData = [
-//   { date: "01 May", value: 52 },
-//   { date: "03 May", value: 88 },
-//   { date: "05 May", value: 118 },
-//   { date: "07 May", value: 92 },
-//   { date: "09 May", value: 105 },
-//   { date: "10 May", value: 116 },
-//   { date: "12 May", value: 91 },
-//   { date: "14 May", value: 110 },
-//   { date: "15 May", value: 128 },
-//   { date: "16 May", value: 118 },
-//   { date: "18 May", value: 91 },
-//   { date: "20 May", value: 78 },
-//   { date: "22 May", value: 96 },
-//   { date: "24 May", value: 80 },
-//   { date: "26 May", value: 103 },
-//   { date: "28 May", value: 85 },
-//   { date: "30 May", value: 92 },
-// ];
+// ======================================================
+// HEALTH HISTORY
+// ======================================================
 
-const dummyBloodPressure = [
-  { date: "01 Sep", value: 120 },
-  { date: "02 Sep", value: 118 },
-  { date: "03 Sep", value: 122 },
-  { date: "04 Sep", value: 119 },
-  { date: "05 Sep", value: 121 },
-];
-
-
-const dummySteps = [
-  { date: "01 Sep", value: 4500 },
-  { date: "02 Sep", value: 6200 },
-  { date: "03 Sep", value: 5100 },
-  { date: "04 Sep", value: 7800 },
-  { date: "05 Sep", value: 6900 },
-];
-
-
-const dummySleep = [
-  { date: "01 Sep", value: 7 },
-  { date: "02 Sep", value: 6.5 },
-  { date: "03 Sep", value: 8 },
-  { date: "04 Sep", value: 7.5 },
-  { date: "05 Sep", value: 6 },
-];
-
-
-// const records = [
-//   {
-//     date: "16 May 2025, 09:10 AM",
-//     heart: "118 BPM",
-//     spo2: "96%",
-//     temperature: "39.1°C",
-//     activity: "High",
-//     risk: "High",
-//   },
-//   {
-//     date: "15 May 2025, 06:00 AM",
-//     heart: "100 BPM",
-//     spo2: "97%",
-//     temperature: "38.7°C",
-//     activity: "Moderate",
-//     risk: "Medium",
-//   },
-//   {
-//     date: "15 May 2025, 06:00 PM",
-//     heart: "68 BPM",
-//     spo2: "99%",
-//     temperature: "36.5°C",
-//     activity: "Low",
-//     risk: "Low",
-//   },
-// ];
-
-
-// const metrics = [
-//   {
-//     name: "Heart Rate",
-//     icon: <HeartPulse />,
-//   },
-//   {
-//     name: "SpO₂",
-//     icon: <Droplets />,
-//   },
-//   {
-//     name: "Temperature",
-//     icon: <Thermometer />,
-//   },
-//   {
-//     name: "Blood Pressure",
-//     icon: <Activity />,
-//   },
-//   {
-//     name: "Steps",
-//     icon: <Footprints />,
-//   },
-//   {
-//     name: "Sleep",
-//     icon: <Moon />,
-//   },
-// ];
-
-
-
-const metrics = [
-  {
-    name: "Heart Rate",
-    key: "heartRate",
-    icon: <HeartPulse />,
-  },
-  {
-    name: "SpO₂",
-    key: "spo2",
-    icon: <Droplets />,
-  },
-  {
-    name: "Temperature",
-    key: "temperature",
-    icon: <Thermometer />,
-  },
-  {
-    name: "Blood Pressure",
-    key: "bloodPressure",
-    icon: <Activity />,
-  },
-  {
-    name: "Steps",
-    key: "steps",
-    icon: <Footprints />,
-  },
-  {
-    name: "Sleep",
-    key: "sleep",
-    icon: <Moon />,
-  },
-];
 function HealthHistory() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [period, setPeriod] = useState("15 Days");
 
- const [metric, setMetric] = useState("heartRate");
-    const [healthData, setHealthData] = useState(null);
- const days = Number(period.split(" ")[0]);
-    const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-};
+  const [metric, setMetric] = useState("heartRate");
 
-const getHealthHistory = async () => {
-  try {
-    const response = await fetch(
-       "http://localhost:5000/api/health/history?days=${days}",
-      {
-        credentials: "include",
+  const [healthData, setHealthData] = useState(null);
+
+  const days = Number(period.split(" ")[0]);
+
+
+  // ======================================================
+  // 7 SENSOR METRICS
+  // ======================================================
+
+  const metrics = [
+    {
+      name: "Heart Rate",
+      key: "heartRate",
+      icon: <HeartPulse />,
+    },
+
+    {
+      name: "SpO₂",
+      key: "spo2",
+      icon: <Droplets />,
+    },
+
+    {
+      name: "Temperature",
+      key: "temperature",
+      icon: <Thermometer />,
+    },
+
+    {
+      name: "Environment Temp",
+      key: "envtemp",
+      icon: <Thermometer />,
+    },
+
+    {
+      name: "Humidity",
+      key: "humidity",
+      icon: <Droplets />,
+    },
+
+    {
+      name: "ECG",
+      key: "ecg",
+      icon: <Activity />,
+    },
+
+    {
+      name: "Dust",
+      key: "dust",
+      icon: <Activity />,
+    },
+  ];
+
+
+  // ======================================================
+  // DATE FORMAT
+  // ======================================================
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    return new Date(dateString).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+
+  // ======================================================
+  // GET HEALTH HISTORY
+  // ======================================================
+
+  const getHealthHistory = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/health/history?days=${days}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("HEALTH HISTORY DATA:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message || "Failed to fetch health history"
+        );
       }
-    );
 
-    const data = await response.json();
+      setHealthData(data);
 
-    console.log("HEALTH DATA:", data);
-
-    setHealthData(data);
-
-  } catch (error) {
-    console.error("API ERROR:", error);
-  }
-};
+    } catch (error) {
+      console.error("HEALTH HISTORY API ERROR:", error);
+    }
+  };
 
 
-useEffect(() => {
-  getHealthHistory();
-}, [period]);
-     
-const allTrends = {
-  heartRate: healthData?.trends?.heartRate?.map((item) => ({
-    ...item,
-    date: formatDate(item.date),
-  })) || [],
+  // ======================================================
+  // FETCH WHEN PERIOD CHANGES
+  // ======================================================
 
-  spo2: healthData?.trends?.spo2?.map((item) => ({
-    ...item,
-    date: formatDate(item.date),
-  })) || [],
-
-  temperature: healthData?.trends?.temperature?.map((item) => ({
-    ...item,
-    date: formatDate(item.date),
-  })) || [],
-
-  bloodPressure: dummyBloodPressure,
-  steps: dummySteps,
-  sleep: dummySleep,
-};
+  useEffect(() => {
+    getHealthHistory();
+  }, [period]);
 
 
-const records = healthData?.recentRecords || [];
+  // ======================================================
+  // GET VALUE FROM RECORD
+  // ======================================================
+
+  const getRecordValue = (item, key) => {
+    if (!item) return 0;
+
+    switch (key) {
+      case "heartRate":
+        return Number(item.heartRate ?? 0);
+
+      case "spo2":
+        return Number(item.spo2 ?? 0);
+
+      case "temperature":
+        return Number(
+          item.temperature ??
+          item.temp ??
+          0
+        );
+
+      case "envtemp":
+        return Number(item.envtemp ?? 0);
+
+      case "humidity":
+        return Number(item.humidity ?? 0);
+
+      case "ecg":
+        return Number(item.ecg ?? 0);
+
+      case "dust":
+        return Number(item.dust ?? 0);
+
+      default:
+        return 0;
+    }
+  };
+
+
+  // ======================================================
+  // CREATE TREND FROM RECENT RECORDS
+  // FALLBACK IF API DOES NOT SEND trends
+  // ======================================================
+
+  const createTrendFromRecords = (key) => {
+    const records = healthData?.recentRecords || [];
+
+    return records.map((item) => ({
+      date: formatDate(
+        item.date ??
+        item.createdAt ??
+        item.timestamp
+      ),
+
+      value: getRecordValue(item, key),
+    }));
+  };
+
+
+  // ======================================================
+  // ALL 7 TRENDS
+  // ======================================================
+
+  const allTrends = {
+
+    heartRate:
+      healthData?.trends?.heartRate?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("heartRate"),
+
+
+    spo2:
+      healthData?.trends?.spo2?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("spo2"),
+
+
+    temperature:
+      healthData?.trends?.temperature?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("temperature"),
+
+
+    envtemp:
+      healthData?.trends?.envtemp?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("envtemp"),
+
+
+    humidity:
+      healthData?.trends?.humidity?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("humidity"),
+
+
+    ecg:
+      healthData?.trends?.ecg?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("ecg"),
+
+
+    dust:
+      healthData?.trends?.dust?.map((item) => ({
+        ...item,
+        date: formatDate(item.date),
+      })) ||
+      createTrendFromRecords("dust"),
+  };
+
+
+  // ======================================================
+  // RECENT RECORDS
+  // ======================================================
+
+  const records = healthData?.recentRecords || [];
+
+
+  // ======================================================
+  // RECORD DATE
+  // ======================================================
 
   const formatRecordDate = (dateString) => {
+    if (!dateString) return "";
+
     return new Date(dateString).toLocaleString("en-IN", {
       day: "2-digit",
       month: "short",
@@ -252,299 +291,483 @@ const records = healthData?.recentRecords || [];
     });
   };
 
+
+  // ======================================================
+  // RISK LEVEL
+  // ======================================================
+
   const getRiskLevel = (record) => {
+
+    const heartRate = Number(
+      record.heartRate ?? 0
+    );
+
+    const spo2 = Number(
+      record.spo2 ?? 0
+    );
+
+    const temperature = Number(
+      record.temperature ??
+      record.temp ??
+      0
+    );
+
+    const envtemp = Number(
+      record.envtemp ?? 0
+    );
+
+    const humidity = Number(
+      record.humidity ?? 0
+    );
+
+    const ecg = Number(
+      record.ecg ?? 0
+    );
+
+    const dust = Number(
+      record.dust ?? 0
+    );
+
+
+    // Critical
     if (
-      record.heartRate > 120 ||
-      record.heartRate < 50 ||
-      record.spo2 < 90 ||
-      record.temperature > 39
+      heartRate > 150 ||
+      heartRate < 40 ||
+      spo2 < 85 ||
+      temperature > 40 ||
+      temperature < 34 ||
+      ecg > 2 ||
+      dust > 400
     ) {
       return "High";
     }
 
+
+    // Moderate
     if (
-      record.heartRate > 100 ||
-      record.spo2 < 95 ||
-      record.temperature > 37.5
+      heartRate > 100 ||
+      heartRate < 60 ||
+      spo2 < 95 ||
+      temperature > 37.5 ||
+      envtemp > 40 ||
+      humidity > 80 ||
+      dust > 150
     ) {
       return "Medium";
     }
 
+
     return "Low";
   };
 
-  const chartData = allTrends[metric] || [];
+
+  // ======================================================
+  // SELECTED CHART
+  // ======================================================
+
+  const chartData =
+    allTrends[metric] || [];
+
+
+  // ======================================================
+  // METRIC SUMMARY
+  // ======================================================
 
   const getMetricSummary = () => {
-  const data = chartData.map((item) => item.value);
 
-  if (!data.length) {
+    const data = chartData
+      .map((item) => Number(item.value))
+      .filter((value) => !Number.isNaN(value));
+
+
+    if (!data.length) {
+      return {
+        lowest: 0,
+        average: 0,
+        highest: 0,
+        today: 0,
+      };
+    }
+
+
     return {
-      lowest: 0,
-      average: 0,
-      highest: 0,
-      today: 0,
+
+      lowest: Math.min(...data),
+
+      average: (
+        data.reduce(
+          (sum, value) => sum + value,
+          0
+        ) / data.length
+      ).toFixed(
+        metric === "temperature" ||
+        metric === "envtemp"
+          ? 1
+          : metric === "ecg"
+          ? 2
+          : 0
+      ),
+
+      highest: Math.max(...data),
+
+      today: data[data.length - 1],
     };
-  }
-
-  return {
-    lowest: Math.min(...data),
-
-    average: (
-      data.reduce((sum, value) => sum + value, 0) /
-      data.length
-    ).toFixed(metric === "temperature" ? 1 : 0),
-
-    highest: Math.max(...data),
-
-    today: data[data.length - 1],
   };
-};
 
-const summary = getMetricSummary();
+
+  const summary = getMetricSummary();
+
+
+  // ======================================================
+  // SELECTED METRIC
+  // ======================================================
 
   const selectedMetric = metrics.find(
     (item) => item.key === metric
   );
 
 
+  // ======================================================
+  // UNIT
+  // ======================================================
+
+  const getUnit = () => {
+
+    switch (metric) {
+
+      case "heartRate":
+        return "BPM";
+
+      case "spo2":
+        return "%";
+
+      case "temperature":
+        return "°C";
+
+      case "envtemp":
+        return "°C";
+
+      case "humidity":
+        return "%";
+
+      case "ecg":
+        return "";
+
+      case "dust":
+        return "µg/m³";
+
+      default:
+        return "";
+    }
+  };
 
 
-  
+  // ======================================================
+  // Y AXIS DOMAIN
+  // ======================================================
+
+  const getYAxisDomain = () => {
+
+    switch (metric) {
+
+      case "spo2":
+        return [0, 100];
+
+      case "temperature":
+        return [0, 45];
+
+      case "envtemp":
+        return [0, 50];
+
+      case "humidity":
+        return [0, 100];
+
+      case "ecg":
+        return [-3, 3];
+
+      case "dust":
+        return [0, 500];
+
+      case "heartRate":
+      default:
+        return [0, 150];
+    }
+  };
+
+
+  // ======================================================
+  // RENDER
+  // ======================================================
 
   return (
 
     <div className="dashboard-layout">
 
-      {/* SIDEBAR */}
-        <Sidebar
-  isOpen={menuOpen}
-  closeSidebar={() => setMenuOpen(false)}
-/>
+      {/* ==================================================
+          SIDEBAR
+      ================================================== */}
+
+      <Sidebar
+        isOpen={menuOpen}
+        closeSidebar={() => setMenuOpen(false)}
+      />
 
 
-      {/* MAIN CONTENT */}
+      {/* ==================================================
+          MAIN CONTENT
+      ================================================== */}
+
       <main className="history-page">
 
-        {/* HEADER */}
-<header className="history-header">
 
-  <div className="header-left">
+        {/* ==================================================
+            HEADER
+        ================================================== */}
 
-    <button
-      className="menu-btn"
-      onClick={() => setMenuOpen(!menuOpen)}
-    >
-      <Menu size={28} />
-    </button>
+        <header className="history-header">
 
-    <div>
-      <h1>Health History</h1>
-      <p>View your health trends over time</p>
-    </div>
+          <div className="header-left">
 
-  </div>
-
-  <div className="period-tabs">
-    {["7 Days", "15 Days", "30 Days"].map((item) => (
-      <button
-        key={item}
-        className={period === item ? "active" : ""}
-        onClick={() => setPeriod(item)}
-      >
-        {item}
-      </button>
-    ))}
-  </div>
-
-</header>
+            <button
+              className="menu-btn"
+              onClick={() =>
+                setMenuOpen(!menuOpen)
+              }
+            >
+              <Menu size={28} />
+            </button>
 
 
-        {/* METRIC TABS */}
+            <div>
+
+              <h1>
+                Health History
+              </h1>
+
+              <p>
+                View your health trends over time
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* PERIOD */}
+
+          <div className="period-tabs">
+
+            {[
+              "7 Days",
+              "15 Days",
+              "30 Days",
+            ].map((item) => (
+
+              <button
+                key={item}
+                className={
+                  period === item
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setPeriod(item)
+                }
+              >
+                {item}
+              </button>
+
+            ))}
+
+          </div>
+
+        </header>
+
+
+        {/* ==================================================
+            METRIC TABS
+        ================================================== */}
 
         <div className="metric-tabs">
 
-        {metrics.map((item) => (
+          {metrics.map((item) => (
 
-  <button
-    key={item.name}
+            <button
+              key={item.name}
+              className={
+                metric === item.key
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setMetric(item.key)
+              }
+            >
 
-    className={
-      metric === item.key
-        ? "active"
-        : ""
-    }
+              {React.cloneElement(
+                item.icon,
+                {
+                  size: 12,
+                }
+              )}
 
-    onClick={() =>
-      setMetric(item.key)
-    }
-  >
+              {item.name}
 
-    {React.cloneElement(item.icon, {
-      size: 12,
-    })}
+            </button>
 
-    {item.name}
-
-  </button>
-
-))}
+          ))}
 
         </div>
 
 
-        {/* TREND CARD */}
+        {/* ==================================================
+            TREND CARD
+        ================================================== */}
 
-       {/* TREND CARD */}
+        <section className="history-chart-card">
 
-<section className="history-chart-card">
-
-  <h3>
-    {selectedMetric?.name} Trend
-  </h3>
+          <h3>
+            {selectedMetric?.name} Trend
+          </h3>
 
 
           <div className="history-chart">
 
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            {chartData.length > 0 ? (
 
-              <LineChart
-                 data={chartData}
-                margin={{
-                  top: 10,
-                  right: 15,
-                  left: 0,
-                  bottom: 5,
-                }}
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
               >
 
-                <CartesianGrid
-                  stroke="#edf0f5"
-                  vertical={false}
-                />
-
-                <XAxis
-                  dataKey="date"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fontSize: 8,
-                    fill: "#7d8491",
+                <LineChart
+                  data={chartData}
+                  margin={{
+                    top: 10,
+                    right: 15,
+                    left: 0,
+                    bottom: 5,
                   }}
-                />
+                >
 
-                <YAxis
-                  domain={[0, 150]}
-                  ticks={[0, 50, 100, 150]}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fontSize: 8,
-                    fill: "#7d8491",
-                  }}
-                />
-
-                <Tooltip />
+                  <CartesianGrid
+                    stroke="#edf0f5"
+                    vertical={false}
+                  />
 
 
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#6547d7"
-                  strokeWidth={2}
-                  dot={{
-                    r: 2,
-                    fill: "#6547d7",
-                  }}
-                  activeDot={{
-                    r: 4,
-                  }}
-                />
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fontSize: 8,
+                      fill: "#7d8491",
+                    }}
+                  />
 
-              </LineChart>
 
-            </ResponsiveContainer>
+                  <YAxis
+                    domain={getYAxisDomain()}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fontSize: 8,
+                      fill: "#7d8491",
+                    }}
+                  />
+
+
+                  <Tooltip />
+
+
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#6547d7"
+                    strokeWidth={2}
+                    dot={{
+                      r: 2,
+                      fill: "#6547d7",
+                    }}
+                    activeDot={{
+                      r: 4,
+                    }}
+                  />
+
+                </LineChart>
+
+              </ResponsiveContainer>
+
+            ) : (
+
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#7d8491",
+                  fontSize: "13px",
+                }}
+              >
+                No {selectedMetric?.name} data available
+              </div>
+
+            )}
 
           </div>
 
         </section>
 
 
-        {/* SUMMARY CARDS */}
+        {/* ==================================================
+            SUMMARY CARDS
+        ================================================== */}
 
         <section className="history-summary">
 
-<SummaryCard
-  type="lowest"
-  title="Lowest"
-  value={summary.lowest}
-  unit={
-    metric === "heartRate"
-      ? "BPM"
-      : metric === "spo2"
-      ? "%"
-      : metric === "temperature"
-      ? "°C"
-      : ""
-  }
-  icon={<Activity />}
-/>
+          <SummaryCard
+            type="lowest"
+            title="Lowest"
+            value={summary.lowest}
+            unit={getUnit()}
+            icon={<Activity />}
+          />
 
-<SummaryCard
-  type="average"
-  title="Average"
-  value={summary.average}
-  unit={
-    metric === "heartRate"
-      ? "BPM"
-      : metric === "spo2"
-      ? "%"
-      : metric === "temperature"
-      ? "°C"
-      : ""
-  }
-  icon={<Activity />}
-/>
 
-<SummaryCard
-  type="highest"
-  title="Highest"
-  value={summary.highest}
-  unit={
-    metric === "heartRate"
-      ? "BPM"
-      : metric === "spo2"
-      ? "%"
-      : metric === "temperature"
-      ? "°C"
-      : ""
-  }
-  icon={<HeartPulse />}
-/>
+          <SummaryCard
+            type="average"
+            title="Average"
+            value={summary.average}
+            unit={getUnit()}
+            icon={<Activity />}
+          />
 
-<SummaryCard
-  type="today"
-  title="Today"
-  value={summary.today}
-  unit={
-    metric === "heartRate"
-      ? "BPM"
-      : metric === "spo2"
-      ? "%"
-      : metric === "temperature"
-      ? "°C"
-      : ""
-  }
-  icon={<HeartPulse />}
-/>
+
+          <SummaryCard
+            type="highest"
+            title="Highest"
+            value={summary.highest}
+            unit={getUnit()}
+            icon={<HeartPulse />}
+          />
+
+
+          <SummaryCard
+            type="today"
+            title="Today"
+            value={summary.today}
+            unit={getUnit()}
+            icon={<HeartPulse />}
+          />
 
         </section>
 
 
-        {/* RECENT RECORDS */}
+        {/* ==================================================
+            RECENT RECORDS
+        ================================================== */}
 
         <section className="records-card">
 
@@ -558,59 +781,107 @@ const summary = getMetricSummary();
             <div className="table-header">
 
               <span>Date & Time</span>
+
               <span>Heart Rate</span>
+
               <span>SpO₂</span>
+
               <span>Temperature</span>
+
               <span>Activity</span>
+
               <span>Risk Level</span>
 
             </div>
 
 
-             {records.length > 0 ? (
-      records.map((record) => {
+            {records.length > 0 ? (
 
-        const risk = getRiskLevel(record);
+              records.map((record, index) => {
 
-        return (
-          <div className="table-row" key={record.id}>
+                const risk =
+                  getRiskLevel(record);
 
-            <span>
-              {formatRecordDate(record.date)}
-            </span>
 
-            <strong>
-              {record.heartRate} BPM
-            </strong>
+                const recordDate =
+                  record.date ??
+                  record.createdAt ??
+                  record.timestamp;
 
-            <strong>
-              {record.spo2}%
-            </strong>
 
-            <strong className="temperature-value">
-              {record.temperature}°C
-            </strong>
+                const temperature =
+                  record.temperature ??
+                  record.temp ??
+                  0;
 
-            <span>
-              <b className="activity-pill low">
-                Low
-              </b>
-            </span>
 
-            <span>
-              <b className={`risk-pill ${risk.toLowerCase()}`}>
-                {risk}
-              </b>
-            </span>
+                return (
+
+                  <div
+                    className="table-row"
+                    key={
+                      record.id ??
+                      record._id ??
+                      index
+                    }
+                  >
+
+                    <span>
+                      {formatRecordDate(
+                        recordDate
+                      )}
+                    </span>
+
+
+                    <strong>
+                      {record.heartRate ?? 0} BPM
+                    </strong>
+
+
+                    <strong>
+                      {record.spo2 ?? 0}%
+                    </strong>
+
+
+                    <strong className="temperature-value">
+                      {temperature}°C
+                    </strong>
+
+
+                    <span>
+
+                      <b className="activity-pill low">
+                        Low
+                      </b>
+
+                    </span>
+
+
+                    <span>
+
+                      <b
+                        className={`risk-pill ${risk.toLowerCase()}`}
+                      >
+                        {risk}
+                      </b>
+
+                    </span>
+
+                  </div>
+
+                );
+
+              })
+
+            ) : (
+
+              <p>
+                No health records found
+              </p>
+
+            )}
 
           </div>
-        );
-      })
-    ) : (
-      <p>No health records found</p>
-    )}
-
-  </div>
 
 
           <button className="view-history">
@@ -630,7 +901,9 @@ const summary = getMetricSummary();
 }
 
 
-/* ================= SUMMARY CARD ================= */
+// ======================================================
+// SUMMARY CARD
+// ======================================================
 
 function SummaryCard({
   type,
@@ -642,13 +915,18 @@ function SummaryCard({
 
   return (
 
-    <div className={`summary-card ${type}`}>
+    <div
+      className={`summary-card ${type}`}
+    >
 
       <div className="summary-icon">
 
-        {React.cloneElement(icon, {
-          size: 15,
-        })}
+        {React.cloneElement(
+          icon,
+          {
+            size: 15,
+          }
+        )}
 
       </div>
 

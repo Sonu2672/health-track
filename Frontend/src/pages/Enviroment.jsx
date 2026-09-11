@@ -1,181 +1,427 @@
 import React from "react";
-import Sidebar from '../components/Sidebar';
+import Sidebar from "../components/Sidebar";
 import { useState, useEffect } from "react";
+
 import {
   HeartPulse,
-  LayoutDashboard,
-  MapPin,
-  Bell,
-  CloudSun,
-  Cloud,
-  Siren,
-  UserRound,
-  Settings,
-  Sun,
+  Activity,
   Droplets,
   Wind,
   CloudFog,
   CircleCheck,
-  Menu
+  Menu,
+  Sun,
 } from "lucide-react";
 
 import "../App.css";
 
-const pollutants = [
-  { name: "PM2.5", value: "306" },
-  { name: "PM10", value: "249", danger: true },
-  { name: "NO₂", value: "36" },
-  { name: "SO₂", value: "16" },
-  { name: "CO", value: "6.4" },
-  { name: "O₃", value: "34" },
-];
+
+// ======================================================
+// PRECAUTIONS
+// ======================================================
 
 const precautions = [
-  "Avoid outdoor activities",
+  "Avoid outdoor activities during high pollution",
   "Wear a mask when outside",
-  "Keep windows closed",
-  "Use air purifier if available",
+  "Keep windows closed when dust levels are high",
+  "Use an air purifier if available",
   "Stay hydrated and take breaks",
 ];
 
+
+// ======================================================
+// ENVIRONMENT
+// ======================================================
+
 function Environment() {
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [environmentData, setEnvironmentData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
-    const fetchEnvironmentData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/",
-          {
-            credentials: "include",
-          }
-        );
+  const [environmentData, setEnvironmentData] =
+    useState(null);
 
-        const data = await response.json();
+  const [loading, setLoading] =
+    useState(true);
 
-        console.log("ENVIRONMENT DATA:", data);
 
-        if (data.success) {
-          setEnvironmentData(data);
+  // ======================================================
+  // FETCH REAL-TIME ENVIRONMENT DATA
+  // ======================================================
+
+  const fetchEnvironmentData = async () => {
+
+    try {
+
+      const response = await fetch(
+        "http://localhost:5000/api/health/gethealthdata",
+        {
+          credentials: "include",
         }
-      } catch (error) {
-        console.error("Environment API Error:", error);
-      } finally {
-        setLoading(false);
+      );
+
+
+      const data = await response.json();
+
+
+      console.log(
+        "ENVIRONMENT DATA:",
+        data
+      );
+
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+          "Failed to fetch environment data"
+        );
       }
-    };
+
+
+      if (data.success) {
+
+        setEnvironmentData(data);
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Environment API Error:",
+        error
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
+
+  // ======================================================
+  // INITIAL FETCH + AUTO REFRESH
+  // ======================================================
+
+  useEffect(() => {
 
     fetchEnvironmentData();
+
+
+    const interval = setInterval(() => {
+
+      fetchEnvironmentData();
+
+    }, 5000);
+
+
+    return () => clearInterval(interval);
+
   }, []);
 
 
+  // ======================================================
+  // GET SENSOR DATA
+  // ======================================================
+
+  const sensor =
+    environmentData?.sensorData ||
+    environmentData?.hd ||
+    {};
+
+
+  // ======================================================
+  // REAL VALUES
+  // ======================================================
+
+  const envTemp = Number(
+    sensor.envtemp ?? 0
+  );
+
+
+  const humidity = Number(
+    sensor.humidity ?? 0
+  );
+
+
+  const dust = Number(
+    sensor.dust ?? 0
+  );
+
+
+  const ecg = Number(
+    sensor.ecg ?? 0
+  );
+
+
+  // ======================================================
+  // ENVIRONMENT STATUS
+  // ======================================================
+
+  const getTemperatureStatus = () => {
+
+    if (envTemp >= 40) {
+      return "Extremely Hot";
+    }
+
+    if (envTemp >= 35) {
+      return "Very Hot";
+    }
+
+    if (envTemp >= 30) {
+      return "Hot";
+    }
+
+    if (envTemp < 15) {
+      return "Cold";
+    }
+
+    return "Normal";
+  };
+
+
+  const getHumidityStatus = () => {
+
+    if (humidity >= 80) {
+      return "High";
+    }
+
+    if (humidity < 30) {
+      return "Low";
+    }
+
+    return "Normal";
+  };
+
+
+  const getDustStatus = () => {
+
+    if (dust >= 400) {
+      return "Very High";
+    }
+
+    if (dust >= 300) {
+      return "High";
+    }
+
+    if (dust >= 150) {
+      return "Moderate";
+    }
+
+    return "Low";
+  };
+
+
+  // ======================================================
+  // DUST COLOR / STATUS
+  // ======================================================
+
+  const dustDanger =
+    dust >= 300;
+
+
+  // ======================================================
+  // UPDATE TIME
+  // ======================================================
+
+  const updatedTime =
+    environmentData?.hd?.createdAt;
+
+
+  // ======================================================
+  // RENDER
+  // ======================================================
 
   return (
+
     <div className="environment-page">
 
-      {/* ================= SIDEBAR ================= */}
+
+      {/* ==================================================
+          SIDEBAR
+      ================================================== */}
 
       <Sidebar
-  isOpen={menuOpen}
-  closeSidebar={() => setMenuOpen(false)}
-/>
+        isOpen={menuOpen}
+        closeSidebar={() =>
+          setMenuOpen(false)
+        }
+      />
 
-      {/* ================= MAIN ================= */}
+
+      {/* ==================================================
+          MAIN
+      ================================================== */}
 
       <main className="environment-main">
 
-        {/* HEADER */}
+
+        {/* ==================================================
+            HEADER
+        ================================================== */}
 
         <header className="environment-header">
+
           <div>
-                  <button
-  className="menu-btn"
-  onClick={() => setMenuOpen(!menuOpen)}
->
-  <Menu size={28} />
-</button>
+
+            <button
+              className="menu-btn"
+              onClick={() =>
+                setMenuOpen(!menuOpen)
+              }
+            >
+              <Menu size={28} />
+            </button>
+
           </div>
-              
+
+
           <div>
-            <h1>Environment</h1>
+
+            <h1>
+              Environment
+            </h1>
 
             <p>
               Real-time environment conditions
             </p>
+
           </div>
 
         </header>
 
 
-        {/* ================= TOP CARDS ================= */}
+        {/* ==================================================
+            TOP CARDS
+        ================================================== */}
 
         <section className="environment-stats">
+
+
+          {/* ENVIRONMENT TEMPERATURE */}
 
           <EnvironmentCard
             icon={<Sun />}
             title="Temperature"
-            value="42°C"
-            status="Extremely Hot"
+            value={
+              loading
+                ? "--"
+                : `${envTemp}°C`
+            }
+            status={
+              loading
+                ? "Loading..."
+                : getTemperatureStatus()
+            }
             type="temperature"
           />
 
+
+          {/* DUST */}
+
           <EnvironmentCard
             icon={<CloudFog />}
-            title="AQI"
-            value="186"
-            status="Unhealthy"
+            title="Dust"
+            value={
+              loading
+                ? "--"
+                : dust
+            }
+            unit="µg/m³"
+            status={
+              loading
+                ? "Loading..."
+                : getDustStatus()
+            }
             type="aqi"
           />
+
+
+          {/* HUMIDITY */}
 
           <EnvironmentCard
             icon={<Droplets />}
             title="Humidity"
-            value="71%"
-            status="High"
+            value={
+              loading
+                ? "--"
+                : `${humidity}%`
+            }
+            status={
+              loading
+                ? "Loading..."
+                : getHumidityStatus()
+            }
             type="humidity"
           />
+
+
+          {/* WIND SPEED */}
 
           <EnvironmentCard
             icon={<Wind />}
             title="Wind Speed"
-            value="12"
+            value="N/A"
             unit="kmph"
-            status="Moderate"
+            status="Sensor unavailable"
             type="wind"
           />
 
         </section>
 
 
-        {/* ================= AQI + POLLUTANTS ================= */}
+        {/* ==================================================
+            DUST + ENVIRONMENT DATA
+        ================================================== */}
 
         <section className="aqi-pollution">
 
-          {/* AQI GAUGE */}
+
+          {/* DUST GAUGE */}
 
           <div className="aqi-card">
 
-            <h3>AQI Score Index</h3>
+            <h3>
+              Dust Level Index
+            </h3>
+
 
             <div className="aqi-gauge">
 
               <div className="aqi-arc">
+
                 <div className="aqi-inner"></div>
+
               </div>
+
 
               <div className="aqi-number">
-                <strong>186</strong>
+
+                <strong>
+                  {loading
+                    ? "--"
+                    : dust}
+                </strong>
+
 
                 <span>
-                  Unhealthy
+                  {loading
+                    ? "Loading"
+                    : getDustStatus()}
                 </span>
+
               </div>
 
+
               <div className="aqi-scale">
-                <span>0</span>
-                <span>500</span>
+
+                <span>
+                  0
+                </span>
+
+                <span>
+                  500
+                </span>
+
               </div>
 
             </div>
@@ -183,42 +429,121 @@ function Environment() {
           </div>
 
 
-          {/* POLLUTANTS */}
+          {/* SENSOR VALUES */}
 
           <div className="pollution-card">
 
             <h3>
-              Pollutants (µg/m³)
+              Environment Sensors
             </h3>
+
 
             <div className="pollution-list">
 
-              {pollutants.map(
-                (pollutant, index) => (
 
-                  <div
-                    className="pollution-row"
-                    key={index}
-                  >
+              {/* ENV TEMP */}
 
-                    <span>
-                      {pollutant.name}
-                    </span>
+              <div className="pollution-row">
 
-                    <strong
-                      className={
-                        pollutant.danger
-                          ? "danger-value"
-                          : ""
-                      }
-                    >
-                      {pollutant.value}
-                    </strong>
+                <span>
+                  Environment Temp
+                </span>
 
-                  </div>
+                <strong>
+                  {loading
+                    ? "--"
+                    : `${envTemp}°C`}
+                </strong>
 
-                )
-              )}
+              </div>
+
+
+              {/* HUMIDITY */}
+
+              <div className="pollution-row">
+
+                <span>
+                  Humidity
+                </span>
+
+                <strong>
+                  {loading
+                    ? "--"
+                    : `${humidity}%`}
+                </strong>
+
+              </div>
+
+
+              {/* DUST */}
+
+              <div className="pollution-row">
+
+                <span>
+                  Dust
+                </span>
+
+                <strong
+                  className={
+                    dustDanger
+                      ? "danger-value"
+                      : ""
+                  }
+                >
+                  {loading
+                    ? "--"
+                    : `${dust} µg/m³`}
+                </strong>
+
+              </div>
+
+
+              {/* ECG */}
+
+              <div className="pollution-row">
+
+                <span>
+                  ECG
+                </span>
+
+                <strong>
+                  {loading
+                    ? "--"
+                    : ecg}
+                </strong>
+
+              </div>
+
+
+              {/* AQI */}
+
+              <div className="pollution-row">
+
+                <span>
+                  AQI
+                </span>
+
+                <strong>
+                  N/A
+                </strong>
+
+              </div>
+
+
+              {/* WIND */}
+
+              <div className="pollution-row">
+
+                <span>
+                  Wind Speed
+                </span>
+
+                <strong>
+                  N/A
+                </strong>
+
+              </div>
+
 
             </div>
 
@@ -227,15 +552,30 @@ function Environment() {
         </section>
 
 
-        {/* ================= HEALTH IMPACT ================= */}
+        {/* ==================================================
+            HEALTH IMPACT
+        ================================================== */}
 
         <section className="health-impact">
 
-          <h3>Health Impact</h3>
+          <h3>
+            Health Impact
+          </h3>
+
 
           <p>
-            Exposure to high AQI levels can cause respiratory issues,
-            reduce lung functions, and aggravate heart conditions.
+
+            {dust >= 300
+
+              ? "High dust levels may increase respiratory irritation and can affect people with breathing or cardiovascular problems."
+
+              : dust >= 150
+
+              ? "Moderate dust levels may cause discomfort and respiratory irritation. Continue monitoring the environment."
+
+              : "Current dust levels are relatively low. Continue monitoring environmental conditions."
+            }
+
           </p>
 
 
@@ -256,7 +596,9 @@ function Environment() {
 
                   <CircleCheck size={13} />
 
-                  <span>{item}</span>
+                  <span>
+                    {item}
+                  </span>
 
                 </div>
 
@@ -266,16 +608,37 @@ function Environment() {
           </div>
 
 
-          {/* UPDATE INFO */}
+          {/* ==================================================
+              UPDATE INFO
+          ================================================== */}
 
           <div className="environment-update">
 
             <span>
-              Data updated: 16 May 2025, 06:30 AM
+
+              Data updated:{" "}
+
+              {updatedTime
+                ? new Date(
+                    updatedTime
+                  ).toLocaleString(
+                    "en-IN",
+                    {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    }
+                  )
+                : "Waiting for sensor data"}
+
             </span>
 
+
             <span>
-              Data Source: CPCB
+              Data Source: ESP32 Sensors
             </span>
 
           </div>
@@ -289,39 +652,9 @@ function Environment() {
 }
 
 
-/* ================= NAV ITEM ================= */
-
-function NavItem({
-  icon,
-  text,
-  active,
-  badge,
-}) {
-  return (
-    <div
-      className={`environment-nav-item ${
-        active ? "active" : ""
-      }`}
-    >
-
-      {React.cloneElement(icon, {
-        size: 17,
-      })}
-
-      <span>{text}</span>
-
-      {badge && (
-        <b className="environment-badge">
-          {badge}
-        </b>
-      )}
-
-    </div>
-  );
-}
-
-
-/* ================= ENVIRONMENT CARD ================= */
+// ======================================================
+// ENVIRONMENT CARD
+// ======================================================
 
 function EnvironmentCard({
   icon,
@@ -331,7 +664,9 @@ function EnvironmentCard({
   status,
   type,
 }) {
+
   return (
+
     <div
       className={`environment-stat-card ${type}`}
     >
@@ -339,33 +674,51 @@ function EnvironmentCard({
       <div className="environment-card-top">
 
         <div className="environment-card-icon">
-          {React.cloneElement(icon, {
-            size: 18,
-          })}
+
+          {React.cloneElement(
+            icon,
+            {
+              size: 18,
+            }
+          )}
+
         </div>
 
-        <span>{title}</span>
+
+        <span>
+          {title}
+        </span>
 
       </div>
 
 
       <div className="environment-value">
 
-        <strong>{value}</strong>
+        <strong>
+          {value}
+        </strong>
+
 
         {unit && (
-          <small>{unit}</small>
+
+          <small>
+            {unit}
+          </small>
+
         )}
 
       </div>
 
 
       <div className="environment-status">
+
         {status}
+
       </div>
 
     </div>
   );
 }
+
 
 export default Environment;

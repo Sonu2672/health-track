@@ -555,9 +555,9 @@ button {
   margin-right: 4px;
 }
 
-.low {
+/* .low {
   background: #35b879;
-}
+} */
 
 .moderate {
   background: #f1a82e;
@@ -3333,7 +3333,7 @@ body {
     justify-content: center;
 
     border: none;
-    background: transparent;
+    background: white;
 
     cursor: pointer;
 
@@ -9978,4 +9978,23 @@ input {
 
 .recommendation-item svg {
   flex-shrink: 0;
+}
+
+.risk-status {
+  background: transparent !important;
+}
+
+
+
+.menu-btn {
+  background: white !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+}
+
+.back-btn {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb;
 }

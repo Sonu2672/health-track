@@ -34,7 +34,7 @@ import DoctorDashboard from "../role/DoctorDashboard"
 import AdminDashboard from "../role/AdminDashboard"
 import DoctorManagement from "../role/DoctorManagement"
 import PatientManagement from "../role/PatientManagement"
-
+import DisasterAlert from "../pages/DisasterAlert"
 import {useState,useEffect} from "react";
 
 function AppRoutes() {
@@ -106,6 +106,7 @@ function AppRoutes() {
         <Route path="/alerts" element={islogin ? <Alerts setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />
          <Route path="/history" element={islogin ? <HealthHistory setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />
         <Route path="/doctor" element={islogin ? <Doctor setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />
+         <Route path="/disaster" element={<DisasterAlert />} />
 
          <Route path="/enviroment" element={islogin ? <Enviroment setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />
          <Route path="/profile" element={islogin ? <Profile setIslogin={setIslogin} /> :<Login setIslogin={setIslogin} />} />

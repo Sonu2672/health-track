@@ -1,10 +1,5 @@
-
-
-
-
-
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../App.css";
 import Sidebar from "../components/Sidebar";
 import { TriangleAlert, Menu } from "lucide-react";
@@ -36,61 +31,377 @@ import {
   Area,
 } from "recharts";
 
-const activityData = [15, 22, 17, 31, 24, 38, 25, 43, 30, 35, 28, 45];
+const activityData = [
+  15, 22, 17, 31, 24, 38,
+  25, 43, 30, 35, 28, 45
+];
 
 function Dashboard() {
+
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] =
+    useState(false);
 
-  const [healthData, setHealthData] = useState([]);
+  const [healthData, setHealthData] =
+    useState([]);
 
-  const [healthd, setHealthd] = useState({
-    heartRate: 0,
-    spo2: 0,
-    temp: 0,
-  });
+  const [healthd, setHealthd] =
+    useState({
+      heartRate: 0,
+      spo2: 0,
+      temp: 0,
+    });
 
-  const [riskScore, setRiskScore] = useState(0);
-  const [riskLevel, setRiskLevel] = useState("Normal");
-  const [name, setName] = useState("");
+  const [riskScore, setRiskScore] =
+    useState(0);
+
+  const [riskLevel, setRiskLevel] =
+    useState("Normal");
+
+  const [name, setName] =
+    useState("");
 
 
+  // ==================================================
+  // 🔊 VOICE ALERT REFS
+  // ==================================================
 
-  useEffect(() => {
-  const Hdata = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/health/gethealthdata",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+  const previousRiskRef =
+    useRef("");
+
+  const lastVoiceAlertRef =
+    useRef(0);
+
+
+  // ==================================================
+  // 🔊 VOICE ALERT FUNCTION
+  // ==================================================
+
+  const speakRiskAlert = (level) => {
+
+    // Browser speech support
+    if (!("speechSynthesis" in window)) {
+
+      console.log(
+        "❌ Speech synthesis not supported"
       );
 
-      console.log("STATUS:", response.status);
-      console.log("OK:", response.ok);
+      return;
+    }
 
-      const data = await response.json();
 
-      console.log("🔥 COMPLETE HEALTH DATA:", data);
-console.log("🔥 HD:", data.hd);
-console.log("🔥 HEART RATE:", data.hd?.heartRate);
-console.log("🔥 SPO2:", data.hd?.spo2);
-console.log("🔥 TEMP:", data.hd?.temp);
-console.log("🔥 RISK SCORE:", data.riskScore);
-console.log("🔥 RISK LEVEL:", data.riskLevel);
-console.log("🔥 RECOMMENDATIONS:", data.recommendations);
+    const now = Date.now();
 
-      // ==========================================
-      // NO DEVICE DATA
-      // ==========================================
 
-      if (!data.hd) {
-        console.log("⚠️ No device data available");
+    // Don't speak repeatedly
+    // within 30 seconds
+    if (
+      now -
+      lastVoiceAlertRef.current <
+      30000
+    ) {
+
+      return;
+    }
+
+
+    let message = "";
+
+
+    if (
+      level === "Critical Risk"
+    ) {
+
+      message =
+        "Critical health risk detected. Immediate attention is recommended.";
+
+    } else if (
+      level === "High Risk"
+    ) {
+
+      message =
+        "Warning. High health risk detected. Please check your health condition.";
+
+    } else {
+
+      return;
+    }
+
+
+    // Stop any previous speech
+    window.speechSynthesis.cancel();
+
+
+    const speech =
+      new SpeechSynthesisUtterance(
+        message
+      );
+
+
+    speech.rate = 0.9;
+    speech.pitch = 1;
+    speech.volume = 1;
+
+
+    // Try English voice
+    const voices =
+      window.speechSynthesis.getVoices();
+
+
+    const englishVoice =
+      voices.find(
+        (voice) =>
+          voice.lang &&
+          voice.lang
+            .toLowerCase()
+            .startsWith("en")
+      );
+
+
+    if (englishVoice) {
+
+      speech.voice =
+        englishVoice;
+
+    }
+
+
+    window.speechSynthesis.speak(
+      speech
+    );
+
+
+    lastVoiceAlertRef.current =
+      now;
+
+
+    console.log(
+      "🔊 VOICE ALERT:",
+      message
+    );
+  };
+
+
+  // ==================================================
+  // LOAD HEALTH DATA
+  // ==================================================
+
+  useEffect(() => {
+
+    const Hdata = async () => {
+
+      try {
+
+        const response =
+          await fetch(
+            "http://localhost:5000/api/health/gethealthdata",
+            {
+              method: "GET",
+
+              credentials: "include",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+            }
+          );
+
+
+        console.log(
+          "STATUS:",
+          response.status
+        );
+
+        console.log(
+          "OK:",
+          response.ok
+        );
+
+
+        const data =
+          await response.json();
+
+
+        console.log(
+          "🔥 COMPLETE HEALTH DATA:",
+          data
+        );
+
+        console.log(
+          "🔥 HD:",
+          data.hd
+        );
+
+        console.log(
+          "🔥 HEART RATE:",
+          data.hd?.heartRate
+        );
+
+        console.log(
+          "🔥 SPO2:",
+          data.hd?.spo2
+        );
+
+        console.log(
+          "🔥 TEMP:",
+          data.hd?.temp
+        );
+
+        console.log(
+          "🔥 RISK SCORE:",
+          data.riskScore
+        );
+
+        console.log(
+          "🔥 RISK LEVEL:",
+          data.riskLevel
+        );
+
+        console.log(
+          "🔥 RECOMMENDATIONS:",
+          data.recommendations
+        );
+
+
+        // ==================================================
+        // NO DEVICE DATA
+        // ==================================================
+
+        if (!data.hd) {
+
+          console.log(
+            "⚠️ No device data available"
+          );
+
+
+          setHealthd({
+            heartRate: 0,
+            spo2: 0,
+            temp: 0,
+          });
+
+
+          setRiskScore(
+            data.riskScore ?? 0
+          );
+
+
+          setRiskLevel(
+            data.riskLevel ??
+            "Normal"
+          );
+
+
+          setHealthData(
+            data.datatimers ?? []
+          );
+
+
+          return;
+        }
+
+
+        // ==================================================
+        // DEVICE DATA AVAILABLE
+        // ==================================================
+
+        setHealthd({
+
+          heartRate:
+            data.hd.heartRate ??
+            0,
+
+          spo2:
+            data.hd.spo2 ??
+            0,
+
+          temp:
+            data.hd.temp != null
+              ? (
+                  (data.hd.temp * 1.8) +
+                  32
+                ).toFixed(1)
+              : 0,
+
+        });
+
+
+        // ==================================================
+        // 🤖 RISK DATA
+        // ==================================================
+
+        const newRiskLevel =
+          data.riskLevel ??
+          "Normal";
+
+        const newRiskScore =
+          data.riskScore ??
+          0;
+
+
+        // ==================================================
+        // 🔊 VOICE ALERT
+        // ==================================================
+
+        const previousRisk =
+          previousRiskRef.current;
+
+
+        if (
+          newRiskLevel ===
+            "High Risk" ||
+
+          newRiskLevel ===
+            "Critical Risk"
+        ) {
+
+          // Speak when risk changes
+          // OR after 30 seconds
+          if (
+            previousRisk !==
+              newRiskLevel ||
+
+            Date.now() -
+              lastVoiceAlertRef.current >=
+              30000
+          ) {
+
+            speakRiskAlert(
+              newRiskLevel
+            );
+
+          }
+
+        }
+
+
+        // Save current risk
+        previousRiskRef.current =
+          newRiskLevel;
+
+
+        setRiskScore(
+          newRiskScore
+        );
+
+        setRiskLevel(
+          newRiskLevel
+        );
+
+        setHealthData(
+          data.datatimers ?? []
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ Health data fetch error:",
+          error
+        );
+
 
         setHealthd({
           heartRate: 0,
@@ -98,87 +409,106 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
           temp: 0,
         });
 
-        setRiskScore(data.riskScore ?? 0);
-        setRiskLevel(data.riskLevel ?? "Normal");
-        setHealthData(data.datatimers ?? []);
 
-        return;
+        setRiskScore(0);
+
+        setRiskLevel(
+          "Normal"
+        );
+
+        setHealthData([]);
+
+
+        // Reset previous risk
+        previousRiskRef.current =
+          "";
+
       }
 
-      // ==========================================
-      // DEVICE DATA AVAILABLE
-      // ==========================================
-        
-      // setHealthd({
-      //   heartRate: data.hd.heartRate ?? 0,
-      //   spo2: data.hd.spo2 ?? 0,
-      //   temp: ((data.hd.temp * 1.8) + 32).toFixed(1) ?? 0,
-      // });
-      setHealthd({
-  heartRate: data.hd.heartRate ?? 0,
-  spo2: data.hd.spo2 ?? 0,
-  temp: data.hd.temp != null
-    ? ((data.hd.temp * 1.8) + 32).toFixed(1)
-    : 0,
-});
+    };
 
-      setRiskScore(data.riskScore ?? 0);
-      setRiskLevel(data.riskLevel ?? "Normal");
-      setHealthData(data.datatimers ?? []);
 
-    } catch (error) {
-      console.error("❌ Health data fetch error:", error);
+    // ==================================================
+    // INITIAL FETCH
+    // ==================================================
 
-      setHealthd({
-        heartRate: 0,
-        spo2: 0,
-        temp: 0,
-      });
-
-      setRiskScore(0);
-      setRiskLevel("Normal");
-      setHealthData([]);
-    }
-  };
-
-  // 🚀 Dashboard open hote hi ek baar fetch
-  Hdata();
-
-  // 🔄 Har 4 seconds mein automatically fetch
-  const interval = setInterval(() => {
     Hdata();
-  }, 4000);
 
-  // 🧹 Component band/unmount hone par interval clear
-  return () => clearInterval(interval);
 
-}, []);
+    // ==================================================
+    // AUTO REFRESH EVERY 4 SECONDS
+    // ==================================================
 
-  // ==========================================
+    const interval =
+      setInterval(() => {
+
+        Hdata();
+
+      }, 4000);
+
+
+    // ==================================================
+    // CLEANUP
+    // ==================================================
+
+    return () => {
+
+      clearInterval(
+        interval
+      );
+
+      // Stop speech when leaving page
+      if (
+        "speechSynthesis" in
+        window
+      ) {
+
+        window.speechSynthesis.cancel();
+
+      }
+
+    };
+
+  }, []);
+
+
+  // ==================================================
   // DANGER CHECK
-  // ==========================================
+  // ==================================================
 
   const isDangerous =
     riskLevel === "High Risk" ||
     riskLevel === "Critical Risk";
 
 
+  // ==================================================
+  // RENDER
+  // ==================================================
+
   return (
+
     <div className="dashboard">
 
-      {/* SIDEBAR */}
 
-      <Sidebar isOpen={menuOpen} />
+      {/* ==================================================
+          SIDEBAR
+      ================================================== */}
+
+      <Sidebar
+        isOpen={menuOpen}
+      />
 
 
-      {/* MAIN CONTENT */}
+      {/* ==================================================
+          MAIN CONTENT
+      ================================================== */}
 
       <main className="main">
 
 
-        {/* ======================================
+        {/* ==================================================
             HEADER
-        ====================================== */}
+        ================================================== */}
 
         <header className="header">
 
@@ -186,19 +516,31 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
             <button
               className="menu-btn"
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={() =>
+                setMenuOpen(
+                  !menuOpen
+                )
+              }
             >
+
               <Menu size={28} />
+
             </button>
 
 
             <div>
 
               <h1>
-                Good Morning, Sonu! <span>👋</span>
+
+                Good Morning, Sonu!
+                <span>👋</span>
+
               </h1>
 
-              <p>Here's your health overview</p>
+
+              <p>
+                Here's your health overview
+              </p>
 
             </div>
 
@@ -208,15 +550,23 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
           <div className="header-right">
 
             <div
-              onClick={() => navigate("/alerts")}
+              onClick={() =>
+                navigate("/alerts")
+              }
               className="notification"
             >
-              <TriangleAlert size={28} />
+
+              <TriangleAlert
+                size={28}
+              />
+
             </div>
 
 
             <div className="profile-avatar">
+
               A
+
             </div>
 
           </div>
@@ -224,10 +574,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
         </header>
 
 
-
-        {/* ======================================
+        {/* ==================================================
             TOP HEALTH CARDS
-        ====================================== */}
+        ================================================== */}
 
         <section className="health-cards">
 
@@ -235,38 +584,75 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
           {/* HEART RATE */}
 
           <HealthCard
+
             title="Heart Rate"
-            value={healthd.heartRate}
+
+            value={
+              healthd.heartRate
+            }
+
             unit="BPM"
+
             icon={<HeartPulse />}
+
             type="heart"
+
             comparison="↑ 22% vs last hour"
-            data={[72, 75, 70, 82, 78, 88, 85, 92, 118]}
+
+            data={[
+              72, 75, 70,
+              82, 78, 88,
+              85, 92, 118
+            ]}
+
           />
 
 
           {/* SPO2 */}
 
           <HealthCard
+
             title="SpO₂"
-            value={healthd.spo2}
+
+            value={
+              healthd.spo2
+            }
+
             unit="%"
+
             icon={<Droplets />}
+
             type="spo2"
+
             comparison="↓ 2% vs last hour"
-            data={[96, 97, 95, 96, 95, 97, 94, 95, 96]}
+
+            data={[
+              96, 97, 95,
+              96, 95, 97,
+              94, 95, 96
+            ]}
+
           />
 
 
           {/* TEMPERATURE */}
 
           <HealthCard
+
             title="Temperature"
-            value={healthd.temp}
+
+            value={
+              healthd.temp
+            }
+
             unit="F"
+
             icon={<Thermometer />}
+
             type="temperature"
+
             comparison="↑ 2.1°C vs last hour"
+
             data={[
               36.8,
               37,
@@ -278,40 +664,52 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               38.7,
               39.1,
             ]}
+
           />
 
 
           {/* ACTIVITY */}
 
           <HealthCard
+
             title="Activity"
+
             value="High"
+
             unit=""
+
             icon={<Footprints />}
+
             type="activity"
+
             comparison="↑ 24% vs last hour"
-            data={activityData}
+
+            data={
+              activityData
+            }
+
           />
 
         </section>
 
 
-
-        {/* ======================================
+        {/* ==================================================
             SECOND ROW
-        ====================================== */}
+        ================================================== */}
 
         <section className="middle-grid">
 
 
-          {/* ==================================
+          {/* ==================================================
               AI RISK SCORE
-          ================================== */}
+          ================================================== */}
 
           <div
             className={`card risk-card ${
-              riskLevel === "High Risk" ||
-              riskLevel === "Critical Risk"
+              riskLevel ===
+                "High Risk" ||
+              riskLevel ===
+                "Critical Risk"
                 ? "risk-blink"
                 : ""
             }`}
@@ -335,7 +733,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
 
                 <div className="gauge-label">
+
                   {riskLevel}
+
                 </div>
 
               </div>
@@ -352,36 +752,51 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
             >
 
               <strong>
-                You are at {riskLevel}.
+
+                You are at{" "}
+                {riskLevel}.
+
               </strong>
 
 
               <span>
 
                 {isDangerous
+
                   ? "Immediate attention recommended!"
-                  : "Continue monitoring your health."}
+
+                  : "Continue monitoring your health."
+
+                }
 
               </span>
 
             </div>
 
 
-            <button className="risk-link">
+            <button
+              className="risk-link"
+              onClick={() =>
+                navigate(
+                  "/risk-analysis"
+                )
+              }
+            >
 
               View Risk Analysis
 
-              <ChevronRight size={14} />
+              <ChevronRight
+                size={14}
+              />
 
             </button>
 
           </div>
 
 
-
-          {/* ==================================
+          {/* ==================================================
               HEALTH TREND
-          ================================== */}
+          ================================================== */}
 
           <div className="card trend-card">
 
@@ -401,7 +816,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
                 height="100%"
               >
 
-                <AreaChart data={healthData}>
+                <AreaChart
+                  data={healthData}
+                >
 
                   <defs>
 
@@ -448,8 +865,17 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
                       fontSize: 9,
                       fill: "#8d95a5",
                     }}
-                    domain={[0, 100]}
-                    ticks={[0, 25, 50, 75, 100]}
+                    domain={[
+                      0,
+                      100
+                    ]}
+                    ticks={[
+                      0,
+                      25,
+                      50,
+                      75,
+                      100
+                    ]}
                   />
 
 
@@ -474,20 +900,29 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
             <div className="trend-status">
 
               <span>
+
                 <i className="low"></i>
+
                 Low (0–53)
+
               </span>
 
 
               <span>
+
                 <i className="moderate"></i>
+
                 Moderate (31–66)
+
               </span>
 
 
               <span>
+
                 <i className="high"></i>
+
                 High (61–100)
+
               </span>
 
             </div>
@@ -497,17 +932,16 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
         </section>
 
 
-
-        {/* ======================================
+        {/* ==================================================
             BOTTOM GRID
-        ====================================== */}
+        ================================================== */}
 
         <section className="bottom-grid">
 
 
-          {/* ==================================
+          {/* ==================================================
               ENVIRONMENT
-          ================================== */}
+          ================================================== */}
 
           <div className="card environment-card">
 
@@ -522,7 +956,13 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               </div>
 
 
-              <button>
+              <button
+                onClick={() =>
+                  navigate(
+                    "/environment"
+                  )
+                }
+              >
                 View all
               </button>
 
@@ -556,7 +996,6 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               </div>
 
 
-
               <div className="environment-item">
 
                 <div className="env-icon gray">
@@ -581,12 +1020,13 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               </div>
 
 
-
               <div className="environment-item">
 
                 <div className="env-icon blue">
 
-                  <Droplets size={17} />
+                  <Droplets
+                    size={17}
+                  />
 
                 </div>
 
@@ -606,12 +1046,13 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               </div>
 
 
-
               <div className="environment-item">
 
                 <div className="env-icon red">
 
-                  <Thermometer size={17} />
+                  <Thermometer
+                    size={17}
+                  />
 
                 </div>
 
@@ -635,10 +1076,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
           </div>
 
 
-
-          {/* ==================================
+          {/* ==================================================
               RECENT ALERTS
-          ================================== */}
+          ================================================== */}
 
           <div className="card alerts-card">
 
@@ -649,7 +1089,13 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
               </h3>
 
 
-              <button>
+              <button
+                onClick={() =>
+                  navigate(
+                    "/alerts"
+                  )
+                }
+              >
                 View all
               </button>
 
@@ -657,36 +1103,57 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
 
             <Alert
-              icon={<AlertTriangle />}
+
+              icon={
+                <AlertTriangle />
+              }
+
               title="High Heat Stress Risk"
+
               time="16 May 2025, 08:10 AM"
+
               level="High"
+
               high
+
             />
 
 
             <Alert
-              icon={<Droplets />}
+
+              icon={
+                <Droplets />
+              }
+
               title="Hydration Level Low"
+
               time="16 May 2025, 06:30 AM"
+
               level="Medium"
+
             />
 
 
             <Alert
-              icon={<Activity />}
+
+              icon={
+                <Activity />
+              }
+
               title="AQI Level Unhealthy"
+
               time="16 May 2025, 07:40 AM"
+
               level="Medium"
+
             />
 
           </div>
 
 
-
-          {/* ==================================
+          {/* ==================================================
               QUICK ACTIONS
-          ================================== */}
+          ================================================== */}
 
           <div className="card quick-card">
 
@@ -703,7 +1170,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
               <span className="qa-icon blue">
 
-                <Activity size={15} />
+                <Activity
+                  size={15}
+                />
 
               </span>
 
@@ -716,7 +1185,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
               <span className="qa-icon blue">
 
-                <Droplets size={15} />
+                <Droplets
+                  size={15}
+                />
 
               </span>
 
@@ -729,7 +1200,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
               <span className="qa-icon green">
 
-                <Pill size={15} />
+                <Pill
+                  size={15}
+                />
 
               </span>
 
@@ -742,7 +1215,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 
               <span className="qa-icon red">
 
-                <FileText size={15} />
+                <FileText
+                  size={15}
+                />
 
               </span>
 
@@ -761,10 +1236,9 @@ console.log("🔥 RECOMMENDATIONS:", data.recommendations);
 }
 
 
-
-/* ==========================================
-   HEALTH CARD COMPONENT
-========================================== */
+// ==================================================
+// HEALTH CARD COMPONENT
+// ==================================================
 
 function HealthCard({
   title,
@@ -776,32 +1250,45 @@ function HealthCard({
   data,
 }) {
 
-  const max = Math.max(...data);
+  const max =
+    Math.max(...data);
 
-  const min = Math.min(...data);
+  const min =
+    Math.min(...data);
 
 
-  const points = data
-    .map((value, index) => {
+  const points =
+    data
+      .map(
+        (value, index) => {
 
-      const x =
-        (index / (data.length - 1)) * 100;
+          const x =
+            (index /
+              (data.length - 1)) *
+            100;
 
-      const y =
-        38 -
-        ((value - min) /
-          (max - min || 1)) *
-          30;
 
-      return `${x},${y}`;
+          const y =
+            38 -
+            (
+              (value - min) /
+              (max - min || 1)
+            ) *
+            30;
 
-    })
-    .join(" ");
+
+          return `${x},${y}`;
+
+        }
+      )
+      .join(" ");
 
 
   return (
 
-    <div className={`health-card ${type}`}>
+    <div
+      className={`health-card ${type}`}
+    >
 
       <div className="health-card-top">
 
@@ -809,9 +1296,12 @@ function HealthCard({
 
           <span className="metric-icon">
 
-            {React.cloneElement(icon, {
-              size: 17,
-            })}
+            {React.cloneElement(
+              icon,
+              {
+                size: 17,
+              }
+            )}
 
           </span>
 
@@ -823,7 +1313,6 @@ function HealthCard({
         </div>
 
       </div>
-
 
 
       <div className="metric-value">
@@ -839,11 +1328,11 @@ function HealthCard({
       </div>
 
 
-
       <div className="comparison">
-        {comparison}
-      </div>
 
+        {comparison}
+
+      </div>
 
 
       <div className="mini-chart">
@@ -852,16 +1341,19 @@ function HealthCard({
 
           <div className="activity-bars">
 
-            {data.map((height, i) => (
+            {data.map(
+              (height, i) => (
 
-              <span
-                key={i}
-                style={{
-                  height: `${height}%`,
-                }}
-              ></span>
+                <span
+                  key={i}
+                  style={{
+                    height:
+                      `${height}%`,
+                  }}
+                ></span>
 
-            ))}
+              )
+            )}
 
           </div>
 
@@ -891,10 +1383,9 @@ function HealthCard({
 }
 
 
-
-/* ==========================================
-   ALERT COMPONENT
-========================================== */
+// ==================================================
+// ALERT COMPONENT
+// ==================================================
 
 function Alert({
   icon,
@@ -910,13 +1401,18 @@ function Alert({
 
       <div
         className={`alert-icon ${
-          high ? "danger" : "warning"
+          high
+            ? "danger"
+            : "warning"
         }`}
       >
 
-        {React.cloneElement(icon, {
-          size: 14,
-        })}
+        {React.cloneElement(
+          icon,
+          {
+            size: 14,
+          }
+        )}
 
       </div>
 
@@ -936,10 +1432,14 @@ function Alert({
 
       <span
         className={`alert-level ${
-          high ? "high-level" : ""
+          high
+            ? "high-level"
+            : ""
         }`}
       >
+
         {level}
+
       </span>
 
     </div>
@@ -948,40 +1448,3 @@ function Alert({
 
 
 export default Dashboard;
-// ```
-
-// ### Bas ek aur important correction
-
-// Tumhare **schema me `temp`** hai, isliye backend me bhi `temp` hi use hona chahiye. Uploaded controller me ab `temp` use ho raha hai, jo correct hai.
-
-// Aur routes:
-
-// ```js
-// app.use("/api/devicedata", deviceRoutes);
-// ```
-
-// ```js
-// Router.post("/", auth, receiveDeviceData);
-// Router.get("/", auth, getdevicedata);
-// ```
-
-// ### Ab expected behavior
-
-// **MongoDB me data hai:**
-
-// ```text
-// Heart Rate: 78 BPM
-// SpO₂: 97%
-// Temperature: 36.5°C
-// ```
-
-// **Data nahi hai:**
-
-// ```text
-// Heart Rate: 0 BPM
-// SpO₂: 0%
-// Temperature: 0°C
-// Risk: 0/100
-// ```
-
-// Aur **`Cannot read properties of null (reading 'heartRate')` nahi aayega.**

@@ -88,9 +88,10 @@ export const healthData = async (req, res) => {
       heartRate,
       spo2,
       temp,
-      // envtemp,
-      // aqi,
-      // humidity
+      envtemp,
+      ecg,
+      humidity,
+      dust,
     } = req.body;
 
     console.log("📦 REQUEST BODY:", req.body);
@@ -129,9 +130,10 @@ export const healthData = async (req, res) => {
       heartRate: Number(heartRate ?? 0),
       spo2: Number(spo2 ?? 0),
       temp: Number(temp ?? 0),
-      // envtemp : Number(envtemp ?? 0),
-      // aqi : Number(aqi ?? 0),
-      // humidity : Number(humidity ?? 0)
+      envtemp : Number(envtemp ?? 0),
+      ecg : Number(ecg ?? 0),
+      humidity : Number(humidity ?? 0),
+      dust : Number(dust ?? 0)
     };
 
     console.log("💾 SAVING HEALTH DATA:", healthPayload);
@@ -156,8 +158,6 @@ export const healthData = async (req, res) => {
   }
 };
 
-
-
 export const gethealthdata = async (req, res) => {
   try {
     // ==========================================
@@ -166,10 +166,12 @@ export const gethealthdata = async (req, res) => {
 
     const userid = req.user.id;
 
+    console.log("==========================================");
+    console.log("GET HEALTH DATA");
     console.log("GET USER ID:", userid);
 
     // ==========================================
-    // GET LATEST DEVICE DATA
+    // GET LATEST HEALTH DATA
     // ==========================================
 
     const hd = await health
@@ -179,7 +181,7 @@ export const gethealthdata = async (req, res) => {
     console.log("LATEST DEVICE DATA:", hd);
 
     // ==========================================
-    // NO DEVICE DATA
+    // NO DATA
     // ==========================================
 
     if (!hd) {
@@ -189,33 +191,52 @@ export const gethealthdata = async (req, res) => {
 
         hd: null,
 
+        sensorData: {
+          heartRate: 0,
+          spo2: 0,
+          temp: 0,
+          envtemp: 0,
+          humidity: 0,
+          ecg: 0,
+          dust: 0,
+        },
+
         riskScore: 0,
         riskLevel: "No Data",
         prediction: null,
+        mlAvailable: false,
 
         recommendations: [],
         datatimers: [],
-
         heartRateData: [],
         spo2Data: [],
         tempData: [],
-
         riskFactors: [],
       });
     }
 
     // ==========================================
-    // LATEST SENSOR VALUES
+    // ❤️ 7 ML FEATURES
     // ==========================================
 
     const heartRate = Number(hd.heartRate ?? 0);
     const spo2 = Number(hd.spo2 ?? 0);
     const temp = Number(hd.temp ?? 0);
+    const envtemp = Number(hd.envtemp ?? 0);
+    const humidity = Number(hd.humidity ?? 0);
+    const ecg = Number(hd.ecg ?? 0);
+    const dust = Number(hd.dust ?? 0);
 
-    console.log("SENSOR VALUES:");
-    console.log("Heart Rate:", heartRate);
-    console.log("SpO2:", spo2);
-    console.log("Temperature:", temp);
+    console.log("==========================================");
+    console.log("7 SENSOR VALUES");
+    console.log("❤️ Heart Rate:", heartRate);
+    console.log("🫁 SpO2:", spo2);
+    console.log("🌡️ Body Temperature:", temp);
+    console.log("🌍 Environment Temperature:", envtemp);
+    console.log("💧 Humidity:", humidity);
+    console.log("❤️ ECG:", ecg);
+    console.log("🌫️ Dust:", dust);
+    console.log("==========================================");
 
     // ==========================================
     // 🤖 ML MODEL PREDICTION
@@ -227,11 +248,32 @@ export const gethealthdata = async (req, res) => {
     let mlAvailable = false;
 
     try {
-      console.log("🤖 Sending data to ML model...");
+      console.log("🤖 Sending 7 features to ML model...");
 
-      const mlUrl = `${process.env.ML_API_URL}/predict`;
+      if (!process.env.ML_API_URL) {
+        throw new Error("ML_API_URL is not configured");
+      }
+
+      const mlUrl = `${process.env.ML_API_URL.replace(/\/$/, "")}/predict`;
 
       console.log("🤖 ML URL:", mlUrl);
+
+      // ==========================================
+      // SEND EXACTLY 7 FEATURES
+      // ORDER MUST MATCH TRAINING
+      // ==========================================
+
+      const mlPayload = {
+        heartRate: heartRate,
+        spo2: spo2,
+        temp: temp,
+        envtemp: envtemp,
+        humidity: humidity,
+        ecg: ecg,
+        dust: dust,
+      };
+
+      console.log("🤖 ML PAYLOAD:", mlPayload);
 
       const mlResponse = await fetch(mlUrl, {
         method: "POST",
@@ -240,27 +282,37 @@ export const gethealthdata = async (req, res) => {
           "Content-Type": "application/json",
         },
 
-        body: JSON.stringify({
-          heartRate,
-          spo2,
-          temp,
-        }),
+        body: JSON.stringify(mlPayload),
       });
 
-      console.log("ML API STATUS:", mlResponse.status);
+      console.log("🤖 ML API STATUS:", mlResponse.status);
+
+      // ==========================================
+      // READ RESPONSE
+      // ==========================================
+
+      const mlText = await mlResponse.text();
+
+      console.log("🤖 ML RAW RESPONSE:", mlText);
 
       if (!mlResponse.ok) {
         throw new Error(
-          `ML API returned status ${mlResponse.status}`
+          `ML API returned status ${mlResponse.status}: ${mlText}`
         );
       }
 
-      const mlData = await mlResponse.json();
+      let mlData;
+
+      try {
+        mlData = JSON.parse(mlText);
+      } catch (parseError) {
+        throw new Error("ML API returned invalid JSON");
+      }
 
       console.log("🤖 ML RESPONSE:", mlData);
 
       // ==========================================
-      // GET ML RESULT
+      // VALIDATE ML RESPONSE
       // ==========================================
 
       if (
@@ -271,6 +323,10 @@ export const gethealthdata = async (req, res) => {
           "Invalid ML response: riskScore or riskLevel missing"
         );
       }
+
+      // ==========================================
+      // GET ML RESULT
+      // ==========================================
 
       riskScore = Number(mlData.riskScore);
 
@@ -286,7 +342,9 @@ export const gethealthdata = async (req, res) => {
       // ==========================================
 
       if (Number.isNaN(riskScore)) {
-        throw new Error("Invalid riskScore received from ML model");
+        throw new Error(
+          "Invalid riskScore received from ML model"
+        );
       }
 
       riskScore = Math.max(
@@ -296,18 +354,21 @@ export const gethealthdata = async (req, res) => {
 
       mlAvailable = true;
 
-      console.log("🤖 ML PREDICTION:", prediction);
-      console.log("🤖 ML RISK SCORE:", riskScore);
-      console.log("🤖 ML RISK LEVEL:", riskLevel);
+      console.log("==========================================");
+      console.log("🤖 ML SUCCESS");
+      console.log("Prediction:", prediction);
+      console.log("Risk Score:", riskScore);
+      console.log("Risk Level:", riskLevel);
+      console.log("ML Available:", mlAvailable);
+      console.log("==========================================");
 
     } catch (mlError) {
-      console.error(
-        "❌ ML API ERROR:",
-        mlError.message
-      );
 
-      // IMPORTANT:
-      // ML fail hone par Normal mat dikhao.
+      console.error("==========================================");
+      console.error("❌ ML API ERROR");
+      console.error("❌ MESSAGE:", mlError.message);
+      console.error("==========================================");
+
       riskScore = 0;
       riskLevel = "ML Unavailable";
       prediction = null;
@@ -315,26 +376,7 @@ export const gethealthdata = async (req, res) => {
     }
 
     // ==========================================
-    // FINAL ML RESULT
-    // ==========================================
-
-    console.log(
-      "🤖 FINAL ML RISK SCORE:",
-      riskScore
-    );
-
-    console.log(
-      "🤖 FINAL RISK LEVEL:",
-      riskLevel
-    );
-
-    console.log(
-      "🤖 ML AVAILABLE:",
-      mlAvailable
-    );
-
-    // ==========================================
-    // SAVE ML RESULT IN MONGODB
+    // SAVE ML RESULT
     // ==========================================
 
     hd.riskScore = riskScore;
@@ -345,7 +387,7 @@ export const gethealthdata = async (req, res) => {
     console.log("✅ ML RESULT SAVED TO MONGODB");
 
     // ==========================================
-    // GET ALL USER DEVICE DATA
+    // GET ALL USER DATA
     // ==========================================
 
     const allData = await health
@@ -358,55 +400,59 @@ export const gethealthdata = async (req, res) => {
     );
 
     // ==========================================
-    // HEART RATE DATA
+    // HEART RATE GRAPH
     // ==========================================
 
     const heartRateData = allData.map((item) => ({
-      time: new Date(
-        item.createdAt
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      time: new Date(item.createdAt).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ),
 
       value: Number(item.heartRate ?? 0),
     }));
 
     // ==========================================
-    // SPO2 DATA
+    // SPO2 GRAPH
     // ==========================================
 
     const spo2Data = allData.map((item) => ({
-      time: new Date(
-        item.createdAt
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      time: new Date(item.createdAt).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ),
 
       value: Number(item.spo2 ?? 0),
     }));
 
     // ==========================================
-    // TEMPERATURE DATA
+    // TEMPERATURE GRAPH
     // ==========================================
 
     const tempData = allData.map((item) => ({
-      time: new Date(
-        item.createdAt
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      time: new Date(item.createdAt).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ),
 
       value: Number(item.temp ?? 0),
     }));
 
     // ==========================================
-    // HEALTH TREND DATA
+    // HEALTH TREND
     // ==========================================
 
     const datatimers = allData.map((item) => {
+
       const hr = Number(item.heartRate ?? 0);
       const oxygen = Number(item.spo2 ?? 0);
       const temperature = Number(item.temp ?? 0);
@@ -463,10 +509,13 @@ export const gethealthdata = async (req, res) => {
       return {
         time: new Date(
           item.createdAt
-        ).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        ).toLocaleTimeString(
+          [],
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        ),
 
         score,
       };
@@ -523,33 +572,35 @@ export const gethealthdata = async (req, res) => {
       );
     }
 
-    // ==========================================
-    // ML RISK RECOMMENDATION
-    // ==========================================
-
+    // ML RECOMMENDATION
     if (riskLevel === "Critical Risk") {
+
       recommendations.push(
         "Critical risk detected. Immediate medical attention is recommended."
       );
+
     } else if (riskLevel === "High Risk") {
+
       recommendations.push(
         "High health risk detected. Please monitor your vital signs closely."
       );
+
     } else if (riskLevel === "Moderate Risk") {
+
       recommendations.push(
         "Moderate risk detected. Continue monitoring your health parameters."
       );
+
     } else if (riskLevel === "Low Risk") {
+
       recommendations.push(
         "Low risk detected. Maintain healthy habits and continue monitoring."
       );
+
     } else if (riskLevel === "ML Unavailable") {
+
       recommendations.push(
         "ML risk prediction is currently unavailable. Please try again later."
-      );
-    } else {
-      recommendations.push(
-        "Your current health indicators look normal. Keep maintaining a healthy lifestyle."
       );
     }
 
@@ -561,18 +612,23 @@ export const gethealthdata = async (req, res) => {
 
     // HEART RATE
     if (heartRate > 100) {
+
       riskFactors.push({
         factor: "Heart Rate",
         value: heartRate,
         status: "High",
       });
+
     } else if (heartRate < 60) {
+
       riskFactors.push({
         factor: "Heart Rate",
         value: heartRate,
         status: "Low",
       });
+
     } else {
+
       riskFactors.push({
         factor: "Heart Rate",
         value: heartRate,
@@ -582,18 +638,23 @@ export const gethealthdata = async (req, res) => {
 
     // SPO2
     if (spo2 < 90) {
+
       riskFactors.push({
         factor: "SpO₂",
         value: spo2,
         status: "Low",
       });
+
     } else if (spo2 < 95) {
+
       riskFactors.push({
         factor: "SpO₂",
         value: spo2,
         status: "Slightly Low",
       });
+
     } else {
+
       riskFactors.push({
         factor: "SpO₂",
         value: spo2,
@@ -603,18 +664,23 @@ export const gethealthdata = async (req, res) => {
 
     // TEMPERATURE
     if (temp > 38) {
+
       riskFactors.push({
         factor: "Temperature",
         value: temp,
         status: "High",
       });
+
     } else if (temp < 35) {
+
       riskFactors.push({
         factor: "Temperature",
         value: temp,
         status: "Low",
       });
+
     } else {
+
       riskFactors.push({
         factor: "Temperature",
         value: temp,
@@ -622,39 +688,115 @@ export const gethealthdata = async (req, res) => {
       });
     }
 
+    // ENVIRONMENT TEMPERATURE
+    riskFactors.push({
+      factor: "Environment Temp",
+      value: envtemp,
+      status:
+        envtemp > 40
+          ? "High"
+          : envtemp < 10
+          ? "Low"
+          : "Normal",
+    });
+
+    // HUMIDITY
+    riskFactors.push({
+      factor: "Humidity",
+      value: humidity,
+      status:
+        humidity > 80
+          ? "High"
+          : humidity < 30
+          ? "Low"
+          : "Normal",
+    });
+
+    // ECG
+    riskFactors.push({
+      factor: "ECG",
+      value: ecg,
+      status:
+        Math.abs(ecg) > 2
+          ? "High"
+          : "Normal",
+    });
+
+    // DUST
+    riskFactors.push({
+      factor: "Dust",
+      value: dust,
+      status:
+        dust > 300
+          ? "High"
+          : dust > 150
+          ? "Moderate"
+          : "Normal",
+    });
+
     // ==========================================
     // FINAL RESPONSE
     // ==========================================
 
     return res.status(200).json({
+
       success: true,
 
       message: "Data received successfully",
 
-      // Latest device data
+      // ==========================================
+      // LATEST HEALTH DATA
+      // ==========================================
+
       hd,
 
+      // ==========================================
+      // EXACT 7 SENSOR VALUES
+      // ==========================================
+
+      sensorData: {
+        heartRate,
+        spo2,
+        temp,
+        envtemp,
+        humidity,
+        ecg,
+        dust,
+      },
+
+      // ==========================================
       // ML RESULT
+      // ==========================================
+
       riskScore,
       riskLevel,
       prediction,
       mlAvailable,
 
-      // Recommendations
+      // ==========================================
+      // RECOMMENDATIONS
+      // ==========================================
+
       recommendations,
 
-      // Graph data
-      datatimers,
+      // ==========================================
+      // GRAPH DATA
+      // ==========================================
 
+      datatimers,
       heartRateData,
       spo2Data,
       tempData,
 
-      // Risk factors
+      // ==========================================
+      // RISK FACTORS
+      // ==========================================
+
       riskFactors,
     });
 
   } catch (error) {
+
     console.error(
       "❌ GET DEVICE DATA ERROR:",
       error
@@ -667,22 +809,6 @@ export const gethealthdata = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -803,48 +929,3 @@ export const getHealthHistory = async (req, res) => {
 
 
 
-
-
-
-
-
-
-// // Esp32 data
-// export const receiveDeviceData = async (req, res) => {
-//   try {
-//     const { deviceId, heartRate, spo2, temp } = req.body;
-
-//     // Device ID se device find karo
-//     const device = await health.findOne({ deviceId });
-
-//     if (!device) {
-//       return res.status(404).json({
-//         message: "Device not registered"
-//       });
-//     }
-
-//     // Device se associated user mil gaya
-//     const userId = device.userid;
-
-//     // Health data save karo
-//     const newHealthData = await health.create({
-//       userid: userId,
-//       deviceId: deviceId,
-//       heartRate,
-//       spo2,
-//       temp
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       data: newHealthData
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-
-//     res.status(500).json({
-//       message: error.message
-//     });
-//   }
-// };

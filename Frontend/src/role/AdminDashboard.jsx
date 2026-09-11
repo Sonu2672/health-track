@@ -49,7 +49,7 @@ const AdminDashboard = ({ setIslogin }) => {
 
   const navigate = useNavigate();
     const handleLogout = async() => {
-         const response = await fetch("http://localhost:5000/api/users/islogout", {
+         const response = await fetch("https://health-track-2b.onrender.com/api/users/islogout", {
               method: "GET",
               credentials: "include",
               headers: {
@@ -68,7 +68,7 @@ const AdminDashboard = ({ setIslogin }) => {
   const Reqhandler = async (id) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/doctors/doctorReq",
+        "https://health-track-2b.onrender.com/api/doctors/doctorReq",
         {
           method: "POST",
           credentials: "include",
@@ -90,7 +90,7 @@ const AdminDashboard = ({ setIslogin }) => {
     const docdata = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/doctors/doctorRequest",
+          "https://health-track-2b.onrender.com/api/doctors/doctorRequest",
           {
             method: "GET",
             credentials: "include",

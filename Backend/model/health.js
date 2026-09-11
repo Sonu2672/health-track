@@ -35,20 +35,28 @@ const healthSchema = new mongoose.Schema(
       default: 0,
     },
 
-    //  envtemp: {
-    //   type: Number,
-    //   default: 0,
-    // },
+     envtemp: {
+      type: Number,
+      default: 0,
+    },
 
-    //  aqi: {
-    //   type: Number,
-    //   default: 0,
-    // },
+     ecg: {
+      type: Number,
+      default: 0,
+    },
 
-    //  humidity: {
-    //   type: Number,
-    //   default: 0,
-    // },
+     humidity: {
+      type: Number,
+      default: 0,
+    },
+
+       dust: {
+      type: Number,
+      default: 0,
+    },
+
+
+
   },
   {
     timestamps: true,

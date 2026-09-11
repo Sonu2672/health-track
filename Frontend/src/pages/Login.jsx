@@ -46,7 +46,7 @@ function Login({ setIslogin, setIsadmin }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/doctors/doctorReg",
+        "https://health-track-2b.onrender.com/api/doctors/doctorReg",
         {
           method: "POST",
           credentials: "include",
