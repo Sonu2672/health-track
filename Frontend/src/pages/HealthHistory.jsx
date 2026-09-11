@@ -681,19 +681,14 @@ function HealthHistory() {
                   <Tooltip />
 
 
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#6547d7"
-                    strokeWidth={2}
-                    dot={{
-                      r: 2,
-                      fill: "#6547d7",
-                    }}
-                    activeDot={{
-                      r: 4,
-                    }}
-                  />
+               <Line
+  type="monotone"
+  dataKey="value"
+  stroke="#6547d7"
+  strokeWidth={2}
+  dot={false}
+  activeDot={false}
+/>
 
                 </LineChart>
 
