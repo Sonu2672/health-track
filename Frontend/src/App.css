@@ -9998,3 +9998,37 @@ input {
   color: #1f2937 !important;
   border: 1px solid #e5e7eb;
 }
+
+
+
+/* ================================
+   AI RISK LEVEL COLORS
+================================ */
+
+.risk-level-section h2.high {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.critical {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.moderate {
+  background: #f59e0b !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.low {
+  background: #22c55e !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
