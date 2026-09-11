@@ -217,7 +217,7 @@ function RiskAnalysis() {
     const Hdata = async () => {
       try {
         const response = await fetch(
-          "https://health-track-2f.onrender.com/api/health/gethealthdata",
+          "https://health-track-2b.onrender.com/api/health/gethealthdata",
           {
             method: "GET",
             credentials: "include",
