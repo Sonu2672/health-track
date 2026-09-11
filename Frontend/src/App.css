@@ -10032,3 +10032,25 @@ input {
   font-weight: 700 !important;
   opacity: 1 !important;
 }
+
+
+
+/* Remove red background from risk level */
+.risk-level-section h2.high,
+.risk-level-section h2.critical,
+.risk-level-section h2.moderate,
+.risk-level-section h2.low {
+  background: transparent !important;
+  color: #ef4444 !important;
+  padding: 0 !important;
+}
+
+/* Remove red block from gauge label */
+.gauge-label.high,
+.gauge-label.critical,
+.gauge-label.moderate,
+.gauge-label.low {
+  background: transparent !important;
+  color: #ef4444 !important;
+  padding: 0 !important;
+}
