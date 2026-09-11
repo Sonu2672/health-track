@@ -99,7 +99,7 @@ const [menuOpen, setMenuOpen] = useState(false);
   const Hdata = async () => {
     try {
       const response = await fetch(
-        "hhttps://health-track-2b.onrender.com/api/health/gethealthdata",
+        "https://health-track-2b.onrender.com/api/health/gethealthdata",
         {
           method: "GET",
           credentials: "include",
