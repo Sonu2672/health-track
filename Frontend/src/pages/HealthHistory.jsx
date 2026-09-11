@@ -912,24 +912,14 @@ function SummaryCard({
   unit,
   icon,
 }) {
-
   return (
-
-    <div
-      className={`summary-card ${type}`}
-    >
+    <div className={`summary-card ${type}`}>
 
       <div className="summary-icon">
-
-        {React.cloneElement(
-          icon,
-          {
-            size: 15,
-          }
-        )}
-
+        {React.cloneElement(icon, {
+          size: 15,
+        })}
       </div>
-
 
       <div className="summary-content">
 
@@ -937,9 +927,7 @@ function SummaryCard({
           {title}
         </span>
 
-
         <div>
-
           <strong>
             {value}
           </strong>
@@ -947,21 +935,12 @@ function SummaryCard({
           <small>
             {unit}
           </small>
-
         </div>
 
       </div>
 
     </div>
   );
-
-
-
-
-
-
-
-
-
+}
 
 export default HealthHistory;
