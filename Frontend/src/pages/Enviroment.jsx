@@ -53,7 +53,7 @@ function Environment() {
     try {
 
       const response = await fetch(
-        "http://localhost:5000/api/health/gethealthdata",
+        "https://health-track-2b.onrender.com/api/health/gethealthdata",
         {
           credentials: "include",
         }
