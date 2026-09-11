@@ -46,7 +46,7 @@ function Login({ setIslogin, setIsadmin }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/doctors/doctorReg",
+        "https://health-track-2b.onrender.com/api/doctors/doctorReg",
         {
           method: "POST",
           credentials: "include",
@@ -103,7 +103,7 @@ function Login({ setIslogin, setIsadmin }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/users/login",
+        "https://health-track-2b.onrender.com/api/users/login",
         {
           method: "POST",
           credentials: "include",
@@ -156,7 +156,7 @@ function Login({ setIslogin, setIsadmin }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/users/signup",
+        "https://health-track-2b.onrender.com/api/users/signup",
         {
           method: "POST",
           credentials: "include",
