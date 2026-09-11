@@ -1,3 +1,9 @@
+
+
+
+
+
+
 // import React from "react";
 // import { useState, useEffect, useRef } from "react";
 // import "../App.css";
@@ -21,14 +27,12 @@
 // } from "lucide-react";
 
 // import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
 //   ResponsiveContainer,
 //   Tooltip,
 //   AreaChart,
 //   Area,
+//   XAxis,
+//   YAxis,
 // } from "recharts";
 
 // const activityData = [
@@ -64,23 +68,19 @@
 
 
 //   // ==================================================
-//   // 🔊 VOICE ALERT REFS
+//   // 🔊 VOICE ALERT REF
 //   // ==================================================
 
-//   const previousRiskRef =
-//     useRef("");
-
-//   const lastVoiceAlertRef =
-//     useRef(0);
+//   const voiceIntervalRef =
+//     useRef(null);
 
 
 //   // ==================================================
-//   // 🔊 VOICE ALERT FUNCTION
+//   // 🔊 HINDI VOICE ALERT
 //   // ==================================================
 
 //   const speakRiskAlert = (level) => {
 
-//     // Browser speech support
 //     if (!("speechSynthesis" in window)) {
 
 //       console.log(
@@ -91,45 +91,37 @@
 //     }
 
 
-//     const now = Date.now();
-
-
-//     // Don't speak repeatedly
-//     // within 30 seconds
-//     if (
-//       now -
-//       lastVoiceAlertRef.current <
-//       30000
-//     ) {
-
-//       return;
-//     }
-
-
 //     let message = "";
 
 
+//     // 🔴 CRITICAL
 //     if (
 //       level === "Critical Risk"
 //     ) {
 
 //       message =
-//         "Critical health risk detected. Immediate attention is recommended.";
+//         "गंभीर स्वास्थ्य जोखिम का पता चला है। तुरंत ध्यान देने की आवश्यकता है।";
 
-//     } else if (
+//     }
+
+//     // 🟠 HIGH
+//     else if (
 //       level === "High Risk"
 //     ) {
 
 //       message =
-//         "Warning. High health risk detected. Please check your health condition.";
+//         "चेतावनी। स्वास्थ्य जोखिम अधिक है। कृपया अपनी स्वास्थ्य स्थिति की जाँच करें।";
 
-//     } else {
+//     }
+
+//     else {
 
 //       return;
+
 //     }
 
 
-//     // Stop any previous speech
+//     // Stop previous speech
 //     window.speechSynthesis.cancel();
 
 
@@ -139,30 +131,35 @@
 //       );
 
 
+//     // 🇮🇳 Hindi language
+//     speech.lang = "hi-IN";
+
 //     speech.rate = 0.9;
+
 //     speech.pitch = 1;
+
 //     speech.volume = 1;
 
 
-//     // Try English voice
+//     // Find Hindi voice
 //     const voices =
 //       window.speechSynthesis.getVoices();
 
 
-//     const englishVoice =
+//     const hindiVoice =
 //       voices.find(
 //         (voice) =>
 //           voice.lang &&
 //           voice.lang
 //             .toLowerCase()
-//             .startsWith("en")
+//             .startsWith("hi")
 //       );
 
 
-//     if (englishVoice) {
+//     if (hindiVoice) {
 
 //       speech.voice =
-//         englishVoice;
+//         hindiVoice;
 
 //     }
 
@@ -172,15 +169,100 @@
 //     );
 
 
-//     lastVoiceAlertRef.current =
-//       now;
-
-
 //     console.log(
-//       "🔊 VOICE ALERT:",
+//       "🔊 HINDI ALERT:",
 //       message
 //     );
+
 //   };
+
+
+//   // ==================================================
+//   // 🔊 REPEAT VOICE EVERY 1 SECOND
+//   // ==================================================
+
+//   useEffect(() => {
+
+//     // Clear old interval
+//     if (
+//       voiceIntervalRef.current
+//     ) {
+
+//       clearInterval(
+//         voiceIntervalRef.current
+//       );
+
+//       voiceIntervalRef.current =
+//         null;
+
+//     }
+
+
+//     // Only High / Critical
+//     if (
+//       riskLevel !== "High Risk" &&
+//       riskLevel !== "Critical Risk"
+//     ) {
+
+//       // Stop any current speech
+//       if (
+//         "speechSynthesis" in window
+//       ) {
+
+//         window.speechSynthesis.cancel();
+
+//       }
+
+//       return;
+
+//     }
+
+
+//     // Speak immediately
+//     speakRiskAlert(
+//       riskLevel
+//     );
+
+
+//     // 🔥 Repeat every 1 second
+//     voiceIntervalRef.current =
+//       setInterval(() => {
+
+//         speakRiskAlert(
+//           riskLevel
+//         );
+
+//       }, 1000);
+
+
+//     // Cleanup
+//     return () => {
+
+//       if (
+//         voiceIntervalRef.current
+//       ) {
+
+//         clearInterval(
+//           voiceIntervalRef.current
+//         );
+
+//         voiceIntervalRef.current =
+//           null;
+
+//       }
+
+
+//       if (
+//         "speechSynthesis" in window
+//       ) {
+
+//         window.speechSynthesis.cancel();
+
+//       }
+
+//     };
+
+//   }, [riskLevel]);
 
 
 //   // ==================================================
@@ -300,11 +382,12 @@
 
 
 //           return;
+
 //         }
 
 
 //         // ==================================================
-//         // DEVICE DATA AVAILABLE
+//         // DEVICE DATA
 //         // ==================================================
 
 //         setHealthd({
@@ -341,47 +424,6 @@
 //           0;
 
 
-//         // ==================================================
-//         // 🔊 VOICE ALERT
-//         // ==================================================
-
-//         const previousRisk =
-//           previousRiskRef.current;
-
-
-//         if (
-//           newRiskLevel ===
-//             "High Risk" ||
-
-//           newRiskLevel ===
-//             "Critical Risk"
-//         ) {
-
-//           // Speak when risk changes
-//           // OR after 30 seconds
-//           if (
-//             previousRisk !==
-//               newRiskLevel ||
-
-//             Date.now() -
-//               lastVoiceAlertRef.current >=
-//               30000
-//           ) {
-
-//             speakRiskAlert(
-//               newRiskLevel
-//             );
-
-//           }
-
-//         }
-
-
-//         // Save current risk
-//         previousRiskRef.current =
-//           newRiskLevel;
-
-
 //         setRiskScore(
 //           newRiskScore
 //         );
@@ -389,6 +431,7 @@
 //         setRiskLevel(
 //           newRiskLevel
 //         );
+
 
 //         setHealthData(
 //           data.datatimers ?? []
@@ -417,11 +460,6 @@
 //         );
 
 //         setHealthData([]);
-
-
-//         // Reset previous risk
-//         previousRiskRef.current =
-//           "";
 
 //       }
 
@@ -457,10 +495,32 @@
 //         interval
 //       );
 
-//       // Stop speech when leaving page
+//     };
+
+//   }, []);
+
+
+//   // ==================================================
+//   // CLEAN SPEECH ON PAGE UNMOUNT
+//   // ==================================================
+
+//   useEffect(() => {
+
+//     return () => {
+
 //       if (
-//         "speechSynthesis" in
-//         window
+//         voiceIntervalRef.current
+//       ) {
+
+//         clearInterval(
+//           voiceIntervalRef.current
+//         );
+
+//       }
+
+
+//       if (
+//         "speechSynthesis" in window
 //       ) {
 
 //         window.speechSynthesis.cancel();
@@ -581,8 +641,6 @@
 //         <section className="health-cards">
 
 
-//           {/* HEART RATE */}
-
 //           <HealthCard
 
 //             title="Heart Rate"
@@ -608,8 +666,6 @@
 //           />
 
 
-//           {/* SPO2 */}
-
 //           <HealthCard
 
 //             title="SpO₂"
@@ -634,8 +690,6 @@
 
 //           />
 
-
-//           {/* TEMPERATURE */}
 
 //           <HealthCard
 
@@ -667,8 +721,6 @@
 
 //           />
 
-
-//           {/* ACTIVITY */}
 
 //           <HealthCard
 
@@ -939,9 +991,7 @@
 //         <section className="bottom-grid">
 
 
-//           {/* ==================================================
-//               ENVIRONMENT
-//           ================================================== */}
+//           {/* ENVIRONMENT */}
 
 //           <div className="card environment-card">
 
@@ -1024,9 +1074,7 @@
 
 //                 <div className="env-icon blue">
 
-//                   <Droplets
-//                     size={17}
-//                   />
+//                   <Droplets size={17} />
 
 //                 </div>
 
@@ -1050,9 +1098,7 @@
 
 //                 <div className="env-icon red">
 
-//                   <Thermometer
-//                     size={17}
-//                   />
+//                   <Thermometer size={17} />
 
 //                 </div>
 
@@ -1076,9 +1122,7 @@
 //           </div>
 
 
-//           {/* ==================================================
-//               RECENT ALERTS
-//           ================================================== */}
+//           {/* RECENT ALERTS */}
 
 //           <div className="card alerts-card">
 
@@ -1103,57 +1147,39 @@
 
 
 //             <Alert
-
 //               icon={
 //                 <AlertTriangle />
 //               }
-
 //               title="High Heat Stress Risk"
-
 //               time="16 May 2025, 08:10 AM"
-
 //               level="High"
-
 //               high
-
 //             />
 
 
 //             <Alert
-
 //               icon={
 //                 <Droplets />
 //               }
-
 //               title="Hydration Level Low"
-
 //               time="16 May 2025, 06:30 AM"
-
 //               level="Medium"
-
 //             />
 
 
 //             <Alert
-
 //               icon={
 //                 <Activity />
 //               }
-
 //               title="AQI Level Unhealthy"
-
 //               time="16 May 2025, 07:40 AM"
-
 //               level="Medium"
-
 //             />
 
 //           </div>
 
 
-//           {/* ==================================================
-//               QUICK ACTIONS
-//           ================================================== */}
+//           {/* QUICK ACTIONS */}
 
 //           <div className="card quick-card">
 
@@ -1170,9 +1196,7 @@
 
 //               <span className="qa-icon blue">
 
-//                 <Activity
-//                   size={15}
-//                 />
+//                 <Activity size={15} />
 
 //               </span>
 
@@ -1185,9 +1209,7 @@
 
 //               <span className="qa-icon blue">
 
-//                 <Droplets
-//                   size={15}
-//                 />
+//                 <Droplets size={15} />
 
 //               </span>
 
@@ -1200,9 +1222,7 @@
 
 //               <span className="qa-icon green">
 
-//                 <Pill
-//                   size={15}
-//                 />
+//                 <Pill size={15} />
 
 //               </span>
 
@@ -1215,9 +1235,7 @@
 
 //               <span className="qa-icon red">
 
-//                 <FileText
-//                   size={15}
-//                 />
+//                 <FileText size={15} />
 
 //               </span>
 
@@ -1237,7 +1255,7 @@
 
 
 // // ==================================================
-// // HEALTH CARD COMPONENT
+// // HEALTH CARD
 // // ==================================================
 
 // function HealthCard({
@@ -1447,14 +1465,7 @@
 // }
 
 
-
 // export default Dashboard;
-
-
-
-
-
-
 
 
 
@@ -1481,12 +1492,14 @@ import {
 } from "lucide-react";
 
 import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
   ResponsiveContainer,
   Tooltip,
   AreaChart,
   Area,
-  XAxis,
-  YAxis,
 } from "recharts";
 
 const activityData = [
@@ -1520,17 +1533,19 @@ function Dashboard() {
   const [name, setName] =
     useState("");
 
+  // ==================================================
+  // 🔊 VOICE ALERT STATE
+  // ==================================================
 
-  // ==================================================
-  // 🔊 VOICE ALERT REF
-  // ==================================================
+  const [voiceAlertStopped, setVoiceAlertStopped] =
+    useState(false);
 
   const voiceIntervalRef =
     useRef(null);
 
 
   // ==================================================
-  // 🔊 HINDI VOICE ALERT
+  // 🔊 VOICE ALERT FUNCTION
   // ==================================================
 
   const speakRiskAlert = (level) => {
@@ -1544,24 +1559,24 @@ function Dashboard() {
       return;
     }
 
-
     let message = "";
 
+    // ==============================
+    // 🚨 CRITICAL
+    // ==============================
 
-    // 🔴 CRITICAL
-    if (
-      level === "Critical Risk"
-    ) {
+    if (level === "Critical Risk") {
 
       message =
-        "गंभीर स्वास्थ्य जोखिम का पता चला है। तुरंत ध्यान देने की आवश्यकता है।";
+        "गंभीर स्वास्थ्य जोखिम पाया गया है। कृपया तुरंत ध्यान दें।";
 
     }
 
-    // 🟠 HIGH
-    else if (
-      level === "High Risk"
-    ) {
+    // ==============================
+    // ⚠️ HIGH
+    // ==============================
+
+    else if (level === "High Risk") {
 
       message =
         "चेतावनी। स्वास्थ्य जोखिम अधिक है। कृपया अपनी स्वास्थ्य स्थिति की जाँच करें।";
@@ -1571,34 +1586,26 @@ function Dashboard() {
     else {
 
       return;
-
     }
-
 
     // Stop previous speech
     window.speechSynthesis.cancel();
-
 
     const speech =
       new SpeechSynthesisUtterance(
         message
       );
 
-
-    // 🇮🇳 Hindi language
+    // Hindi voice
     speech.lang = "hi-IN";
 
     speech.rate = 0.9;
-
     speech.pitch = 1;
-
     speech.volume = 1;
-
 
     // Find Hindi voice
     const voices =
       window.speechSynthesis.getVoices();
-
 
     const hindiVoice =
       voices.find(
@@ -1609,7 +1616,6 @@ function Dashboard() {
             .startsWith("hi")
       );
 
-
     if (hindiVoice) {
 
       speech.voice =
@@ -1617,30 +1623,25 @@ function Dashboard() {
 
     }
 
-
     window.speechSynthesis.speak(
       speech
     );
 
-
     console.log(
-      "🔊 HINDI ALERT:",
+      "🔊 VOICE ALERT:",
       message
     );
-
   };
 
 
   // ==================================================
-  // 🔊 REPEAT VOICE EVERY 1 SECOND
+  // 🔊 START / STOP VOICE ALERT
   // ==================================================
 
   useEffect(() => {
 
-    // Clear old interval
-    if (
-      voiceIntervalRef.current
-    ) {
+    // Clear previous interval
+    if (voiceIntervalRef.current) {
 
       clearInterval(
         voiceIntervalRef.current
@@ -1651,45 +1652,85 @@ function Dashboard() {
 
     }
 
+    // Stop current speech
+    if (
+      "speechSynthesis" in window
+    ) {
 
-    // Only High / Critical
+      window.speechSynthesis.cancel();
+
+    }
+
+    // ==================================================
+    // ONLY HIGH / CRITICAL
+    // ==================================================
+
     if (
       riskLevel !== "High Risk" &&
       riskLevel !== "Critical Risk"
     ) {
 
-      // Stop any current speech
-      if (
-        "speechSynthesis" in window
-      ) {
-
-        window.speechSynthesis.cancel();
-
-      }
+      // Reset stop state when danger is gone
+      setVoiceAlertStopped(false);
 
       return;
 
     }
 
 
-    // Speak immediately
+    // ==================================================
+    // USER PRESSED STOP
+    // ==================================================
+
+    if (voiceAlertStopped) {
+
+      console.log(
+        "🔇 Voice alert stopped by user"
+      );
+
+      return;
+
+    }
+
+
+    // ==================================================
+    // SPEAK IMMEDIATELY
+    // ==================================================
+
     speakRiskAlert(
       riskLevel
     );
 
 
-    // 🔥 Repeat every 1 second
+    // ==================================================
+    // REPEAT EVERY 5 SECONDS
+    // ==================================================
+
     voiceIntervalRef.current =
       setInterval(() => {
 
-        speakRiskAlert(
-          riskLevel
-        );
+        // Safety check
+        if (
+          !voiceAlertStopped &&
+          (
+            riskLevel === "High Risk" ||
+            riskLevel === "Critical Risk"
+          )
+        ) {
 
-      }, 1000);
+          speakRiskAlert(
+            riskLevel
+          );
+
+        }
+
+      }, 5000);
 
 
-    // Cleanup
+    // ==================================================
+    // CLEANUP
+    // ==================================================
+
     return () => {
 
       if (
@@ -1705,7 +1746,6 @@ function Dashboard() {
 
       }
 
-
       if (
         "speechSynthesis" in window
       ) {
@@ -1716,7 +1756,10 @@ function Dashboard() {
 
     };
 
-  }, [riskLevel]);
+  }, [
+    riskLevel,
+    voiceAlertStopped
+  ]);
 
 
   // ==================================================
@@ -1731,7 +1774,7 @@ function Dashboard() {
 
         const response =
           await fetch(
-            "https://health-track-2b.onrender.com/api/health/gethealthdata",
+            "http://localhost:5000/api/health/gethealthdata",
             {
               method: "GET",
 
@@ -1836,12 +1879,11 @@ function Dashboard() {
 
 
           return;
-
         }
 
 
         // ==================================================
-        // DEVICE DATA
+        // DEVICE DATA AVAILABLE
         // ==================================================
 
         setHealthd({
@@ -1878,6 +1920,10 @@ function Dashboard() {
           0;
 
 
+        // ==================================================
+        // SAVE RISK DATA
+        // ==================================================
+
         setRiskScore(
           newRiskScore
         );
@@ -1886,11 +1932,9 @@ function Dashboard() {
           newRiskLevel
         );
 
-
         setHealthData(
           data.datatimers ?? []
         );
-
 
       } catch (error) {
 
@@ -1948,30 +1992,6 @@ function Dashboard() {
       clearInterval(
         interval
       );
-
-    };
-
-  }, []);
-
-
-  // ==================================================
-  // CLEAN SPEECH ON PAGE UNMOUNT
-  // ==================================================
-
-  useEffect(() => {
-
-    return () => {
-
-      if (
-        voiceIntervalRef.current
-      ) {
-
-        clearInterval(
-          voiceIntervalRef.current
-        );
-
-      }
-
 
       if (
         "speechSynthesis" in window
@@ -2095,6 +2115,8 @@ function Dashboard() {
         <section className="health-cards">
 
 
+          {/* HEART RATE */}
+
           <HealthCard
 
             title="Heart Rate"
@@ -2120,6 +2142,8 @@ function Dashboard() {
           />
 
 
+          {/* SPO2 */}
+
           <HealthCard
 
             title="SpO₂"
@@ -2144,6 +2168,8 @@ function Dashboard() {
 
           />
 
+
+          {/* TEMPERATURE */}
 
           <HealthCard
 
@@ -2175,6 +2201,8 @@ function Dashboard() {
 
           />
 
+
+          {/* ACTIVITY */}
 
           <HealthCard
 
@@ -2278,6 +2306,51 @@ function Dashboard() {
               </span>
 
             </div>
+
+
+            {/* ==================================================
+                🔇 STOP VOICE ALERT BUTTON
+            ================================================== */}
+
+            {isDangerous && (
+
+              <button
+                className="stop-voice-btn"
+                onClick={() => {
+
+                  setVoiceAlertStopped(
+                    true
+                  );
+
+                  if (
+                    "speechSynthesis" in window
+                  ) {
+
+                    window.speechSynthesis.cancel();
+
+                  }
+
+                  if (
+                    voiceIntervalRef.current
+                  ) {
+
+                    clearInterval(
+                      voiceIntervalRef.current
+                    );
+
+                    voiceIntervalRef.current =
+                      null;
+
+                  }
+
+                }}
+              >
+
+                🔇 Stop Voice Alert
+
+              </button>
+
+            )}
 
 
             <button
@@ -2445,7 +2518,9 @@ function Dashboard() {
         <section className="bottom-grid">
 
 
-          {/* ENVIRONMENT */}
+          {/* ==================================================
+              ENVIRONMENT
+          ================================================== */}
 
           <div className="card environment-card">
 
@@ -2528,7 +2603,9 @@ function Dashboard() {
 
                 <div className="env-icon blue">
 
-                  <Droplets size={17} />
+                  <Droplets
+                    size={17}
+                  />
 
                 </div>
 
@@ -2552,7 +2629,9 @@ function Dashboard() {
 
                 <div className="env-icon red">
 
-                  <Thermometer size={17} />
+                  <Thermometer
+                    size={17}
+                  />
 
                 </div>
 
@@ -2576,7 +2655,9 @@ function Dashboard() {
           </div>
 
 
-          {/* RECENT ALERTS */}
+          {/* ==================================================
+              RECENT ALERTS
+          ================================================== */}
 
           <div className="card alerts-card">
 
@@ -2601,39 +2682,57 @@ function Dashboard() {
 
 
             <Alert
+
               icon={
                 <AlertTriangle />
               }
+
               title="High Heat Stress Risk"
+
               time="16 May 2025, 08:10 AM"
+
               level="High"
+
               high
+
             />
 
 
             <Alert
+
               icon={
                 <Droplets />
               }
+
               title="Hydration Level Low"
+
               time="16 May 2025, 06:30 AM"
+
               level="Medium"
+
             />
 
 
             <Alert
+
               icon={
                 <Activity />
               }
+
               title="AQI Level Unhealthy"
+
               time="16 May 2025, 07:40 AM"
+
               level="Medium"
+
             />
 
           </div>
 
 
-          {/* QUICK ACTIONS */}
+          {/* ==================================================
+              QUICK ACTIONS
+          ================================================== */}
 
           <div className="card quick-card">
 
@@ -2650,7 +2749,9 @@ function Dashboard() {
 
               <span className="qa-icon blue">
 
-                <Activity size={15} />
+                <Activity
+                  size={15}
+                />
 
               </span>
 
@@ -2663,7 +2764,9 @@ function Dashboard() {
 
               <span className="qa-icon blue">
 
-                <Droplets size={15} />
+                <Droplets
+                  size={15}
+                />
 
               </span>
 
@@ -2676,7 +2779,9 @@ function Dashboard() {
 
               <span className="qa-icon green">
 
-                <Pill size={15} />
+                <Pill
+                  size={15}
+                />
 
               </span>
 
@@ -2689,7 +2794,9 @@ function Dashboard() {
 
               <span className="qa-icon red">
 
-                <FileText size={15} />
+                <FileText
+                  size={15}
+                />
 
               </span>
 
@@ -2709,7 +2816,7 @@ function Dashboard() {
 
 
 // ==================================================
-// HEALTH CARD
+// HEALTH CARD COMPONENT
 // ==================================================
 
 function HealthCard({
