@@ -10054,3 +10054,44 @@ input {
   color: #ef4444 !important;
   padding: 0 !important;
 }
+
+
+
+
+
+
+
+
+/* =========================================
+   🔇 STOP VOICE ALERT BUTTON
+========================================= */
+
+.stop-voice-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #dc2626;
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stop-voice-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.stop-voice-btn:active {
+  transform: scale(0.97);
+}
