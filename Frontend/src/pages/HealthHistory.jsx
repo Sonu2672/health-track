@@ -680,16 +680,14 @@ function HealthHistory() {
 
                   <Tooltip />
 
-
-               <Line
-  type="monotone"
+<Line
+  type="natural"
   dataKey="value"
   stroke="#6547d7"
   strokeWidth={2}
   dot={false}
   activeDot={false}
 />
-
                 </LineChart>
 
               </ResponsiveContainer>
