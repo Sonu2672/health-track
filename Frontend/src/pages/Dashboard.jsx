@@ -2257,7 +2257,7 @@ function Dashboard() {
 
                   <strong>
                    
-                    60
+                    {riskScore}
                   </strong>
 
                   <small>
