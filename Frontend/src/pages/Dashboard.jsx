@@ -1975,12 +1975,12 @@ function Dashboard() {
     // AUTO REFRESH EVERY 4 SECONDS
     // ==================================================
 
-    // const interval =
-    //   setInterval(() => {
+    const interval =
+      setInterval(() => {
 
-    //     Hdata();
+        Hdata();
 
-    //   }, 4000);
+      }, 4000);
 
 
     // ==================================================
@@ -1989,9 +1989,9 @@ function Dashboard() {
 
     return () => {
 
-      // clearInterval(
-      //   interval
-      // );
+      clearInterval(
+        interval
+      );
 
       if (
         "speechSynthesis" in window
