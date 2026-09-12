@@ -175,7 +175,7 @@ const AdminDashboard = ({ setIslogin }) => {
         {/* Top Header */}
         <header className="top-header">
           <div className="header-title">
-            <h1>Dashboard</h1>
+            <h1>Admin Dashboard</h1>
             <p>Welcome back, Administrator 👋</p>
           </div>
 
