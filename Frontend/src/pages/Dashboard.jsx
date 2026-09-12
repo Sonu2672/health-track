@@ -2256,7 +2256,8 @@ function Dashboard() {
                 <div className="gauge-score">
 
                   <strong>
-                    {riskScore}
+                   
+                    60
                   </strong>
 
                   <small>
