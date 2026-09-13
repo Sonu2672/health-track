@@ -119,7 +119,11 @@ function Login({ setIslogin, setIsadmin }) {
       );
 
       const data = await response.json();
-
+       if(data.message==="Device is not linked to this user")
+       {
+          navigate("/register");
+         return;
+       }
       console.log(data.message);
    if (data.success) {
   if (data.role === "admin") {
@@ -141,10 +145,7 @@ function Login({ setIslogin, setIsadmin }) {
  
 }
 
-      else
-   {
-       navigate("/register");
-   }
+   
 
      
 
