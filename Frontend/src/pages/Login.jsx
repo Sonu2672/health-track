@@ -118,32 +118,62 @@ function Login({ setIslogin, setIsadmin }) {
         }
       );
 
-      const data = await response.json();
-    if (response.status === 404 && data.message === "Device is not linked to this patient") {
-  toast.info("Please register your device first");
-       setIslogin(true); // ⭐ important
-  navigate("/register");
-  return;
-}
-      console.log(data.message);
-   if (data.success) {
-  if (data.role === "admin") {
-    setIslogin(true);
-    navigate("/admindash");
-  } 
-  else if (data.role === "doctor") {
-    setIslogin(true);
-    navigate("/doctordash");
-  } 
-  else if (data.role === "patient") 
-  {
-    setIslogin(true);
-    navigate("/dashboard");
-  }
+//       const data = await response.json();
+//     if (response.status === 404 && data.message === "Device is not linked to this patient") {
+//   toast.info("Please register your device first");
+//        setIslogin(true); // ⭐ important
+//   navigate("/register");
+//   return;
+// }
+//       console.log(data.message);
+//    if (data.success) {
+//   if (data.role === "admin") {
+//     setIslogin(true);
+//     navigate("/admindash");
+//   } 
+//   else if (data.role === "doctor") {
+//     setIslogin(true);
+//     navigate("/doctordash");
+//   } 
+//   else if (data.role === "patient") 
+//   {
+//     setIslogin(true);
+//     navigate("/dashboard");
+//   }
 
   
 
  
+// }
+
+      const data = await response.json();
+
+if (
+  response.status === 404 &&
+  data.message === "Device is not linked to this patient"
+) {
+  toast.info("Please register your device first");
+
+  setIslogin(true); // ⭐ important
+  navigate("/register");
+
+  return;
+}
+
+console.log(data.message);
+
+if (data.success) {
+  setIslogin(true);
+
+  if (data.role === "admin") {
+    navigate("/admindash");
+  } 
+  else if (data.role === "doctor") {
+    navigate("/doctordash");
+  } 
+  else if (data.role === "patient") {
+    navigate("/dashboard");
+  }
 }
 
    
