@@ -140,7 +140,7 @@ function Login({ setIslogin, setIsadmin }) {
 }
  else
   {
-     navigate("/register);
+     navigate("/register");
   }
 
 
