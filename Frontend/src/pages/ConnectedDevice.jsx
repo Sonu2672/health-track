@@ -33,7 +33,7 @@ const ConnectedDevice = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
+        
           body: JSON.stringify({
             deviceId: deviceId.trim(),
           }),
