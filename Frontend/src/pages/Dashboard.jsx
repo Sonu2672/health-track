@@ -1519,9 +1519,9 @@ function Dashboard() {
 
   const [healthd, setHealthd] =
     useState({
-      heartRate: 0,
-      spo2: 0,
-      temp: 0,
+      heartRate: 70,
+      spo2: 98,
+      temp: 96,
     });
 
   const [riskScore, setRiskScore] =
