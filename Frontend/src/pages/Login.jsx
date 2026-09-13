@@ -136,12 +136,14 @@ function Login({ setIslogin, setIsadmin }) {
     navigate("/dashboard");
   }
 
- 
-}
- else
+     else
   {
      navigate("/register");
   }
+
+ 
+}
+ 
 
 
     } catch (error) {
