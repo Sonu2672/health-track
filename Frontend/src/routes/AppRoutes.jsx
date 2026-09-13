@@ -28,7 +28,7 @@ import Profile from '../pages/Profile';
 import Setting from '../pages/Setting';
 import Doctor  from "../pages/Doctor"
 import Appointment from "../pages/Appointment"
-import ConnectedDevice from "../pages/ConnectedDevice"
+import ConnectDevice from "../pages/ConnectDevice"
 
 import DoctorDashboard from "../role/DoctorDashboard"
 import AdminDashboard from "../role/AdminDashboard"
@@ -82,7 +82,7 @@ function AppRoutes() {
         <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
         <Route path="/patientm" element={islogin ? <PatientManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin}/>} />
         <Route path="/doctordash" element={islogin ? <DoctorDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
-        <Route path="/register" element={<register/>} />
+        <Route path="/register" element={<ConnectDevice/>} />
 
 
 
