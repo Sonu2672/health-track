@@ -130,7 +130,8 @@ function Login({ setIslogin, setIsadmin }) {
     setIslogin(true);
     navigate("/doctordash");
   } 
-  else if (data.role === "patient") {
+  else if (data.role === "patient") 
+  {
     setIslogin(true);
     navigate("/dashboard");
   }
@@ -139,7 +140,7 @@ function Login({ setIslogin, setIsadmin }) {
 }
  else
   {
-     toast.error(data.message);
+     navigate("/register);
   }
 
 
