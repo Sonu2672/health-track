@@ -43,9 +43,9 @@ const [menuOpen, setMenuOpen] = useState(false);
         
     const [healthd, setHealthd] = useState({
       // deviceId: "",
-      heartRate: "",
-      spo2: "",
-      temp: "",
+      heartRate: "70",
+      spo2: "98",
+      temp: "96",
     });
 
 //   useEffect(() => {
