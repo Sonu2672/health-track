@@ -119,11 +119,11 @@ function Login({ setIslogin, setIsadmin }) {
       );
 
       const data = await response.json();
-       if(data.message==="Device is not linked to this user")
-       {
-          navigate("/register");
-         return;
-       }
+    if (response.status === 404 && data.message === "Device is not linked to this patient") {
+  toast.info("Please register your device first");
+  navigate("/register");
+  return;
+}
       console.log(data.message);
    if (data.success) {
   if (data.role === "admin") {
