@@ -1567,7 +1567,7 @@ function Dashboard() {
 
     if (level === "Critical Risk") {
 
-      message =
+      message ="";
         // "गंभीर स्वास्थ्य जोखिम पाया गया है। कृपया तुरंत ध्यान दें।";
 
     }
@@ -1578,7 +1578,7 @@ function Dashboard() {
 
     else if (level === "High Risk") {
 
-      message =
+      message ="";
         // "चेतावनी। स्वास्थ्य जोखिम अधिक है। कृपया अपनी स्वास्थ्य स्थिति की जाँच करें।";
 
     }
