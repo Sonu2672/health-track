@@ -7,6 +7,21 @@ import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
   const { email, password ,role} = req.body;
+// today code
+    const deviceId = user.deviceId;
+
+      const deviceData = await device.findOne({
+        deviceId: deviceId,
+        userid: user._id
+      });
+
+      if (!deviceData) {
+        return res.status(404).json({
+          success: false,
+          message: "Device is not linked to this user"
+        });
+      }
+  //
 
   try {
     const result = validationResult(req);
