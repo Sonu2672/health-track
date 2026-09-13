@@ -82,6 +82,7 @@ function AppRoutes() {
         <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
         <Route path="/patientm" element={islogin ? <PatientManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin}/>} />
         <Route path="/doctordash" element={islogin ? <DoctorDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
+        <Route path="/register" element={<register/>} />
 
 
 
