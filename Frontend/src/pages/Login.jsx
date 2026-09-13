@@ -121,6 +121,7 @@ function Login({ setIslogin, setIsadmin }) {
       const data = await response.json();
     if (response.status === 404 && data.message === "Device is not linked to this patient") {
   toast.info("Please register your device first");
+       setIslogin(true); // ⭐ important
   navigate("/register");
   return;
 }
