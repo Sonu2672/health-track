@@ -110,16 +110,7 @@ res.cookie("token", token, {
   }
 
   // Check patient's device
-  const deviceData = await device.findOne({
-    userid: userd._id
-  });
-
-  if (!deviceData) {
-    return res.status(404).json({
-      success: false,
-      message: "Device is not linked to this patient"
-    });
-  }
+ 
 
   // Create token
   const token = jwt.sign(
@@ -139,6 +130,17 @@ res.cookie("token", token, {
     sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000
   });
+
+           const deviceData = await device.findOne({
+    userid: userd._id
+  });
+
+  if (!deviceData) {
+    return res.status(404).json({
+      success: false,
+      message: "Device is not linked to this patient"
+    });
+  }
 
   console.log("Cookie set:", userd._id);
 
