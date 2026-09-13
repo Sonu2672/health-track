@@ -7,7 +7,17 @@ import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
   const { email, password ,role} = req.body;
-// today code
+
+
+  try {
+    const result = validationResult(req);
+    console.log("result= ",result);
+
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
+
+    // today code
     const deviceId = user.deviceId;
 
       const deviceData = await device.findOne({
@@ -22,18 +32,6 @@ export const login = async (req, res) => {
         });
       }
   //
-
-  try {
-    const result = validationResult(req);
-    console.log("result= ",result);
-
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-    const deviceId = user.deviceId;
-
-    const deviceIdd=await device.findOne({deviceId});
-    
 
 
       if(role==="doctor")
