@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
 
-const ConnectDevice = () => {
+const ConnectedDevice = () => {
   const navigate = useNavigate();
 
   const [deviceId, setDeviceId] = useState("");
@@ -135,5 +135,5 @@ const ConnectDevice = () => {
   );
 };
 
-export default ConnectDevice;
+export default ConnectedDevice;
 
