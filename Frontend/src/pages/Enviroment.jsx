@@ -111,7 +111,7 @@ function Environment() {
 
       fetchEnvironmentData();
 
-    }, 5000);
+    }, 4000);
 
 
     return () => clearInterval(interval);
