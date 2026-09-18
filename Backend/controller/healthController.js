@@ -86,7 +86,7 @@ export const healthData = async (req, res) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": "Basic YOUR_ONESIGNAL_REST_API_KEY" // ⚠️ Apni OneSignal REST API Key yahan replace karein
+              "Authorization": "Basic os_v2_app_v5t2ytgpyffgxovl7zv4swpnhy6rypgznkrus5mpg52cu2uctqcjw6l4ybo3c6tdvwizzwxj7vnc2hnz4xegglce4g23hvjbibz2feq" // ⚠️ Apni OneSignal REST API Key yahan replace karein
             },
             body: JSON.stringify({
               app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
