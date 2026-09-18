@@ -99,7 +99,7 @@ const sendPushNotification = async (playerId, title, message) => {
 app.post("/api/users/save-onesignal-id", auth, async (req, res) => {
   try {
     const { playerId } = req.body;
-    const userId = req.user._id; // Jo user logged-in hai uska ID
+    const userId = req.user.id; // Jo user logged-in hai uska ID
 
     if (!playerId) {
       return res.status(400).json({ success: false, message: "Player ID is required" });
