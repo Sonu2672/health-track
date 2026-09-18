@@ -64,6 +64,56 @@ app.use("/api/devicedata",deviceRoutes)
 
 
 
+// ==========================================
+// 1. Background Notification Helper Function
+// ==========================================
+const sendPushNotification = async (playerId, title, message) => {
+  try {
+    const response = await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Basic YOUR_ONESIGNAL_REST_API_KEY" // Apni OneSignal REST API Key yahan daalein
+      },
+      body: JSON.stringify({
+        app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Aapka OneSignal App ID
+        include_player_ids: [playerId], // Jis user ko bhejna hai uska Player ID
+        headings: { en: title },
+        contents: { en: message }
+      })
+    });
+
+    const data = await response.json();
+    console.log("Notification sent successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send push notification:", error);
+  }
+};
+
+
+// ==========================================
+// 2. Route to Save OneSignal Player ID
+// ==========================================
+app.post("/api/users/save-onesignal-id", verifyToken, async (req, res) => {
+  try {
+    const { playerId } = req.body;
+    const userId = req.user._id; // Jo user logged-in hai uska ID
+
+    if (!playerId) {
+      return res.status(400).json({ success: false, message: "Player ID is required" });
+    }
+
+    // User model mein player ID update/save karein
+    await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
+
+    console.log(`Player ID saved for user ${userId}: ${playerId}`);
+    res.status(200).json({ success: true, message: "Player ID saved successfully" });
+  } catch (error) {
+    console.error("Error saving player ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 
 
@@ -74,60 +124,74 @@ app.use("/api/devicedata",deviceRoutes)
 
 
 
-app.get('/auth/google',
-    passport.authenticate('google', { scope: ["profile", "email"],}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// app.get('/auth/google',
+//     passport.authenticate('google', { scope: ["profile", "email"],}));
       
 
  
 
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/",
-  }),
-  async (req, res) => {
-    try {
-      console.log("USER:", req.user);
+// app.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", {
+//     session: false,
+//     failureRedirect: "/",
+//   }),
+//   async (req, res) => {
+//     try {
+//       console.log("USER:", req.user);
 
-      if (!req.user) {
-        return res.status(401).send("Google auth failed");
-      }
+//       if (!req.user) {
+//         return res.status(401).send("Google auth failed");
+//       }
           
 
 
-      const token = jwt.sign(
-        { 
-        googleId: req.user.id,
-        id: req.user._id,
-        // role:req.user.role,
-        email:req.user.email,
-        firstname: req.user.firstname,
-        lastname: req.user.lastname , 
+//       const token = jwt.sign(
+//         { 
+//         googleId: req.user.id,
+//         id: req.user._id,
+//         // role:req.user.role,
+//         email:req.user.email,
+//         firstname: req.user.firstname,
+//         lastname: req.user.lastname , 
 
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
+//         },
+//         process.env.JWT_SECRET,
+//         { expiresIn: "7d" }
+//       );
 
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+// res.cookie("token", token, {
+//   httpOnly: true,
+//   secure: false,
+//   sameSite: "lax",
+//     maxAge: 7 * 24 * 60 * 60 * 1000,
+// });
       
-// if(req.user.role==="admin")
-// {
-//   return res.redirect("http://localhost:5173/dashboard");
-// }
-      res.redirect("https://localhost:5173/patient");
+// // if(req.user.role==="admin")
+// // {
+// //   return res.redirect("http://localhost:5173/dashboard");
+// // }
+//       res.redirect("https://localhost:5173/patient");
 
-    } catch (err) {
-      console.log("ERROR:", err);
-      return res.status(500).send("Internal Server Error");
-    }
-  }
-);
+//     } catch (err) {
+//       console.log("ERROR:", err);
+//       return res.status(500).send("Internal Server Error");
+//     }
+//   }
+// );
 
 
