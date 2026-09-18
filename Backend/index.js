@@ -62,7 +62,7 @@ app.use("/api/devicedata",deviceRoutes)
 
 
 
-
+app.use("/api/notif",userRoutes);
 
 
 
