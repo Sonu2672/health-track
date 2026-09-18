@@ -66,25 +66,44 @@ app.use("/api/devicedata",deviceRoutes)
 // 1. Background Notification Helper Function
 // ==========================================
 
+// ==========================================
+// SAVE ONESIGNAL PLAYER ID ROUTE (Updated & Safer)
+// ==========================================
 app.post("/api/users/save-onesignal-id", auth, async (req, res) => {
   try {
     const { playerId } = req.body;
-    const userId = req.user._id || req.user.id; 
+    console.log("📥 Received Player ID request for:", playerId);
+    console.log("👤 Req.user object:", req.user);
 
     if (!playerId) {
       return res.status(400).json({ success: false, message: "Player ID is required" });
     }
 
-    await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
+    // Safely extract user ID from various possible structures
+    const userId = req.user?._id || req.user?.id || req.userId;
 
-    console.log(`✅ OneSignal Player ID saved for user: ${userId}`);
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized: User ID not found" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, 
+      { oneSignalPlayerId: playerId },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found in database" });
+    }
+
+    console.log(`✅ OneSignal Player ID successfully saved for user: ${userId}`);
     return res.status(200).json({ success: true, message: "Player ID saved successfully" });
+    
   } catch (error) {
-    console.error("❌ Error saving OneSignal ID:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("❌ Detailed Error saving OneSignal ID:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 // ==========================================
 // 3. ESP32 HEALTH DATA & NOTIFICATION ROUTE
