@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
 
-const ConnectDevice = () => {
+const ConnectedDevice = () => {
   const navigate = useNavigate();
 
   const [deviceId, setDeviceId] = useState("");
@@ -26,13 +26,14 @@ const ConnectDevice = () => {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/devicedata/register",
+        "https://health-track-2b.onrender.com/api/devicedata/register",
         {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
+        
           body: JSON.stringify({
             deviceId: deviceId.trim(),
           }),
@@ -135,5 +136,5 @@ const ConnectDevice = () => {
   );
 };
 
-export default ConnectDevice;
+export default ConnectedDevice;
 

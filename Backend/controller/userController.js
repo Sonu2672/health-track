@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
   const { email, password ,role} = req.body;
 
+
   try {
     const result = validationResult(req);
     console.log("result= ",result);
@@ -15,10 +16,8 @@ export const login = async (req, res) => {
     if (!result.isEmpty()) {
       return res.status(400).json({ errors: result.array() });
     }
-    const deviceId = user.deviceId;
 
-    const deviceIdd=await device.findOne({deviceId});
-    
+
 
 
       if(role==="doctor")
@@ -43,8 +42,8 @@ export const login = async (req, res) => {
 
 res.cookie("token", token, {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
   maxAge: 24 * 60 * 60 * 1000,
 });
 
@@ -58,36 +57,99 @@ res.cookie("token", token, {
 
 
 
-       else if(role==="patient")
-      {
-            const userd = await user.findOne({ email });
+//        else if(role==="patient")
+//       {
+//             const userd = await user.findOne({ email });
             
-      if (!userd) {
-      return res.status(404).json({ message: "email doesnot exist" ,role,success: true});
-      }
-       const checkpass = await bcrypt.compare(password, userd.password);
-    if (checkpass)
-   {
-     const token = jwt.sign(
-      { id: userd._id,
-        role: role
-       },      //header+payload
-      process.env.JWT_SECRET, //signature
-      { expiresIn: "1d" }
-    );
+//       if (!userd) {
+//       return res.status(404).json({ message: "email doesnot exist" ,role,success: true});
+//       }
+//        const checkpass = await bcrypt.compare(password, userd.password);
+//     if (checkpass)
+//    {
+//      const token = jwt.sign(
+//       { id: userd._id,
+//         role: role
+//        },      //header+payload
+//       process.env.JWT_SECRET, //signature
+//       { expiresIn: "1d" }
+//     );
 
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-  maxAge: 24 * 60 * 60 * 1000,
-});
+// res.cookie("token", token, {
+//   httpOnly: true,
+//   secure: true,
+//   sameSite: "none",
+//   maxAge: 24 * 60 * 60 * 1000,
+// });
 
-      console.log("Cookie set:", userd._id);
-      return res.status(200).json({ message: "login successfully patient",role,success: true});
+//       console.log("Cookie set:", userd._id);
+//       return res.status(200).json({ message: "login successfully patient",role,success: true});
+// }
+//     return res.json({ message: "Wrong Password patient "});
+//       }
+
+
+        else if (role === "patient") {
+
+  const userd = await user.findOne({ email });
+
+  if (!userd) {
+    return res.status(404).json({
+      message: "email does not exist",
+      success: false
+    });
+  }
+
+  const checkpass = await bcrypt.compare(password, userd.password);
+
+  if (!checkpass) {
+    return res.json({
+      message: "Wrong Password patient",
+      success: false
+    });
+  }
+
+  // Check patient's device
+ 
+
+  // Create token
+  const token = jwt.sign(
+    {
+      id: userd._id,
+      role: role
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1d"
+    }
+  );
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 24 * 60 * 60 * 1000
+  });
+
+           const deviceData = await device.findOne({
+    userid: userd._id
+  });
+
+  if (!deviceData) {
+    return res.status(404).json({
+      success: false,
+      message: "Device is not linked to this patient"
+    });
+  }
+
+  console.log("Cookie set:", userd._id);
+
+  return res.status(200).json({
+    message: "login successfully patient",
+    role,
+    success: true
+  });
 }
-    return res.json({ message: "Wrong Password patient "});
-      }
 
 
 
@@ -110,8 +172,8 @@ res.cookie("token", token, {
 
 res.cookie("token", token, {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
   maxAge: 24 * 60 * 60 * 1000,
 });
 

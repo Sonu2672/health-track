@@ -232,6 +232,14 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         </Link>
       </div>
 
+               
+        <div className="nav-item">
+          <CloudSun size={17} />
+           <Link to="/disaster">
+           Disaster Alert 🚨
+        </Link>
+        </div>
+
 
         <div className="nav-item">
           <CloudSun size={17} />

@@ -12,7 +12,7 @@ import {gethealthdata,healthData,getHealthHistory} from "../controller/healthCon
 
 // Router.post("/healthdata",auth,healthData);
 Router.get("/gethealthdata",auth,gethealthdata)
-Router.post("/healthdata",auth,healthData);
+Router.post("/healthdata",healthData);
 // Router.post("/",auth,receiveDeviceData)
 Router.get("/history", auth, getHealthHistory);
 

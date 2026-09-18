@@ -112,7 +112,7 @@ function HealthHistory() {
   const getHealthHistory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/health/history?days=${days}`,
+        `https://health-track-2b.onrender.com/api/health/history?days=${days}`,
         {
           credentials: "include",
         }
@@ -680,21 +680,14 @@ function HealthHistory() {
 
                   <Tooltip />
 
-
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#6547d7"
-                    strokeWidth={2}
-                    dot={{
-                      r: 2,
-                      fill: "#6547d7",
-                    }}
-                    activeDot={{
-                      r: 4,
-                    }}
-                  />
-
+<Line
+  type="natural"
+  dataKey="value"
+  stroke="#6547d7"
+  strokeWidth={2}
+  dot={false}
+  activeDot={false}
+/>
                 </LineChart>
 
               </ResponsiveContainer>
@@ -912,24 +905,14 @@ function SummaryCard({
   unit,
   icon,
 }) {
-
   return (
-
-    <div
-      className={`summary-card ${type}`}
-    >
+    <div className={`summary-card ${type}`}>
 
       <div className="summary-icon">
-
-        {React.cloneElement(
-          icon,
-          {
-            size: 15,
-          }
-        )}
-
+        {React.cloneElement(icon, {
+          size: 15,
+        })}
       </div>
-
 
       <div className="summary-content">
 
@@ -937,9 +920,7 @@ function SummaryCard({
           {title}
         </span>
 
-
         <div>
-
           <strong>
             {value}
           </strong>
@@ -947,7 +928,6 @@ function SummaryCard({
           <small>
             {unit}
           </small>
-
         </div>
 
       </div>
@@ -955,6 +935,5 @@ function SummaryCard({
     </div>
   );
 }
-
 
 export default HealthHistory;

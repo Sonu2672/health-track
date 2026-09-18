@@ -9998,3 +9998,182 @@ input {
   color: #1f2937 !important;
   border: 1px solid #e5e7eb;
 }
+
+
+
+/* ================================
+   AI RISK LEVEL COLORS
+================================ */
+
+.risk-level-section h2.high {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.critical {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.moderate {
+  background: #f59e0b !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.risk-level-section h2.low {
+  background: #22c55e !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+
+
+/* Remove red background from risk level */
+.risk-level-section h2.high,
+.risk-level-section h2.critical,
+.risk-level-section h2.moderate,
+.risk-level-section h2.low {
+  background: transparent !important;
+  color: #ef4444 !important;
+  padding: 0 !important;
+}
+
+/* Remove red block from gauge label */
+.gauge-label.high,
+.gauge-label.critical,
+.gauge-label.moderate,
+.gauge-label.low {
+  background: transparent !important;
+  color: #ef4444 !important;
+  padding: 0 !important;
+}
+
+
+
+
+
+
+
+
+/* =========================================
+   🔇 STOP VOICE ALERT BUTTON
+========================================= */
+
+.stop-voice-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #dc2626;
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stop-voice-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.stop-voice-btn:active {
+  transform: scale(0.97);
+}
+
+
+
+/*..................................................................  */
+/* ===== FINAL RISK CARD + VOICE BUTTON FIX ===== */
+
+.middle-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.5fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* IMPORTANT */
+.middle-grid .risk-card {
+  position: relative !important;
+  height: auto !important;
+  min-height: 280px !important;
+  max-height: none !important;
+  overflow: visible !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box;
+}
+
+/* Voice button */
+.middle-grid .risk-card .stop-voice-btn {
+  position: relative !important;
+  display: flex !important;
+
+  width: 90% !important;
+  max-width: 240px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+
+  margin: 15px auto !important;
+  padding: 10px 15px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+
+  z-index: 10 !important;
+}
+
+/* Trend */
+.middle-grid .trend-card {
+  position: relative !important;
+  height: auto !important;
+  min-height: 280px !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+.middle-grid .trend-chart {
+  width: 100% !important;
+  height: 220px !important;
+  min-height: 220px !important;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .middle-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .middle-grid .risk-card {
+    min-height: 280px !important;
+  }
+
+  .middle-grid .trend-card {
+    min-height: 280px !important;
+  }
+}
+
+
+
+

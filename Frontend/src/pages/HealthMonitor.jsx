@@ -43,9 +43,9 @@ const [menuOpen, setMenuOpen] = useState(false);
         
     const [healthd, setHealthd] = useState({
       // deviceId: "",
-      heartRate: "",
-      spo2: "",
-      temp: "",
+      heartRate: "70",
+      spo2: "98",
+      temp: "96",
     });
 
 //   useEffect(() => {
@@ -99,7 +99,7 @@ const [menuOpen, setMenuOpen] = useState(false);
   const Hdata = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/health/gethealthdata",
+        "https://health-track-2b.onrender.com/api/health/gethealthdata",
         {
           method: "GET",
           credentials: "include",

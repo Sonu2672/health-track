@@ -44,7 +44,7 @@ function AppRoutes() {
   useEffect(() => {
     const checklogin = async () => {
       try {
-         const response = await fetch("http://localhost:5000/api/users/islogin", {
+         const response = await fetch("https://health-track-2b.onrender.com/api/users/islogin", {
           method: "GET",
           credentials: "include",
         });
@@ -82,6 +82,7 @@ function AppRoutes() {
         <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
         <Route path="/patientm" element={islogin ? <PatientManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin}/>} />
         <Route path="/doctordash" element={islogin ? <DoctorDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
+        <Route path="/register" element={<ConnectedDevice/>} />
 
 
 
