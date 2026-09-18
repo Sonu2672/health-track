@@ -66,7 +66,115 @@ app.use("/api/devicedata",deviceRoutes)
 // 1. Background Notification Helper Function
 // ==========================================
 
+app.post("/api/users/save-onesignal-id", auth, async (req, res) => {
+  try {
+    const { playerId } = req.body;
+    const userId = req.user._id || req.user.id; 
 
+    if (!playerId) {
+      return res.status(400).json({ success: false, message: "Player ID is required" });
+    }
+
+    await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
+
+    console.log(`✅ OneSignal Player ID saved for user: ${userId}`);
+    return res.status(200).json({ success: true, message: "Player ID saved successfully" });
+  } catch (error) {
+    console.error("❌ Error saving OneSignal ID:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+// ==========================================
+// 3. ESP32 HEALTH DATA & NOTIFICATION ROUTE
+// ==========================================
+app.post("/api/health/healthdata", async (req, res) => {
+   console.log("🔥🔥🔥 HEALTHDATA ROUTE HIT 🔥🔥🔥");
+  try {
+    const {
+      deviceId,
+      heartRate,
+      spo2,
+      temp,
+      envtemp,
+      ecg,
+      humidity,
+      dust,
+    } = req.body;
+
+    if (!deviceId) {
+      return res.status(400).json({ success: false, message: "Device ID is required" });
+    }
+
+    const existingDevice = await device.findOne({ deviceId });
+    if (!existingDevice) {
+      return res.status(404).json({ success: false, message: "Device is not registered" });
+    }
+
+    const userid = existingDevice.userid;
+
+    const healthPayload = {
+      deviceId,
+      userid,
+      heartRate: Number(heartRate ?? 0),
+      spo2: Number(spo2 ?? 0),
+      temp: Number(temp ?? 0),
+      envtemp : Number(envtemp ?? 0),
+      ecg : Number(ecg ?? 0),
+      humidity : Number(humidity ?? 0),
+      dust : Number(dust ?? 0)
+    };
+
+    const newHealthData = await health.create(healthPayload);
+    console.log("✅ SAVED TO MONGODB:", newHealthData);
+
+    // OneSignal Background Push Notification Trigger
+    try {
+      const hrVal = Number(heartRate ?? 0);
+      const spo2Val = Number(spo2 ?? 0);
+      const tempVal = Number(temp ?? 0);
+
+      const isCritical = hrVal > 120 || hrVal < 45 || spo2Val < 90 || tempVal > 38.5;
+
+      if (isCritical) {
+        const userDoc = await User.findById(userid);
+
+        if (userDoc && userDoc.oneSignalPlayerId) {
+          await fetch("https://onesignal.com/api/v1/notifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Basic os_v2_app_v5t2ytgpyffgxovl7zv4swpnhy6rypgznkrus5mpg52cu2uctqcjw6l4ybo3c6tdvwizzwxj7vnc2hnz4xegglce4g23hvjbibz2feq"
+            },
+            body: JSON.stringify({
+              app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
+              include_player_ids: [userDoc.oneSignalPlayerId],
+              headings: { en: "🚨 Critical Health Emergency Alert!" },
+              contents: { en: `Aapka health parameter critical hai! HR: ${hrVal}, SpO2: ${spo2Val}%, Temp: ${tempVal}°C` }
+            })
+          });
+          console.log("🚀 Background Push Notification Sent Successfully via OneSignal!");
+        }
+      }
+    } catch (notifErr) {
+      console.error("❌ Notification Trigger Error:", notifErr);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Health data saved successfully",
+      data: newHealthData,
+    });
+
+  } catch (error) {
+    console.error("❌ HEALTH DATA ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 
 
