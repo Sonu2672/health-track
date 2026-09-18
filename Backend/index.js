@@ -6,7 +6,7 @@ dotenv.config();
 import passport from "passport";
 import jwt from "jsonwebtoken";
 // import authGoogle from "./auth/google.js"
-
+import {auth} from "../middlewares/userAuth.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import connectDB from "./config/Db.js";
