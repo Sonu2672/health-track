@@ -9,7 +9,7 @@ import {auth} from "../middlewares/userAuth.js"
 
 
 // POST route to save OneSignal Player ID
-Router.post("/api/users/save-onesignal-id", auth, async (req, res) => {
+Router.post("/save-onesignal-id", auth, async (req, res) => {
   try {
     const { playerId } = req.body;
     const userId = req.user._id; // Jo user logged-in hai uska ID (aapke auth middleware ke mutabiq)
