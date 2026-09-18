@@ -6,7 +6,7 @@ dotenv.config();
 import passport from "passport";
 import jwt from "jsonwebtoken";
 // import authGoogle from "./auth/google.js"
-import User from "./model/user.js";
+// import User from "./model/user.js";
 import {auth} from "../middlewares/userAuth.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -68,60 +68,6 @@ app.use("/api/devicedata",deviceRoutes)
 // ==========================================
 // 1. Background Notification Helper Function
 // ==========================================
-const sendPushNotification = async (playerId, title, message) => {
-  try {
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Basic YOUR_ONESIGNAL_REST_API_KEY" // Apni OneSignal REST API Key yahan daalein
-      },
-      body: JSON.stringify({
-        app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Aapka OneSignal App ID
-        include_player_ids: [playerId], // Jis user ko bhejna hai uska Player ID
-        headings: { en: title },
-        contents: { en: message }
-      })
-    });
-
-    const data = await response.json();
-    console.log("Notification sent successfully:", data);
-    return data;
-  } catch (error) {
-    console.error("Failed to send push notification:", error);
-  }
-};
-
-
-// ==========================================
-// 2. Route to Save OneSignal Player ID
-// ==========================================
-app.post("/api/users/save-onesignal-id", auth, async (req, res) => {
-  try {
-    const { playerId } = req.body;
-    const userId = req.user.id; // Jo user logged-in hai uska ID
-
-    if (!playerId) {
-      return res.status(400).json({ success: false, message: "Player ID is required" });
-    }
-
-    // User model mein player ID update/save karein
-    await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
-
-    console.log(`Player ID saved for user ${userId}: ${playerId}`);
-    res.status(200).json({ success: true, message: "Player ID saved successfully" });
-  } catch (error) {
-    console.error("Error saving player ID:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
-
-
-
-
-
-
-
 
 
 
