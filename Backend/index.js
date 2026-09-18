@@ -95,7 +95,7 @@ const sendPushNotification = async (playerId, title, message) => {
 // ==========================================
 // 2. Route to Save OneSignal Player ID
 // ==========================================
-app.post("/api/users/save-onesignal-id", verifyToken, async (req, res) => {
+app.post("/api/users/save-onesignal-id", auth, async (req, res) => {
   try {
     const { playerId } = req.body;
     const userId = req.user._id; // Jo user logged-in hai uska ID
