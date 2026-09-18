@@ -1774,7 +1774,7 @@ function Dashboard() {
 
         const response =
           await fetch(
-            "https://health-track-2b.onrender.com/api/health/gethealthdata",
+            "https://healthtrackb.onrender.com/api/health/gethealthdata",
             {
               method: "GET",
 
