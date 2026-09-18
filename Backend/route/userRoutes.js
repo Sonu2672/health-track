@@ -7,6 +7,40 @@ import {signupValidation,loginValidation} from "../middlewares/validation.js";
 import {auth} from "../middlewares/userAuth.js"
 
 
+
+// POST route to save OneSignal Player ID
+Router.post("/api/users/save-onesignal-id", auth, async (req, res) => {
+  try {
+    const { playerId } = req.body;
+    const userId = req.user._id; // Jo user logged-in hai uska ID (aapke auth middleware ke mutabiq)
+
+    if (!playerId) {
+      return res.status(400).json({ success: false, message: "Player ID is required" });
+    }
+
+    // User model mein player ID update/save karein
+    await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
+
+    console.log(`Player ID saved for user ${userId}: ${playerId}`);
+    res.status(200).json({ success: true, message: "Player ID saved successfully" });
+  } catch (error) {
+    console.error("Error saving player ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 Router.post("/login",loginValidation,login)
 
 Router.post("/signup",signupValidation,Signup)
