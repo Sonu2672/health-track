@@ -2,7 +2,7 @@ import user from "../model/user.js";
 import device from "../model/device.js";
 import doctor from "../model/doctor.js";
 // import device from "../model/device.js";
-import {auth} from "../middlewares/userAuth.js"
+// import {auth} from "../middlewares/userAuth.js"
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
