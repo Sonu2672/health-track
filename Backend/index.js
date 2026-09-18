@@ -32,10 +32,7 @@ connectDB().then(() => {
 
 // ---------------- MIDDLEWARE ----------------
 app.use(cors({
-    origin: [
-      "https://health-track-2f.onrender.com", 
-      "https://healthtrackf.onrender.com"
-    ],
+    origin: "https://healthtrackf.onrender.com",
     credentials: true
 }));
 
