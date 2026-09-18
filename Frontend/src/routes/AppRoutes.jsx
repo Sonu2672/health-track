@@ -50,7 +50,7 @@ function AppRoutes() {
          if (playerId) {
            console.log("OneSignal Player ID fetched:", playerId);
 
-           await fetch("https://health-track-2b.onrender.com/api/users/save-onesignal-id", {
+           await fetch("https://healthtrackb.onrender.com/api/users/save-onesignal-id", {
              method: "POST",
              headers: {
                "Content-Type": "application/json",
@@ -70,7 +70,7 @@ function AppRoutes() {
    useEffect(() => {
      const checklogin = async () => {
        try {
-          const response = await fetch("https://health-track-2b.onrender.com/api/users/islogin", {
+          const response = await fetch("https://healthtrackb.onrender.com/api/users/islogin", {
            method: "GET",
            credentials: "include",
          });
