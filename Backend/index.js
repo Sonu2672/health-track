@@ -6,7 +6,8 @@ dotenv.config();
 import passport from "passport";
 import jwt from "jsonwebtoken";
 // import authGoogle from "./auth/google.js"
-
+// import User from "./model/user.js";
+import {auth} from "../middlewares/userAuth.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import connectDB from "./config/Db.js";
@@ -31,8 +32,11 @@ connectDB().then(() => {
 
 // ---------------- MIDDLEWARE ----------------
 app.use(cors({
-   origin: "https://health-track-2f.onrender.com",
-  credentials: true
+    origin: [
+      "https://health-track-2f.onrender.com", 
+      "https://healthtrackf.onrender.com"
+    ],
+    credentials: true
 }));
 
 app.use(express.json());
@@ -61,6 +65,9 @@ app.use("/api/devicedata",deviceRoutes)
 
 
 
+// ==========================================
+// 1. Background Notification Helper Function
+// ==========================================
 
 
 
@@ -71,60 +78,67 @@ app.use("/api/devicedata",deviceRoutes)
 
 
 
-app.get('/auth/google',
-    passport.authenticate('google', { scope: ["profile", "email"],}));
+
+
+
+
+
+
+
+// app.get('/auth/google',
+//     passport.authenticate('google', { scope: ["profile", "email"],}));
       
 
  
 
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/",
-  }),
-  async (req, res) => {
-    try {
-      console.log("USER:", req.user);
+// app.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", {
+//     session: false,
+//     failureRedirect: "/",
+//   }),
+//   async (req, res) => {
+//     try {
+//       console.log("USER:", req.user);
 
-      if (!req.user) {
-        return res.status(401).send("Google auth failed");
-      }
+//       if (!req.user) {
+//         return res.status(401).send("Google auth failed");
+//       }
           
 
 
-      const token = jwt.sign(
-        { 
-        googleId: req.user.id,
-        id: req.user._id,
-        // role:req.user.role,
-        email:req.user.email,
-        firstname: req.user.firstname,
-        lastname: req.user.lastname , 
+//       const token = jwt.sign(
+//         { 
+//         googleId: req.user.id,
+//         id: req.user._id,
+//         // role:req.user.role,
+//         email:req.user.email,
+//         firstname: req.user.firstname,
+//         lastname: req.user.lastname , 
 
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
+//         },
+//         process.env.JWT_SECRET,
+//         { expiresIn: "7d" }
+//       );
 
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+// res.cookie("token", token, {
+//   httpOnly: true,
+//   secure: false,
+//   sameSite: "lax",
+//     maxAge: 7 * 24 * 60 * 60 * 1000,
+// });
       
-// if(req.user.role==="admin")
-// {
-//   return res.redirect("http://localhost:5173/dashboard");
-// }
-      res.redirect("https://localhost:5173/patient");
+// // if(req.user.role==="admin")
+// // {
+// //   return res.redirect("http://localhost:5173/dashboard");
+// // }
+//       res.redirect("https://localhost:5173/patient");
 
-    } catch (err) {
-      console.log("ERROR:", err);
-      return res.status(500).send("Internal Server Error");
-    }
-  }
-);
+//     } catch (err) {
+//       console.log("ERROR:", err);
+//       return res.status(500).send("Internal Server Error");
+//     }
+//   }
+// );
 
 
