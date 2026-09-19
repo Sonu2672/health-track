@@ -56,50 +56,6 @@ function Home() {
 
   // OneSignal Auto-Initialization & Push Prompt on Home Page (No login required)
 // Home Page OneSignal Prompt & Player ID Sync (No duplicate init)
-useEffect(() => {
-    console.log("🔄 Home Page: OneSignal Effect Triggered");
-
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(async function(OneSignal) {
-      console.log("✅ OneSignal Deferred Callback Executed");
-
-      try {
-        // Safe initialization (agar pehle se init hoga toh catch karke aage badh jayega)
-        await OneSignal.init({
-          appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", 
-          allowLocalhostAsSecureOrigin: true,
-        }).catch((e) => console.log("ℹ️ Init info:", e.message));
-
-        console.log("🔔 Attempting to show push prompt...");
-        await OneSignal.Slidedown.promptPush();
-
-        // Thoda wait karke Player ID nikalein
-        setTimeout(async () => {
-          const playerId = OneSignal.User.PushSubscription.id;
-          console.log("🔍 Checked Player ID:", playerId);
-
-          if (playerId) {
-            try {
-              const res = await fetch("https://healthtrackb.onrender.com/api/devicedata/onesignalid", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ playerId })
-              });
-              const data = await res.json();
-              console.log("🚀 Backend Response:", data);
-            } catch (fetchErr) {
-              console.error("❌ Backend Fetch Error:", fetchErr);
-            }
-          } else {
-            console.log("⚠️ Player ID is null. User might need to allow notifications manually.");
-          }
-        }, 2000); // 2 second ka delay taaki subscription complete ho sake
-
-      } catch (err) {
-        console.error("❌ OneSignal Execution Error:", err);
-      }
-    });
-  }, []);
 
   return (
     <div className="home">
