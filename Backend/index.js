@@ -16,7 +16,8 @@ import userRoutes from "./route/userRoutes.js";
 import  deviceRoutes from "./route/deviceRoutes.js";
 // import VITE_FRONTEND_URL from "../config/api.js"
 import doctorRoutes from "./route/doctorRoutes.js";
-import device from "./model/device.js;
+import health from "./model/health.js";
+import device from "./model/device.js";
 import dns from "dns";
 dns.setServers(["1.1.1.1" , "8.8.8.8"])
 dotenv.config();
