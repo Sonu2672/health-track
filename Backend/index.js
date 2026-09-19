@@ -18,6 +18,7 @@ import  deviceRoutes from "./route/deviceRoutes.js";
 import doctorRoutes from "./route/doctorRoutes.js";
 // import health from "./model/health.js";
 // import device from "./model/device.js";
+import documentRoutes from "./route/documentRoutes.js"
 import dns from "dns";
 dns.setServers(["1.1.1.1" , "8.8.8.8"])
 dotenv.config();
@@ -58,7 +59,7 @@ app.use("/api/doctors", doctorRoutes);
 
 //esp32 calling my api
 app.use("/api/devicedata",deviceRoutes)
-
+app.use("/api/upload",documentRoutes)
 
 
 
