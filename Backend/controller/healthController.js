@@ -3,37 +3,6 @@ import device from "../model/device.js";
 import User from "../model/user.js"; // OneSignal Player ID ke liye User model import kiya hai
 import jwt from "jsonwebtoken";
 
-export const onesignalid = async (req, res) => {
-  try {
-    const { playerId, deviceId } = req.body;
-
-    // Yahan database mein device dhoondh kar 'oneSignalPlayerId' save ho raha hai
-    const updatedDevice = await device.findOneAndUpdate(
-      { deviceId: deviceId },
-      { oneSignalPlayerId: playerId }, // 👈 Yahan save ho rahi hai
-      { new: true, upsert: true }
-    );
-
-    console.log(`✅ Player ID saved in Database for Device: ${deviceId}`);
-
-    return res.status(200).json({ success: true, message: "Saved successfully" });
-  } catch (error) {
-    console.error("❌ Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
