@@ -169,46 +169,28 @@ function Dashboard() {
   // 🔊 START / STOP VOICE ALERT
   // ==================================================
  useEffect(() => {
-    const initOneSignal = async () => {
-      try {
-        // 1. OneSignal Initialize karein
-        await OneSignal.init({
-          appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
-          allowLocalhostAsSecureOrigin: true,
-        });
+  if (window._oneSignalInitialized) return;
 
-        // 2. User ko notification allow karne ka prompt dikhayein
-        await OneSignal.Slidedown.promptPush();
-
-        // 3. Player ID nikal kar backend par bhejein
-        setTimeout(async () => {
-          const playerId = OneSignal.User.PushSubscription.id;
-      
-
-          if (playerId) {
-            const response = await fetch("https://healthtrackb.onrender.com/api/devicedata/onesignalid", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                
-              },
-              body: JSON.stringify({ playerId }) // 👈 Sirf playerId bheji ja rahi hai!
-            });
-
-            const data = await response.json();
-            console.log("✅ Player ID Mapping Response:", data);
-          } else {
-            console.log("⚠️ Player ID ya Login Token missing hai.");
-          }
-        }, 2000); // 2 second ka delay taaki SDK fully load ho jaye
-
-      } catch (error) {
-        console.error("❌ OneSignal Initialization Error:", error);
+  window.OneSignal = window.OneSignal || [];
+  window.OneSignal.push(async function() {
+    try {
+      if (window.OneSignal.initialized) {
+        window._oneSignalInitialized = true;
+        return;
       }
-    };
 
-    initOneSignal();
-  }, []);
+      await window.OneSignal.init({
+        appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Sirf apni OneSignal App ID chahiye
+      });
+
+      window._oneSignalInitialized = true;
+      console.log("OneSignal Initialized Successfully");
+    } catch (error) {
+      console.error("Error during OneSignal init:", error);
+    }
+  });
+
+}, []);
 
   
   
