@@ -1,5 +1,5 @@
 import cloudinary from 'cloudinary';
-import Document from '../models/document.js'; // Model import kiya
+import Document from '../model/document.js'; // Model import kiya
 
 // Cloudinary Configuration
 cloudinary.v2.config({
