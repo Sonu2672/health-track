@@ -111,7 +111,7 @@ export const analyzeMedicalReport = async (req, res) => {
     console.error("DETAILED GEMINI ERROR:", error);
     return res.status(500).json({ 
       success: false, 
-      message: "AI analysis failed!", 
+      message: "Coming Soon...", 
       error: error.message 
     });
   }
