@@ -168,25 +168,23 @@ function Dashboard() {
   // ==================================================
   // 🔊 START / STOP VOICE ALERT
   // ==================================================
- useEffect(() => {
+useEffect(() => {
+  // Sync check aur turant flag set karein taaki doosra render rok sake
   if (window._oneSignalInitialized) return;
+  window._oneSignalInitialized = true; 
 
   window.OneSignal = window.OneSignal || [];
   window.OneSignal.push(async function() {
     try {
-      if (window.OneSignal.initialized) {
-        window._oneSignalInitialized = true;
-        return;
-      }
-
       await window.OneSignal.init({
-        appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Sirf apni OneSignal App ID chahiye
+        appId: "YOUR_ONESIGNAL_APP_ID", // Apni App ID daalein
       });
-
-      window._oneSignalInitialized = true;
-      console.log("OneSignal Initialized Successfully");
+      console.lg("OneSignal Initialized Successfully");
     } catch (error) {
-      console.error("Error during OneSignal init:", error);
+      // Agar fir bhi error aaye toh ignore kar sakte hain
+      if (!error.message?.includes("already initialized")) {
+        console.error("Error during OneSignal init:", error);
+      }
     }
   });
 
