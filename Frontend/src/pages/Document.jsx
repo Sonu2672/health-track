@@ -12,12 +12,20 @@ useEffect(() => {
     fetchDocuments();
   }, []);
 
-  const fetchDocuments = async () => {
+ const fetchDocuments = async () => {
     try {
-      const response = await fetch('https://healthtrackb.onrender.com/api/document/getdoc'); // Apka GET route
+      const response = await fetch('https://healthtrackb.onrender.com/api/document/getdoc', {
+        method: 'GET',
+        credentials: 'include', // Agar cookie/session auth use ho raha hai
+        headers: {
+          'Content-Type': 'application/json',
+          // Agar token-based auth (Bearer token) hai toh yahan Authorization header bhi aayega:
+          // 'Authorization': `Bearer ${token}`
+        }
+      });
+
       const data = await response.json();
       if (data.success) {
-        // Backend se aane wale object keys ke hisab se (jaise fileName aur fileUrl)
         const formattedReports = data.documents.map(doc => ({
           name: doc.fileName,
           url: doc.fileUrl
