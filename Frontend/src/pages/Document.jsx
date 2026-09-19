@@ -14,7 +14,7 @@ useEffect(() => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await fetch('https://healthtrackb.onrender.com/api/documents'); // Apka GET route
+      const response = await fetch('https://healthtrackb.onrender.com/api/document/getdoc'); // Apka GET route
       const data = await response.json();
       if (data.success) {
         // Backend se aane wale object keys ke hisab se (jaise fileName aur fileUrl)
