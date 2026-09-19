@@ -35,7 +35,7 @@ import PatientManagement from "../role/PatientManagement"
 import DisasterAlert from "../pages/DisasterAlert"
 import {useState, useEffect} from "react";
 import OneSignal from 'react-onesignal';
-import Docuemnt from "../pages/Document"
+import Document from "../pages/Document"
 function AppRoutes() {
   const [islogin, setIslogin] = useState(null);
   const [isadmin, setIsadmin] = useState(null);
