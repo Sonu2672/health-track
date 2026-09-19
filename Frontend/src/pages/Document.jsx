@@ -1,7 +1,7 @@
 import  { useState, useEffect } from 'react';
 
 
-function Document=()=> {
+function Document() {
 
   const [file, setFile] = useState(null);
   const [reports, setReports] = useState([]);
