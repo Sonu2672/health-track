@@ -17,7 +17,7 @@ export const sendPushNotification = async (userId, title, message) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "", // 👈 Yahan apni asli OneSignal REST API Key daal dena
+        "Authorization": "os_v2_app_v5t2ytgpyffgxovl7zv4swpnhz2pifjlkgnulfn5v547wjsde3ebthvmiw6uzo77am6smwtfr6uwim5bo5jc53e7pfoaupa733u2dha", // 👈 Yahan apni asli OneSignal REST API Key daal dena
       },
       body: JSON.stringify({
         app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
