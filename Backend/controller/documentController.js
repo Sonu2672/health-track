@@ -4,7 +4,7 @@ import Document from '../model/document.js'; // Model import kiya
 import { GoogleGenAI } from '@google/genai';
 
 // Yeh automatic .env se GEMINI_API_KEY utha lega
-const ai = new GoogleGenAI();
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Cloudinary Configuration
 cloudinary.v2.config({
@@ -91,10 +91,8 @@ export const getDocuments = async (req, res) => {
 
 
 
-import { GoogleGenAI } from '@google/genai';
-
 // Explicitly API key pass karein taaki koi confusion na ho
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
 
 export const analyzeMedicalReport = async (req, res) => {
   try {
