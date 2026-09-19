@@ -2,7 +2,7 @@ import express from "express";
 const Router = express.Router(); 
 // import { checkLike ,upload ,getpost,deletepost , editpost} from "../controller/healthController.js";
 import {auth} from "../middlewares/userAuth.js"
-import { deviceRegister,onesignnalid} from "../controller/deviceController.js";
+import { deviceRegister,onesignalid} from "../controller/deviceController.js";
 // import {receiveDeviceData} from "../controller/deviceController.js";
 // import {getdevicedata} from "../controller/deviceController.js"
 // import {updateHealthData} from "../controller/deviceController.js"
