@@ -171,10 +171,16 @@ if (data.success) {
   else if (data.role === "doctor") {
     navigate("/doctordash");
   } 
-  else if (data.role === "patient") {
+    // if (data.role === "patient")
+  else  {
     navigate("/dashboard");
   }
 }
+else
+{
+  toast.error(data.message);
+}
+      
 
    
 
