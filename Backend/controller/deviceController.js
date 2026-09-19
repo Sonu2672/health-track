@@ -9,23 +9,45 @@ import device from "../model/device.js";
 
 export const onesignalid = async (req, res) => {
   try {
-    const { playerId, deviceId } = req.body;
+    const { playerId } = req.body;
+    const userId = req.user.id; // 👈 Login token se user ki ID mil gayi
 
-    // Yahan database mein device dhoondh kar 'oneSignalPlayerId' save ho raha hai
+    if (!playerId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Player ID is required" 
+      });
+    }
+
+    // Direct userid ke base par device dhoondh kar update kar do
     const updatedDevice = await device.findOneAndUpdate(
-      { deviceId: deviceId },
-      { oneSignalPlayerId: playerId }, // 👈 Yahan save ho rahi hai
-      { new: true, upsert: true }
+      { userid: userId }, // 👈 User ID se match kiya
+      { oneSignalPlayerId: playerId }, // 👈 Player ID save kar di
+      { new: true }
     );
 
-    console.log(`✅ Player ID saved in Database for Device: ${deviceId}`);
+    if (!updatedDevice) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Aapke is account se koi device linked nahi hai!" 
+      });
+    }
 
-    return res.status(200).json({ success: true, message: "Saved successfully" });
+    console.log(`✅ Player ID saved successfully for User ID: ${userId}`);
+
+    return res.status(200).json({ 
+      success: true, 
+      message: "Player ID mapped successfully!" 
+    });
+
   } catch (error) {
     console.error("❌ Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
-});
+};
 
 
 
