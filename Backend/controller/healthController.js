@@ -2,7 +2,7 @@ import health from "../model/health.js";
 import device from "../model/device.js";
 import User from "../model/user.js"; // OneSignal Player ID ke liye User model import kiya hai
 import jwt from "jsonwebtoken";
-
+import { sendPushNotification } from "./utils/sendNotification.js";
 
 
 
@@ -12,7 +12,7 @@ export const healthData = async (req, res) => {
    console.log("🔥🔥🔥 HEALTHDATA CONTROLLER HIT 🔥🔥🔥");
   try {
     console.log("🔥 HEALTH DATA API HIT");
-
+  
     const {
       deviceId,
       heartRate,
@@ -75,36 +75,20 @@ export const healthData = async (req, res) => {
     // ==========================================
     // 🔔 ONESIGNAL BACKGROUND NOTIFICATION TRIGGER
     // ==========================================
-    try {
-      const hrVal = Number(heartRate ?? 0);
-      const spo2Val = Number(spo2 ?? 0);
-      const tempVal = Number(temp ?? 0);
 
-      // Condition: Agar vitals critical hain toh notification bhejo
-      const isCritical = hrVal > 120 || hrVal < 45 || spo2Val < 90 || tempVal > 38.5;
 
-      if (isCritical) {
-        const userDoc = await User.findById(userid);
+// मान लो ESP32 का डाटा आया और खतरा दिखा:
+    const numericHeartRate = Number(heartRate ?? 0);
+    const numericSpo2 = Number(spo2 ?? 0);
+    const numericTemp = Number(temp ?? 0);
 
-        if (userDoc && userDoc.oneSignalPlayerId) {
-          await fetch("https://onesignal.com/api/v1/notifications", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Basic os_v2_app_v5t2ytgpyffgxovl7zv4swpnhy6rypgznkrus5mpg52cu2uctqcjw6l4ybo3c6tdvwizzwxj7vnc2hnz4xegglce4g23hvjbibz2feq" // ⚠️ Apni OneSignal REST API Key yahan replace karein
-            },
-            body: JSON.stringify({
-              app_id: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
-              include_player_ids: [userDoc.oneSignalPlayerId],
-              headings: { en: "🚨 Critical Health Emergency Alert!" },
-              contents: { en: `Aapka health parameter critical hai! HR: ${hrVal}, SpO2: ${spo2Val}%, Temp: ${tempVal}°C` }
-            })
-          });
-          console.log("🚀 Background Push Notification Sent Successfully via OneSignal!");
-        }
-      }
-    } catch (notifErr) {
-      console.error("❌ Notification Trigger Error:", notifErr);
+    if (numericHeartRate > 100 || numericSpo2 < 92 || numericTemp > 100) {
+      await sendPushNotification(
+        userid, 
+        "⚠️ Emergency Health Alert!", 
+        `Warning! High risk detected. Heart Rate: ${numericHeartRate}, SpO2: ${numericSpo2}%`
+      );
+      console.log("🚨 Emergency Alert Notification Triggered!");
     }
     // ==========================================
 
