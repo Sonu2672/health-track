@@ -41,20 +41,7 @@ function AppRoutes() {
   const [isadmin, setIsadmin] = useState(null);
 
   // OneSignal Initialization Effect
-  useEffect(() => {
-    const initOneSignal = async () => {
-      try {
-        await OneSignal.init({
-          appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Yahan apna actual OneSignal App ID daalein
-          allowLocalhostAsSecureOrigin: true,
-        });
-      } catch (error) {
-        console.error("OneSignal Initialization Error:", error);
-      }
-    };
 
-    initOneSignal();
-  }, []);
 
   useEffect(() => {
     const checklogin = async () => {
