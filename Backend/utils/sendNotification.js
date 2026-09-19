@@ -1,6 +1,7 @@
 import device from "../model/device.js"; // Aapka device model path
 
 export const sendPushNotification = async (userId, title, message) => {
+   console.log("🚨 send push notification block trigers!");
   try {
     // 1. डेटाबेस से यूजर की OneSignal Player ID ढूंढें
     const userDevice = await device.findOne({ userid: userId });
