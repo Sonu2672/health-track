@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 
 
-const Docuemnt=()=> {
+const Document=()=> {
 
   const [file, setFile] = useState(null);
   const [reports, setReports] = useState([]);
