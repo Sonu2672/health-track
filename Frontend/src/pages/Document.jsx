@@ -28,7 +28,7 @@ function Document() {
       setUploading(true);
       
       // Native fetch API (Axios ki jagah)
-      const response = await fetch('https://healthtrackb.onrender.com/api/upload/uploaddoc', {
+      const response = await fetch('https://healthtrackb.onrender.com/api/document/uploaddoc', {
         method: 'POST',
         credentials: 'include',
         body: formData,
