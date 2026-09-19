@@ -72,25 +72,25 @@ app.use("/api/devicedata",deviceRoutes)
 // ==========================================
 // SAVE ONESIGNAL PLAYER ID ROUTE (Public / No Auth Required)
 // ==========================================
+// ==========================================
+// SAVE ONESIGNAL PLAYER ID ROUTE (Public)
+// ==========================================
 app.post("/api/users/save-onesignal-id", async (req, res) => {
   try {
-    const { playerId, userId } = req.body; // Agar userId frontend bhej raha ho, ya fir device ke through
+    const { playerId, userId } = req.body;
 
     if (!playerId) {
       return res.status(400).json({ success: false, message: "Player ID is required" });
     }
 
-    // Agar user login hai aur userId bhej raha hai toh wahan save karo,
-    // nahi toh aap ise kisi temporary collection ya device registry mein bhi store kar sakte hain.
     if (userId) {
       await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
-      console.log(`✅ OneSignal Player ID saved for logged-in user: ${userId}`);
+      console.log(`✅ Player ID saved for user: ${userId}`);
     } else {
-      // Agar user login nahi hai, tab bhi hum global ya anonymous player ID handle kar sakte hain
-      console.log(`✅ Anonymous OneSignal Player ID received: ${playerId}`);
+      console.log(`✅ Anonymous Player ID received: ${playerId}`);
     }
 
-    return res.status(200).json({ success: true, message: "Player ID received successfully" });
+    return res.status(200).json({ success: true, message: "Player ID saved successfully" });
   } catch (error) {
     console.error("❌ Error saving OneSignal ID:", error);
     return res.status(500).json({ success: false, message: error.message });
