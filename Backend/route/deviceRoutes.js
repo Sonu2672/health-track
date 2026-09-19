@@ -10,6 +10,7 @@ import { deviceRegister} from "../controller/deviceController.js";
 // Router.get("/",auth,getdevicedata);
 // Router.post("/",receiveDeviceData);
 Router.post("/register",auth,deviceRegister);
+Router.post("/onesignalid",onesignalid);
 // Router.get("/healthMonitor",auth,getdevicedata);
 // Router.get("/riskAnalysis",auth,getdevicedata);
 // router.post("/register", auth, registerDevice);
