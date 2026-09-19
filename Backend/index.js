@@ -61,6 +61,12 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/devicedata",deviceRoutes)
 app.use("/api/document",documentRoutes)
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "ML server is running"
+  });
+});
 
 
 
