@@ -1,4 +1,4 @@
-import device from "../models/device.js"; // Aapka device model path
+import device from "../model/device.js"; // Aapka device model path
 
 export const sendPushNotification = async (userId, title, message) => {
   try {
