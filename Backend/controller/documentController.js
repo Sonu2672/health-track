@@ -91,11 +91,15 @@ export const getDocuments = async (req, res) => {
 
 
 
+import { GoogleGenAI } from '@google/genai';
 
+// Explicitly API key pass karein taaki koi confusion na ho
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const analyzeMedicalReport = async (req, res) => {
   try {
     const { fileUrl } = req.body;
+    console.log("AI Analysis Request Received for URL:", fileUrl);
 
     if (!fileUrl) {
       return res.status(400).json({ 
@@ -104,19 +108,21 @@ export const analyzeMedicalReport = async (req, res) => {
       });
     }
 
-    // 1. Cloudinary URL se file fetch karke Base64 mein convert karein
+    // 1. Cloudinary URL se file fetch karein
     const fileResponse = await fetch(fileUrl);
     if (!fileResponse.ok) {
-      throw new Error("Cloudinary se file fetch karne mein fail ho gaya");
+      throw new Error(`Cloudinary se file fetch nahi ho payi. Status: ${fileResponse.status}`);
     }
 
     const arrayBuffer = await fileResponse.arrayBuffer();
     const base64Data = Buffer.from(arrayBuffer).toString("base64");
     
-    // 2. Check karein ki file PDF hai ya image
+    // 2. MIME type check
     const mimeType = fileUrl.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
 
-    // 3. Gemini AI Model ko call karein
+    console.log("Calling Gemini API...");
+
+    // 3. Gemini Model Call
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [
@@ -134,16 +140,16 @@ export const analyzeMedicalReport = async (req, res) => {
       ]
     });
 
-    const aiTextOutput = response.text;
+    console.log("Gemini API Response Received successfully.");
 
-    // 4. Frontend ko JSON response bhej dein
     return res.status(200).json({
       success: true,
-      analysis: aiTextOutput
+      analysis: response.text
     });
 
   } catch (error) {
-    console.error("Gemini Analysis Error:", error);
+    // Yeh error ab Render ke logs mein bilkul saaf dikhega
+    console.error("DETAILED GEMINI ERROR:", error);
     return res.status(500).json({ 
       success: false, 
       message: "AI analysis fail ho gaya!", 
@@ -151,8 +157,6 @@ export const analyzeMedicalReport = async (req, res) => {
     });
   }
 };
-
-
 
 
 
