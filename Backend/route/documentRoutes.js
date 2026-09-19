@@ -9,5 +9,5 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // POST Route: /api/upload-document
 Router.post('/uploaddoc', upload.single('document'),auth, uploadDocument);
-
+Router.get('/getdoc',getdocument);
 export default Router;
