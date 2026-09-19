@@ -177,7 +177,7 @@ useEffect(() => {
   window.OneSignal.push(async function() {
     try {
       await window.OneSignal.init({
-        appId: "YOUR_ONESIGNAL_APP_ID", // Apni App ID daalein
+        appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Apni App ID daalein
       });
       console.lg("OneSignal Initialized Successfully");
     } catch (error) {
