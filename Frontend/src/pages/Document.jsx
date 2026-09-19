@@ -6,6 +6,7 @@ function Document() {
   const [file, setFile] = useState(null);
   const [reports, setReports] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [msg,setMsg]=useState("");
   
   const navigate = useNavigate(); // Navigation hook initialize kiya
 
@@ -147,7 +148,7 @@ function Document() {
       <div className="doc-list-section">
         <h3>My Uploaded Documents</h3>
         {reports.length === 0 ? (
-          <p className="doc-empty-text">Loading...</p>
+          <p className="doc-empty-text">{msg}</p>
         ) : (
           <ul className="doc-list">
             {reports.map((doc, index) => (
