@@ -146,6 +146,19 @@ export const analyzeMedicalReport = async (req, res) => {
     });
 
   } catch (error) {
+  
+    // 🔥 Yahan exact error print karwayein
+    console.error("DETAILED GEMINI ERROR:", error);
+    console.error("ERROR MESSAGE:", error.message);
+    console.error("ERROR STACK:", error.stack);
+    
+    return res.status(500).json({ 
+      success: false, 
+      message: "AI analysis failed!", 
+      error: error.message,
+      details: error.toString()
+    });
+  }
     console.error("DETAILED GEMINI ERROR:", error);
     return res.status(500).json({ 
       success: false, 
