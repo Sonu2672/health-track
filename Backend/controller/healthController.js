@@ -3,7 +3,7 @@ import device from "../model/device.js";
 import User from "../model/user.js"; // OneSignal Player ID ke liye User model import kiya hai
 import jwt from "jsonwebtoken";
 
-export const save-onesignal-id = async (req, res) => {
+export const onesignalid = async (req, res) => {
   try {
     const { playerId, deviceId } = req.body;
 
