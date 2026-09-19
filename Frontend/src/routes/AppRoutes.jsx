@@ -35,7 +35,7 @@ import PatientManagement from "../role/PatientManagement"
 import DisasterAlert from "../pages/DisasterAlert"
 import {useState, useEffect} from "react";
 import OneSignal from 'react-onesignal';
-
+import Docuemnt from "../pages/Document"
 function AppRoutes() {
   const [islogin, setIslogin] = useState(null);
   const [isadmin, setIsadmin] = useState(null);
@@ -79,6 +79,9 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
+        <Route path="/upload" element={<Document/>} />
+
+ 
        {/* Role wise acess */}
         <Route path="/admindash" element={islogin ? <AdminDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
         <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
