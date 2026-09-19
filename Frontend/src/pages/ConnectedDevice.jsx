@@ -26,7 +26,7 @@ const ConnectedDevice = () => {
       setLoading(true);
 
       const response = await fetch(
-        "https://health-track-2b.onrender.com/api/devicedata/register",
+        "https://healthtrackb.onrender.com/api/devicedata/register",
         {
           method: "POST",
           credentials: "include",
