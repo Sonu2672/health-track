@@ -81,7 +81,9 @@ function AppRoutes() {
 
         <Route path="/upload" element={<Document/>} />
 
- 
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+        
        {/* Role wise acess */}
         <Route path="/admindash" element={islogin ? <AdminDashboard setIslogin={setIslogin} /> : <Login setIslogin={setIslogin} />} />
         <Route path="/doctorm" element={islogin ? <DoctorManagement setIslogin={setIslogin}/> : <Login setIslogin={setIslogin} />} />
