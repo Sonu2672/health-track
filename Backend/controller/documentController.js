@@ -80,7 +80,7 @@ export const uploadDocument = async (req, res) => {
 
   export const getDocuments = async (req, res) => {
   try {
-    const documents = await Document.find({userid:req.user.id}).sort({ createdAt: -1 }); // Naye documents sabse upar
+    const documents = await Document.find({patientId:req.user.id}).sort({ createdAt: -1 }); // Naye documents sabse upar
     res.status(200).json({ success: true, documents });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
