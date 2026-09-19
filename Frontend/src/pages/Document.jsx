@@ -164,7 +164,7 @@ function Document() {
       
       {/* Uploaded Documents List */}
       <div className="doc-list-section">
-        <h3>My Uploaded Documents</h3>
+        <h3>My Medical Documents</h3>
         {reports.length === 0 ? (
           <p className="doc-empty-text">No reports found</p>
         ) : (
