@@ -1,8 +1,9 @@
 import cloudinary from 'cloudinary';
 import Document from '../model/document.js'; // Model import kiya
-const { GoogleGenAI } = require('@google/genai');
 
-// Initialize Gemini (Yeh automatically .env se GEMINI_API_KEY utha lega)
+import { GoogleGenAI } from '@google/genai';
+
+// Yeh automatic .env se GEMINI_API_KEY utha lega
 const ai = new GoogleGenAI();
 
 // Cloudinary Configuration
