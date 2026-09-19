@@ -16,26 +16,12 @@ const deviceSchema = new mongoose.Schema(
       required: true,
     },
 
-    // heartRate: {
-    //   type: Number,
-    //   default: 0,
-    // },
-
-    // spo2: {
-    //   type: Number,
-    //   default: 0,
-    // },
-
-    // temp: {
-    //   type: Number,
-    //   default: 0,
-    // },
-
-    // riskScore: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    oneSignalPlayerId: { 
+    type: String, 
+    default: null 
   },
+
+
   {
     timestamps: true,
   }
