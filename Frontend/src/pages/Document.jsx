@@ -147,7 +147,7 @@ function Document() {
       <div className="doc-list-section">
         <h3>My Uploaded Documents</h3>
         {reports.length === 0 ? (
-          <p className="doc-empty-text">Abhi tak koi document upload nahi kiya gaya hai.</p>
+          <p className="doc-empty-text">Loading...</p>
         ) : (
           <ul className="doc-list">
             {reports.map((doc, index) => (
