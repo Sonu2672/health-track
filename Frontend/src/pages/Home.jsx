@@ -55,41 +55,46 @@ const features = [
 function Home() {
 
   // OneSignal Auto-Initialization & Push Prompt on Home Page (No login required)
+// Home Page OneSignal Prompt & Player ID Sync (No duplicate init)
   useEffect(() => {
-    const initOneSignal = async () => {
+    const handleOneSignal = async () => {
       try {
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         window.OneSignalDeferred.push(async function(OneSignal) {
-          await OneSignal.init({
-            appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", 
-            allowLocalhostAsSecureOrigin: true,
-          });
+          
+          // Trigger the push permission prompt
+          try {
+            await OneSignal.Slidedown.promptPush();
+          } catch (e) {
+            console.log("Prompt already shown or ignored");
+          }
 
-          // Automatic permission prompt for visitors
-          await OneSignal.Slidedown.promptPush();
-
-          // Fetch Player ID
+          // Fetch Player ID safely
           const playerId = OneSignal.User.PushSubscription.id;
           console.log("🚀 Home Page OneSignal Player ID:", playerId);
 
           if (playerId) {
-            // Send Player ID to backend without requiring a token/login
-            await fetch("https://healthtrackb.onrender.com/api/users/save-onesignal-id", {
+            const response = await fetch("https://healthtrackb.onrender.com/api/users/save-onesignal-id", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ playerId })
             });
-            console.log("✅ Player ID sent to backend successfully!");
+            
+            if (response.ok) {
+              console.log("✅ Player ID sent to backend successfully!");
+            } else {
+              console.error("❌ Failed to save Player ID on backend, status:", response.status);
+            }
           }
         });
       } catch (error) {
-        console.error("❌ OneSignal Home Init Error:", error);
+        console.error("❌ OneSignal Home Error:", error);
       }
     };
 
-    initOneSignal();
+    handleOneSignal();
   }, []);
 
   return (
