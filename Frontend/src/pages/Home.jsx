@@ -56,45 +56,40 @@ function Home() {
 
   // OneSignal Auto-Initialization & Push Prompt on Home Page (No login required)
 // Home Page OneSignal Prompt & Player ID Sync (No duplicate init)
-  useEffect(() => {
-    const handleOneSignal = async () => {
+useEffect(() => {
+    console.log("🔄 Home Page: OneSignal Effect Triggered");
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      console.log("✅ OneSignal Deferred Callback Executed");
+
       try {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        window.OneSignalDeferred.push(async function(OneSignal) {
-          
-          // Trigger the push permission prompt
-          try {
-            await OneSignal.Slidedown.promptPush();
-          } catch (e) {
-            console.log("Prompt already shown or ignored");
-          }
-
-          // Fetch Player ID safely
-          const playerId = OneSignal.User.PushSubscription.id;
-          console.log("🚀 Home Page OneSignal Player ID:", playerId);
-
-          if (playerId) {
-            const response = await fetch("https://healthtrackb.onrender.com/api/users/save-onesignal-id", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ playerId })
-            });
-            
-            if (response.ok) {
-              console.log("✅ Player ID sent to backend successfully!");
-            } else {
-              console.error("❌ Failed to save Player ID on backend, status:", response.status);
-            }
-          }
-        });
-      } catch (error) {
-        console.error("❌ OneSignal Home Error:", error);
+        // Push prompt show karein
+        await OneSignal.Slidedown.promptPush();
+      } catch (err) {
+        console.log("⚠️ Prompt error or already shown:", err);
       }
-    };
 
-    handleOneSignal();
+      // Check karein ki subscription ID mili ya nahi
+      const playerId = OneSignal.User.PushSubscription.id;
+      console.log("🔍 Checked Player ID:", playerId);
+
+      if (playerId) {
+        try {
+          const res = await fetch("https://healthtrackb.onrender.com/api/users/save-onesignal-id", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ playerId })
+          });
+          const data = await res.json();
+          console.log("🚀 Backend Response:", data);
+        } catch (fetchErr) {
+          console.error("❌ Backend Fetch Error:", fetchErr);
+        }
+      } else {
+        console.log("⚠️ Player ID is still null/undefined. User might need to click the bell icon or allow notifications.");
+      }
+    });
   }, []);
 
   return (
