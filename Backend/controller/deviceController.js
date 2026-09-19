@@ -19,25 +19,25 @@ export const onesignalid = async (req, res) => {
       });
     }
 
-    // Direct userid ke base par device dhoondh kar update kar do
+    // 💡 Yahan 'upsert: true' lagane se agar record nahi hoga toh naya ban jayega!
     const updatedDevice = await device.findOneAndUpdate(
       { userid: userId }, // 👈 User ID se match kiya
-      { oneSignalPlayerId: playerId }, // 👈 Player ID save kar di
-      { new: true }
+      { 
+        $set: { oneSignalPlayerId: playerId } // 👈 Player ID save ya update kar di
+      }, 
+      { 
+        new: true,          // Updated/Created document wapas dega
+        upsert: true,       // Agar record nahi mila toh naya insert kar dega
+        setDefaultsOnInsert: true 
+      }
     );
 
-    if (!updatedDevice) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Aapke is account se koi device linked nahi hai!" 
-      });
-    }
-
-    console.log(`✅ Player ID saved successfully for User ID: ${userId}`);
+    console.log(`✅ Player ID saved/created successfully for User ID: ${userId}`);
 
     return res.status(200).json({ 
       success: true, 
-      message: "Player ID mapped successfully!" 
+      message: "Player ID mapped successfully!",
+      data: updatedDevice
     });
 
   } catch (error) {
@@ -48,8 +48,6 @@ export const onesignalid = async (req, res) => {
     });
   }
 };
-
-
 
 // import health from "../model/health.js"
 
