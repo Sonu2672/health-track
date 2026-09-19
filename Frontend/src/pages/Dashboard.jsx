@@ -215,6 +215,7 @@ function Dashboard() {
         
         const response = await fetch("https://healthtrackb.onrender.com/api/devicedata/onesignalid", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
