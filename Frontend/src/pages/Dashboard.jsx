@@ -186,7 +186,7 @@ function Dashboard() {
       
 
           if (playerId) {
-            const response = await fetch("https://healthtrackb.onrender.com/api/users/onesignalid", {
+            const response = await fetch("https://healthtrackb.onrender.com/api/devicedata/onesignalid", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
