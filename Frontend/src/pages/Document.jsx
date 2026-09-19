@@ -120,7 +120,7 @@ function Document() {
         >
           ⬅️
         </button>
-        <h2 style={{ margin: 0 }}>🏥 Patient Medical Dashboard</h2>
+        <h2 style={{ margin: 0 }}>🏥 Patient Medical Documents</h2>
       </div>
       
       {/* Upload Box */}
