@@ -59,7 +59,7 @@ app.use("/api/doctors", doctorRoutes);
 
 //esp32 calling my api
 app.use("/api/devicedata",deviceRoutes)
-app.use("/api/upload",documentRoutes)
+app.use("/api/document",documentRoutes)
 
 
 
