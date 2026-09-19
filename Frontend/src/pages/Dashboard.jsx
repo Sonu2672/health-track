@@ -96,28 +96,23 @@ function Dashboard() {
     // 🚨 CRITICAL
     // ==============================
 
-    if (level === "Critical Risk") {
 
-      message ="";
-        // "गंभीर स्वास्थ्य जोखिम पाया गया है। कृपया तुरंत ध्यान दें।";
+if (level === "Critical Risk") {
+  message = "Critical health risk detected. Please take immediate action.";
+}
+else if (level === "High Risk") {
+  message = "Warning. High health risk detected. Please check your health condition.";
+}
+else {
+  return;
+}
 
-    }
 
-    // ==============================
-    // ⚠️ HIGH
-    // ==============================
 
-    else if (level === "High Risk") {
 
-      message ="";
-        // "चेतावनी। स्वास्थ्य जोखिम अधिक है। कृपया अपनी स्वास्थ्य स्थिति की जाँच करें।";
 
-    }
 
-    else {
 
-      return;
-    }
 
     // Stop previous speech
     window.speechSynthesis.cancel();
