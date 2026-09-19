@@ -82,7 +82,7 @@ export const healthData = async (req, res) => {
     const numericSpo2 = Number(spo2 ?? 0);
     const numericTemp = Number(temp ?? 0);
 
-    if (numericHeartRate > 100 || numericSpo2 < 92 || numericTemp > 100) {
+    if (numericHeartRate > 100 || numericSpo2 > 92 || numericTemp > 100) {
         console.log("🚨 Emergency Alert Notification Triggered!");
       await sendPushNotification(
         userid, 
