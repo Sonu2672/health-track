@@ -37,7 +37,8 @@ export const uploadDocument = async (req, res) => {
           const newDocument = await Document.create({
             fileName: req.file.originalname,
             fileUrl: result.secure_url,
-            publicId: result.public_id
+            // publicId: result.public_id
+            patientId: req.user.id
           });
 
           // Success response with file URL & DB data
