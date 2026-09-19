@@ -30,6 +30,7 @@ function Document() {
       // Native fetch API (Axios ki jagah)
       const response = await fetch('https://healthtrackb.onrender.com/api/upload/uploaddoc', {
         method: 'POST',
+        credentials: 'include',
         body: formData,
         // Note: Jab FormData bhejte hain, toh 'Content-Type' header khud-b-khud browser set kar deta hai, isliye alag se likhne ki zarurat nahi hai.
       });
