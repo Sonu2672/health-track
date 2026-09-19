@@ -8,6 +8,31 @@ function Document() {
   const [reports, setReports] = useState([]);
   const [uploading, setUploading] = useState(false);
 
+useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch('https://healthtrackb.onrender.com/api/documents'); // Apka GET route
+      const data = await response.json();
+      if (data.success) {
+        // Backend se aane wale object keys ke hisab se (jaise fileName aur fileUrl)
+        const formattedReports = data.documents.map(doc => ({
+          name: doc.fileName,
+          url: doc.fileUrl
+        }));
+        setReports(formattedReports);
+      }
+    } catch (err) {
+      console.error('Documents fetch karne me error aaya:', err);
+    }
+  };
+
+
+
+
+  
   // File select karne ka handler
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
