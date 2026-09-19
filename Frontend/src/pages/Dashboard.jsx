@@ -247,8 +247,8 @@ function Dashboard() {
         voiceIntervalRef.current
       );
 
-      voiceIntervalRef.current =
-        null;
+      voiceIntervalRef.current ="warning!"
+       
 
     }
 
@@ -324,7 +324,7 @@ function Dashboard() {
 
         }
 
-      }, 10000);
+      }, 5000);
 
 
     // ==================================================
@@ -580,7 +580,7 @@ function Dashboard() {
 
         Hdata();
 
-      }, 30000);
+      }, 3000);
 
 
     // // ==================================================
