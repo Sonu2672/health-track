@@ -80,7 +80,7 @@ useEffect(() => {
 
           if (playerId) {
             try {
-              const res = await fetch("https://healthtrackb.onrender.com/api/device/onesignalid", {
+              const res = await fetch("https://healthtrackb.onrender.com/api/devicedata/onesignalid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ playerId })
