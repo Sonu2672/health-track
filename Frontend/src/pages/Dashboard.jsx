@@ -168,8 +168,10 @@ function Dashboard() {
   // ==================================================
   // 🔊 START / STOP VOICE ALERT
   // ==================================================
-useEffect(() => {
-  // Sync check aur turant flag set karein taaki doosra render rok sake
+
+
+  useEffect(() => {
+  // Sync check taaki duplicate init na ho
   if (window._oneSignalInitialized) return;
   window._oneSignalInitialized = true; 
 
@@ -177,17 +179,16 @@ useEffect(() => {
   window.OneSignal.push(async function() {
     try {
       await window.OneSignal.init({
-        appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e", // Apni App ID daalein
+        appId: "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
+        allowLocalhostAsSecureOrigin: true,
       });
-      console.lg("OneSignal Initialized Successfully");
+      console.log("OneSignal Initialized Successfully");
     } catch (error) {
-      // Agar fir bhi error aaye toh ignore kar sakte hain
       if (!error.message?.includes("already initialized")) {
         console.error("Error during OneSignal init:", error);
       }
     }
   });
-
 }, []);
 
   
