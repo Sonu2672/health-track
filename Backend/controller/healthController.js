@@ -2,7 +2,7 @@ import health from "../model/health.js";
 import device from "../model/device.js";
 import User from "../model/user.js"; // OneSignal Player ID ke liye User model import kiya hai
 import jwt from "jsonwebtoken";
-import { sendPushNotification } from "./utils/sendNotification.js";
+import { sendPushNotification } from "../utils/sendNotification.js";
 
 
 
