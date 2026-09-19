@@ -1,5 +1,9 @@
 import cloudinary from 'cloudinary';
 import Document from '../model/document.js'; // Model import kiya
+const { GoogleGenAI } = require('@google/genai');
+
+// Initialize Gemini (Yeh automatically .env se GEMINI_API_KEY utha lega)
+const ai = new GoogleGenAI();
 
 // Cloudinary Configuration
 cloudinary.v2.config({
@@ -175,3 +179,67 @@ export const getDocuments = async (req, res) => {
 //   }
 // };
 // };
+
+
+
+
+const analyzeMedicalReport = async (req, res) => {
+  try {
+    const { fileUrl } = req.body;
+
+    if (!fileUrl) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "File URL nahi mila!" 
+      });
+    }
+
+    // 1. Cloudinary URL se file fetch karke Base64 mein convert karein
+    const fileResponse = await fetch(fileUrl);
+    if (!fileResponse.ok) {
+      throw new Error("Cloudinary se file fetch karne mein fail ho gaya");
+    }
+
+    const arrayBuffer = await fileResponse.arrayBuffer();
+    const base64Data = Buffer.from(arrayBuffer).toString("base64");
+    
+    // 2. Check karein ki file PDF hai ya image
+    const mimeType = fileUrl.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
+
+    // 3. Gemini AI Model ko call karein
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+          }
+        },
+        {
+          text: `You are an expert medical AI assistant. Analyze this medical report carefully. 
+          Provide the output strictly in valid JSON format with these exact keys: 
+          "summary", "keyFindings", "abnormalValues", and "recommendations".`
+        }
+      ]
+    });
+
+    const aiTextOutput = response.text;
+
+    // 4. Frontend ko JSON response bhej dein
+    return res.status(200).json({
+      success: true,
+      analysis: aiTextOutput
+    });
+
+  } catch (error) {
+    console.error("Gemini Analysis Error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "AI analysis fail ho gaya!", 
+      error: error.message 
+    });
+  }
+};
+
+module.exports = { analyzeMedicalReport };
