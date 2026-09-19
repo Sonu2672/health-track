@@ -1975,23 +1975,23 @@ function Dashboard() {
     // AUTO REFRESH EVERY 4 SECONDS
     // ==================================================
 
-    // const interval =
-    //   setInterval(() => {
+    const interval =
+      setInterval(() => {
 
-    //     Hdata();
+        Hdata();
 
-    //   }, 4000);
+      }, 30000);
 
 
     // // ==================================================
     // // CLEANUP
     // // ==================================================
 
-    // return () => {
+    return () => {
 
-    //   clearInterval(
-    //     interval
-    //   );
+      clearInterval(
+        interval
+      );
 
       if (
         "speechSynthesis" in window
