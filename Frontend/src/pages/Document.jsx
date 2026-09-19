@@ -54,74 +54,35 @@ function Document() {
   };
 
   return (
-    // <div style={{ padding: '30px', fontFamily: 'Arial' }}>
-    //   <h2>🏥 Patient Medical Dashboard</h2>
-      
-    //   {/* Upload Box */}
-    //   <div style={{ background: '#f4f4f4', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
-    //     <h3>Upload New Medical Report / PDF</h3>
-    //     <input type="file" onChange={handleFileChange} accept=".pdf, .jpg, .png" />
-    //     <button onClick={handleUpload} disabled={uploading} style={{ marginLeft: '10px', padding: '8px 15px' }}>
-    //       {uploading ? 'Uploading...' : 'Upload Report'}
-    //     </button>
-    //   </div>
-
-    //   {/* Uploaded Documents List */}
-    //   <div>
-    //     <h3>My Uploaded Documents</h3>
-    //     {reports.length === 0 ? (
-    //       <p>Abhi tak koi document upload nahi kiya gaya hai.</p>
-    //     ) : (
-    //       <ul style={{ listStyle: 'none', padding: 0 }}>
-    //         {reports.map((doc, index) => (
-    //           <li key={index} style={{ background: '#fff', border: '1px solid #ddd', padding: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '5px' }}>
-    //             <span>📄 {doc.name}</span>
-    //             <div>
-    //               {/* View Button */}
-    //               <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ marginRight: '10px', textDecoration: 'none', background: '#007bff', color: 'white', padding: '5px 10px', borderRadius: '3px' }}>
-    //                 View
-    //               </a>
-    //               {/* Download Button */}
-    //               <a href={doc.url} download style={{ textDecoration: 'none', background: '#28a745', color: 'white', padding: '5px 10px', borderRadius: '3px' }}>
-    //                 Download
-    //               </a>
-    //             </div>
-    //           </li>
-    //         ))}
-    //       </ul>
-    //     )}
-    //   </div>
-    // </div>
-
-    <div className="doc-dashboard">
+    <div style={{ padding: '30px', fontFamily: 'Arial' }}>
       <h2>🏥 Patient Medical Dashboard</h2>
       
       {/* Upload Box */}
-      <div className="doc-upload-box">
+      <div style={{ background: '#f4f4f4', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
         <h3>Upload New Medical Report / PDF</h3>
-        <div className="doc-input-group">
-          <input type="file" onChange={handleFileChange} accept=".pdf, .jpg, .png" className="doc-file-input" />
-          <button onClick={handleUpload} disabled={uploading} className="doc-upload-btn">
-            {uploading ? 'Uploading...' : 'Upload Report'}
-          </button>
-        </div>
+        <input type="file" onChange={handleFileChange} accept=".pdf, .jpg, .png" />
+        <button onClick={handleUpload} disabled={uploading} style={{ marginLeft: '10px', padding: '8px 15px' }}>
+          {uploading ? 'Uploading...' : 'Upload Report'}
+        </button>
       </div>
 
       {/* Uploaded Documents List */}
-      <div className="doc-list-section">
+      <div>
         <h3>My Uploaded Documents</h3>
         {reports.length === 0 ? (
-          <p className="doc-empty-text">Abhi tak koi document upload nahi kiya gaya hai.</p>
+          <p>Abhi tak koi document upload nahi kiya gaya hai.</p>
         ) : (
-          <ul className="doc-list">
+          <ul style={{ listStyle: 'none', padding: 0 }}>
             {reports.map((doc, index) => (
-              <li key={index} className="doc-item">
-                <span className="doc-file-name">📄 {doc.name}</span>
-                <div className="doc-actions">
-                  <a href={doc.url} target="_blank" rel="noopener noreferrer" className="doc-btn doc-btn-view">
+              <li key={index} style={{ background: '#fff', border: '1px solid #ddd', padding: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '5px' }}>
+                <span>📄 {doc.name}</span>
+                <div>
+                  {/* View Button */}
+                  <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ marginRight: '10px', textDecoration: 'none', background: '#007bff', color: 'white', padding: '5px 10px', borderRadius: '3px' }}>
                     View
                   </a>
-                  <a href={doc.url} download className="doc-btn doc-btn-download">
+                  {/* Download Button */}
+                  <a href={doc.url} download style={{ textDecoration: 'none', background: '#28a745', color: 'white', padding: '5px 10px', borderRadius: '3px' }}>
                     Download
                   </a>
                 </div>
@@ -130,7 +91,9 @@ function Document() {
           </ul>
         )}
       </div>
-    </div>
+    // </div>
+
+
   );
 }
 
