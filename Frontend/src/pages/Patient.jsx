@@ -44,7 +44,7 @@ const navigate = useNavigate();
 const pSubmit = async () => {
   try {
     const response = await fetch(
-      "https://health-track-2b.onrender.com/api/health/healthdata",
+      "https://healthtrackb.onrender.com/api/health/healthdata",
       {
         method: "POST",
         credentials: "include",
