@@ -93,7 +93,6 @@ export const getDocuments = async (req, res) => {
 
 // Explicitly API key pass karein taaki koi confusion na ho
 
-
 export const analyzeMedicalReport = async (req, res) => {
   try {
     const { fileUrl } = req.body;
@@ -112,15 +111,16 @@ export const analyzeMedicalReport = async (req, res) => {
       throw new Error(`Cloudinary se file fetch nahi ho payi. Status: ${fileResponse.status}`);
     }
 
+    // 🔥 FIX: Direct response header se sahi MIME type utha lo (e.g., application/pdf, image/png, image/jpeg)
+    const mimeType = fileResponse.headers.get('content-type') || 'image/jpeg';
+    console.log("Detected MIME Type:", mimeType);
+
     const arrayBuffer = await fileResponse.arrayBuffer();
     const base64Data = Buffer.from(arrayBuffer).toString("base64");
     
-    // 2. MIME type check
-    const mimeType = fileUrl.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
-
     console.log("Calling Gemini API...");
 
-    // 3. Gemini Model Call
+    // 2. Gemini Model Call
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [
@@ -146,7 +146,6 @@ export const analyzeMedicalReport = async (req, res) => {
     });
 
   } catch (error) {
-    // Yeh error ab Render ke logs mein bilkul saaf dikhega
     console.error("DETAILED GEMINI ERROR:", error);
     return res.status(500).json({ 
       success: false, 
@@ -155,9 +154,6 @@ export const analyzeMedicalReport = async (req, res) => {
     });
   }
 };
-
-
-
 
 
 
