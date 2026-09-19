@@ -125,8 +125,8 @@ const ConnectedDevice = () => {
             <strong>How it works?</strong>
 
             <p>
-              Enter your ESP32 Device ID once. After registration,
-              your health data will automatically appear on your dashboard.
+             Please enter your device ID. If you don't have one right now, 
+              you can enter any dummy ID (e.g., "ESP3211") to proceed.
             </p>
           </div>
         </div>
