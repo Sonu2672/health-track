@@ -76,27 +76,7 @@ app.use("/api/devicedata",deviceRoutes)
 // ==========================================
 // SAVE ONESIGNAL PLAYER ID ROUTE (Public)
 // ==========================================
-app.post("/api/users/save-onesignal-id", async (req, res) => {
-  try {
-    const { playerId, userId } = req.body;
 
-    if (!playerId) {
-      return res.status(400).json({ success: false, message: "Player ID is required" });
-    }
-
-    if (userId) {
-      await User.findByIdAndUpdate(userId, { oneSignalPlayerId: playerId });
-      console.log(`✅ Player ID saved for user: ${userId}`);
-    } else {
-      console.log(`✅ Anonymous Player ID received: ${playerId}`);
-    }
-
-    return res.status(200).json({ success: true, message: "Player ID saved successfully" });
-  } catch (error) {
-    console.error("❌ Error saving OneSignal ID:", error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
-});
 // ==========================================
 // 3. ESP32 HEALTH DATA & NOTIFICATION ROUTE
 // ==========================================
