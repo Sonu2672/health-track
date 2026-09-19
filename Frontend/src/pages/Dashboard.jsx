@@ -213,7 +213,7 @@ function Dashboard() {
       if (playerId) {
         console.log("🔥 Player ID Found:", playerId);
         
-        const response = await fetch("https://healthtrackb.onrender.com/api/health/healthdata", {
+        const response = await fetch("https://healthtrackb.onrender.com/api/devicedata/", {
           method: "POST",
           credentials: "include",
           headers: {
