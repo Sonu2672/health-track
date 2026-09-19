@@ -92,7 +92,7 @@ export const getDocuments = async (req, res) => {
 
 
 
-const analyzeMedicalReport = async (req, res) => {
+export const analyzeMedicalReport = async (req, res) => {
   try {
     const { fileUrl } = req.body;
 
