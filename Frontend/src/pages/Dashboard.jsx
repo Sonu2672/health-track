@@ -359,246 +359,655 @@ else {
 
   // ==================================================
   // LOAD HEALTH DATA
+
+  
   // ==================================================
 
-  useEffect(() => {
 
-    const Hdata = async () => {
+  // ==================================================
+// 📡 LOAD HEALTH DATA
+// 🌐 ONLINE API + 📡 ESP32 LOCAL API FALLBACK
+// ==================================================
+
+useEffect(() => {
+
+  const Hdata = async () => {
+
+    let data = null;
+    let source = "NONE";
+
+    // ==================================================
+    // 1️⃣ FIRST TRY ONLINE API
+    // ==================================================
+
+    try {
+
+      console.log("🌐 Trying ONLINE API...");
+
+      const response = await fetch(
+        "https://healthtrackb.onrender.com/api/health/gethealthdata",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          signal: AbortSignal.timeout(3000),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Online API HTTP ${response.status}`
+        );
+      }
+
+      data = await response.json();
+
+      source = "ONLINE";
+
+      console.log(
+        "🟢 ONLINE API CONNECTED"
+      );
+
+      console.log(
+        "🌐 ONLINE DATA:",
+        data
+      );
+
+    } catch (onlineError) {
+
+      console.log(
+        "🟡 ONLINE API unavailable"
+      );
+
+      console.log(
+        "📡 Switching to ESP32 LOCAL API..."
+      );
+
+
+      // ==================================================
+      // 2️⃣ TRY ESP32 LOCAL API
+      // ==================================================
 
       try {
 
-        const response =
-          await fetch(
-            "https://healthtrackb.onrender.com/api/health/gethealthdata",
-            {
-              method: "GET",
+        const localResponse = await fetch(
+          "http://192.168.4.1/api/data",
+          {
+            method: "GET",
+            signal: AbortSignal.timeout(2000),
+          }
+        );
 
-              credentials: "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-            }
+        if (!localResponse.ok) {
+          throw new Error(
+            `ESP32 HTTP ${localResponse.status}`
           );
-
-
-        console.log(
-          "STATUS:",
-          response.status
-        );
-
-        console.log(
-          "OK:",
-          response.ok
-        );
-
-
-        const data =
-          await response.json();
-
-
-        console.log(
-          "🔥 COMPLETE HEALTH DATA:",
-          data
-        );
-
-        console.log(
-          "🔥 HD:",
-          data.hd
-        );
-
-        console.log(
-          "🔥 HEART RATE:",
-          data.hd?.heartRate
-        );
-
-        console.log(
-          "🔥 SPO2:",
-          data.hd?.spo2
-        );
-
-        console.log(
-          "🔥 TEMP:",
-          data.hd?.temp
-        );
-
-        console.log(
-          "🔥 RISK SCORE:",
-          data.riskScore
-        );
-
-        console.log(
-          "🔥 RISK LEVEL:",
-          data.riskLevel
-        );
-
-        console.log(
-          "🔥 RECOMMENDATIONS:",
-          data.recommendations
-        );
-
-
-        // ==================================================
-        // NO DEVICE DATA
-        // ==================================================
-
-        if (!data.hd) {
-
-          console.log(
-            "⚠️ No device data available"
-          );
-
-
-          setHealthd({
-            heartRate: 0,
-            spo2: 0,
-            temp: 0,
-          });
-
-
-          setRiskScore(
-            data.riskScore ?? 0
-          );
-
-
-          setRiskLevel(
-            data.riskLevel ??
-            "Normal"
-          );
-
-
-          setHealthData(
-            data.datatimers ?? []
-          );
-
-
-          return;
         }
 
+        const esp32 = await localResponse.json();
+
+        console.log(
+          "🟢 ESP32 LOCAL API CONNECTED"
+        );
+
+        console.log(
+          "📡 ESP32 DATA:",
+          esp32
+        );
+
 
         // ==================================================
-        // DEVICE DATA AVAILABLE
+        // CONVERT ESP32 DATA → DASHBOARD FORMAT
         // ==================================================
 
-        setHealthd({
+        data = {
 
-          heartRate:
-            data.hd.heartRate ??
+          hd: {
+
+            heartRate:
+              esp32.heart_rate ??
+              esp32.heartRate ??
+              0,
+
+            spo2:
+              esp32.spo2 ??
+              0,
+
+            temp:
+              esp32.temperature ??
+              esp32.body_temperature ??
+              esp32.bodyTemperature ??
+              0,
+
+          },
+
+          humidity:
+            esp32.humidity ??
             0,
 
-          spo2:
-            data.hd.spo2 ??
+          dust:
+            esp32.dust ??
+            esp32.dust_density ??
+            esp32.dustDensity ??
             0,
 
-          temp:
-            data.hd.temp != null
-              ? (
-                  (data.hd.temp * 1.8) +
-                  32
-                ).toFixed(1)
-              : 0,
+          riskLevel:
+            esp32.status ??
+            esp32.ml_status ??
+            esp32.mlStatus ??
+            "Normal",
 
-        });
+          riskScore:
+            esp32.confidence ??
+            esp32.ml_confidence ??
+            0,
 
+          datatimers:
+            esp32.datatimers ??
+            [],
 
-        // ==================================================
-        // 🤖 RISK DATA
-        // ==================================================
+        };
 
-        const newRiskLevel =
-          data.riskLevel ??
-          "Normal";
-
-        const newRiskScore =
-          data.riskScore ??
-          0;
+        source = "OFFLINE";
 
 
-        // ==================================================
-        // SAVE RISK DATA
-        // ==================================================
-
-        setRiskScore(
-          newRiskScore
-        );
-
-        setRiskLevel(
-          newRiskLevel
-        );
-
-        setHealthData(
-          data.datatimers ?? []
-        );
-
-      } catch (error) {
+      } catch (localError) {
 
         console.error(
-          "❌ Health data fetch error:",
-          error
+          "🔴 ESP32 LOCAL API also unavailable",
+          localError
         );
 
-
-        setHealthd({
-          heartRate: 0,
-          spo2: 0,
-          temp: 0,
-        });
-
-
-        setRiskScore(0);
-
-        setRiskLevel(
-          "Normal"
-        );
-
-        setHealthData([]);
+        data = null;
 
       }
 
-    };
+    }
 
 
     // ==================================================
-    // INITIAL FETCH
+    // 3️⃣ NO DATA FROM BOTH APIs
     // ==================================================
 
-    Hdata();
+    if (!data) {
 
+      setHealthd({
 
-    // ==================================================
-    // AUTO REFRESH EVERY 4 SECONDS
-    // ==================================================
+        heartRate: 0,
 
-    const interval =
-      setInterval(() => {
+        spo2: 0,
 
-        Hdata();
+        temp: 0,
 
-      }, 3000);
+      });
 
+      setRiskScore(0);
 
-    // // ==================================================
-    // // CLEANUP
-    // // ==================================================
-
-    return () => {
-
-      clearInterval(
-        interval
+      setRiskLevel(
+        "Normal"
       );
 
-      if (
-        "speechSynthesis" in window
-      ) {
+      setHealthData([]);
 
-        window.speechSynthesis.cancel();
+      return;
 
-      }
+    }
 
-    };
 
-  }, []);
+    // ==================================================
+    // 4️⃣ HEART RATE
+    // ==================================================
+
+    const heartRate = Number(
+      data.hd?.heartRate ??
+      data.heart_rate ??
+      data.heartRate ??
+      0
+    );
+
+
+    // ==================================================
+    // 5️⃣ SpO2
+    // ==================================================
+
+    const spo2 = Number(
+      data.hd?.spo2 ??
+      data.spo2 ??
+      0
+    );
+
+
+    // ==================================================
+    // 6️⃣ BODY TEMPERATURE
+    // ==================================================
+
+    const temperature = Number(
+      data.hd?.temp ??
+      data.temperature ??
+      data.body_temperature ??
+      data.bodyTemperature ??
+      0
+    );
+
+
+    // ==================================================
+    // 7️⃣ UPDATE HEALTH CARDS
+    // ==================================================
+
+    setHealthd({
+
+      heartRate:
+        heartRate,
+
+      spo2:
+        spo2,
+
+      // ESP32 temperature = Celsius
+      // Dashboard displays Fahrenheit
+
+      temp:
+        temperature !== 0
+          ? (
+              (temperature * 1.8) +
+              32
+            ).toFixed(1)
+          : 0,
+
+    });
+
+
+    // ==================================================
+    // 8️⃣ TINYML RISK LEVEL
+    // ==================================================
+
+    let newRiskLevel =
+      data.riskLevel ??
+      data.status ??
+      "Normal";
+
+
+    // ESP32 → Dashboard labels
+
+    if (
+      newRiskLevel === "Critical" ||
+      newRiskLevel === "Abnormal"
+    ) {
+
+      newRiskLevel =
+        "Critical Risk";
+
+    }
+
+    else if (
+      newRiskLevel === "Warning"
+    ) {
+
+      newRiskLevel =
+        "High Risk";
+
+    }
+
+
+    // ==================================================
+    // 9️⃣ TINYML RISK SCORE
+    // ==================================================
+
+    let newRiskScore = Number(
+      data.riskScore ??
+      0
+    );
+
+
+    // Confidence can be:
+    // 0.00 → 1.00
+    // OR
+    // 0 → 100
+
+    if (
+      newRiskScore > 0 &&
+      newRiskScore <= 1
+    ) {
+
+      newRiskScore =
+        Math.round(
+          newRiskScore * 100
+        );
+
+    }
+
+
+    // Keep score inside 0–100
+
+    newRiskScore =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          newRiskScore
+        )
+      );
+
+
+    // ==================================================
+    // 🔟 SAVE RISK DATA
+    // ==================================================
+
+    setRiskScore(
+      newRiskScore
+    );
+
+    setRiskLevel(
+      newRiskLevel
+    );
+
+
+    // ==================================================
+    // 1️⃣1️⃣ HEALTH TREND
+    // ==================================================
+
+    setHealthData(
+      data.datatimers ??
+      []
+    );
+
+
+    // ==================================================
+    // 1️⃣2️⃣ CONNECTION STATUS
+    // ==================================================
+
+    if (source === "ONLINE") {
+
+      console.log(
+        "🟢 DATA SOURCE: ONLINE API"
+      );
+
+    }
+
+    else if (source === "OFFLINE") {
+
+      console.log(
+        "🟡 DATA SOURCE: ESP32 LOCAL API"
+      );
+
+    }
+
+  };
+
+
+  // ==================================================
+  // INITIAL DATA LOAD
+  // ==================================================
+
+  Hdata();
+
+
+  // ==================================================
+  // AUTO REFRESH EVERY 3 SECONDS
+  // ==================================================
+
+  const interval =
+    setInterval(() => {
+
+      Hdata();
+
+    }, 3000);
+
+
+  // ==================================================
+  // CLEANUP
+  // ==================================================
+
+  return () => {
+
+    clearInterval(
+      interval
+    );
+
+  };
+
+}, []);
+  
+
+  // useEffect(() => {
+
+  //   const Hdata = async () => {
+
+  //     try {
+
+  //       const response =
+  //         await fetch(
+  //           "https://healthtrackb.onrender.com/api/health/gethealthdata",
+  //           {
+  //             method: "GET",
+
+  //             credentials: "include",
+
+  //             headers: {
+  //               "Content-Type":
+  //                 "application/json",
+  //             },
+  //           }
+  //         );
+
+
+  //       console.log(
+  //         "STATUS:",
+  //         response.status
+  //       );
+
+  //       console.log(
+  //         "OK:",
+  //         response.ok
+  //       );
+
+
+  //       const data =
+  //         await response.json();
+
+
+  //       console.log(
+  //         "🔥 COMPLETE HEALTH DATA:",
+  //         data
+  //       );
+
+  //       console.log(
+  //         "🔥 HD:",
+  //         data.hd
+  //       );
+
+  //       console.log(
+  //         "🔥 HEART RATE:",
+  //         data.hd?.heartRate
+  //       );
+
+  //       console.log(
+  //         "🔥 SPO2:",
+  //         data.hd?.spo2
+  //       );
+
+  //       console.log(
+  //         "🔥 TEMP:",
+  //         data.hd?.temp
+  //       );
+
+  //       console.log(
+  //         "🔥 RISK SCORE:",
+  //         data.riskScore
+  //       );
+
+  //       console.log(
+  //         "🔥 RISK LEVEL:",
+  //         data.riskLevel
+  //       );
+
+  //       console.log(
+  //         "🔥 RECOMMENDATIONS:",
+  //         data.recommendations
+  //       );
+
+
+  //       // ==================================================
+  //       // NO DEVICE DATA
+  //       // ==================================================
+
+  //       if (!data.hd) {
+
+  //         console.log(
+  //           "⚠️ No device data available"
+  //         );
+
+
+  //         setHealthd({
+  //           heartRate: 0,
+  //           spo2: 0,
+  //           temp: 0,
+  //         });
+
+
+  //         setRiskScore(
+  //           data.riskScore ?? 0
+  //         );
+
+
+  //         setRiskLevel(
+  //           data.riskLevel ??
+  //           "Normal"
+  //         );
+
+
+  //         setHealthData(
+  //           data.datatimers ?? []
+  //         );
+
+
+  //         return;
+  //       }
+
+
+  //       // ==================================================
+  //       // DEVICE DATA AVAILABLE
+  //       // ==================================================
+
+  //       setHealthd({
+
+  //         heartRate:
+  //           data.hd.heartRate ??
+  //           0,
+
+  //         spo2:
+  //           data.hd.spo2 ??
+  //           0,
+
+  //         temp:
+  //           data.hd.temp != null
+  //             ? (
+  //                 (data.hd.temp * 1.8) +
+  //                 32
+  //               ).toFixed(1)
+  //             : 0,
+
+  //       });
+
+
+  //       // ==================================================
+  //       // 🤖 RISK DATA
+  //       // ==================================================
+
+  //       const newRiskLevel =
+  //         data.riskLevel ??
+  //         "Normal";
+
+  //       const newRiskScore =
+  //         data.riskScore ??
+  //         0;
+
+
+  //       // ==================================================
+  //       // SAVE RISK DATA
+  //       // ==================================================
+
+  //       setRiskScore(
+  //         newRiskScore
+  //       );
+
+  //       setRiskLevel(
+  //         newRiskLevel
+  //       );
+
+  //       setHealthData(
+  //         data.datatimers ?? []
+  //       );
+
+  //     } catch (error) {
+
+  //       console.error(
+  //         "❌ Health data fetch error:",
+  //         error
+  //       );
+
+
+  //       setHealthd({
+  //         heartRate: 0,
+  //         spo2: 0,
+  //         temp: 0,
+  //       });
+
+
+  //       setRiskScore(0);
+
+  //       setRiskLevel(
+  //         "Normal"
+  //       );
+
+  //       setHealthData([]);
+
+  //     }
+
+  //   };
+
+
+  //   // ==================================================
+  //   // INITIAL FETCH
+  //   // ==================================================
+
+  //   Hdata();
+
+
+  //   // ==================================================
+  //   // AUTO REFRESH EVERY 4 SECONDS
+  //   // ==================================================
+
+  //   const interval =
+  //     setInterval(() => {
+
+  //       Hdata();
+
+  //     }, 3000);
+
+
+  //   // // ==================================================
+  //   // // CLEANUP
+  //   // // ==================================================
+
+  //   return () => {
+
+  //     clearInterval(
+  //       interval
+  //     );
+
+  //     if (
+  //       "speechSynthesis" in window
+  //     ) {
+
+  //       window.speechSynthesis.cancel();
+
+  //     }
+
+  //   };
+
+  // }, []);
 
 
   // ==================================================
