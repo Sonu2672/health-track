@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import "../App.css";
 import Sidebar from "../components/Sidebar";
-import { TriangleAlert, Menu } from "lucide-react";
+import { TriangleAlert} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 
