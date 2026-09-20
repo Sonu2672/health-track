@@ -416,7 +416,7 @@ else {
 
         try {
           const localResponse = await fetchWithTimeout(
-            "http://192.168.4.1/api/data",
+            "http://192.168.4.1/data",
             {
               method: "GET",
             },
