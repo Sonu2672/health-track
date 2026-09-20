@@ -1,3 +1,6 @@
+import  { useEffect, useState } from "react";
+
+
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import "../App.css";
@@ -5,1197 +8,921 @@ import Sidebar from "../components/Sidebar";
 import { TriangleAlert, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+
 import {
-  HeartPulse,
-  AlertTriangle,
-  Droplets,
-  Thermometer,
-  Footprints,
   Activity,
+  HeartPulse,
+  Thermometer,
+  Droplets,
   Wind,
-  Pill,
-  FileText,
-  ChevronRight,
-  Sun,
+  ShieldCheck,
+  AlertTriangle,
+  Bell,
+  Calendar,
+  Clock,
+  User,
+  LogOut,
+  Menu,
+  Wifi,
+  WifiOff,
+  Brain,
+  RefreshCw,
+  Stethoscope,
 } from "lucide-react";
 
-import {
-  AreaChart,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip,
-  Area,
-} from "recharts";
 
-// ==================================================
-// 🌐 API CONFIGURATION
-// ==================================================
 
-const BACKEND_URL =
-  "https://healthtrackb.onrender.com";
+// ================================================================
+//                         API CONFIG
+// ================================================================
 
-// ==================================================
-// API 1
-// ESP32 → Backend → MongoDB
-//
-// POST /api/health/healthdata
-//
-// IMPORTANT:
-// Dashboard DOES NOT call this API.
-// ESP32 .ino will call this endpoint.
-// ==================================================
-
-const ESP32_UPLOAD_API =
-  `${BACKEND_URL}/api/health/healthdata`;
-
-// ==================================================
-// API 2
-// MongoDB → Backend → Dashboard
-//
-// GET /api/health/getHealthData
-// ==================================================
-
+// ONLINE BACKEND
 const ONLINE_GET_API =
-  `${BACKEND_URL}/api/health/getHealthData`;
+  "https://healthtrackb.onrender.com/api/health/getHealthData";
 
-// ==================================================
-// API 3
-// ESP32 → Dashboard
-//
-// OFFLINE LOCAL ESP32 API
-// GET /data
-// ==================================================
-
+// ESP32 LOCAL API
 const ESP32_LOCAL_API =
   "http://192.168.4.1/data";
 
-// ==================================================
-// ACTIVITY DATA
-// ==================================================
+// Refresh interval
+const REFRESH_INTERVAL = 5000;
 
-const activityData = [
-  15,
-  22,
-  17,
-  31,
-  24,
-  38,
-  25,
-  43,
-  30,
-  35,
-  28,
-  45,
-];
+// ================================================================
+//                         HELPERS
+// ================================================================
 
-function Dashboard() {
+const getOnlineData = async () => {
+  const response = await fetch(
+    ONLINE_GET_API,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
+  if (!response.ok) {
+    throw new Error(
+      `Online API Error: ${response.status}`
+    );
+  }
+
+  return await response.json();
+};
+
+const getLocalData = async () => {
+  const response = await fetch(
+    ESP32_LOCAL_API,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `ESP32 API Error: ${response.status}`
+    );
+  }
+
+  return await response.json();
+};
+
+// ================================================================
+//                 NORMALIZE ONLINE DATA
+// ================================================================
+
+const normalizeOnlineData = (response) => {
+  // Backend may return:
+  // { data: {...} }
+  // OR
+  // direct object
+
+  const result =
+    response?.data ?? response;
+
+  // Some backend responses may contain
+  // health data inside "hd"
+  const hd =
+    result?.hd ?? result;
+
+  return {
+    deviceId:
+      hd?.deviceId ??
+      result?.deviceId ??
+      "ESP32_HEALTH_01",
+
+    heartRate:
+      Number(
+        hd?.heartRate ??
+        hd?.heart_rate ??
+        result?.heartRate ??
+        result?.heart_rate ??
+        0
+      ),
+
+    rawBPM:
+      Number(
+        hd?.rawBPM ??
+        hd?.raw_bpm ??
+        result?.rawBPM ??
+        result?.raw_bpm ??
+        0
+      ),
+
+    spo2:
+      Number(
+        hd?.spo2 ??
+        hd?.SpO2 ??
+        result?.spo2 ??
+        result?.SpO2 ??
+        0
+      ),
+
+    bodyTemperature:
+      Number(
+        hd?.bodyTemperature ??
+        hd?.body_temperature ??
+        result?.bodyTemperature ??
+        0
+      ),
+
+    environmentTemperature:
+      Number(
+        hd?.environmentTemperature ??
+        hd?.environment_temperature ??
+        result?.environmentTemperature ??
+        0
+      ),
+
+    humidity:
+      Number(
+        hd?.humidity ??
+        result?.humidity ??
+        0
+      ),
+
+    ecg:
+      Number(
+        hd?.ecg ??
+        result?.ecg ??
+        0
+      ),
+
+    ecgLeadOff:
+      Boolean(
+        hd?.ecgLeadOff ??
+        hd?.ecg_lead_off ??
+        result?.ecgLeadOff ??
+        false
+      ),
+
+    dustDensity:
+      Number(
+        hd?.dustDensity ??
+        hd?.dust_density ??
+        result?.dustDensity ??
+        0
+      ),
+
+    mlStatus:
+      hd?.mlStatus ??
+      hd?.ml_status ??
+      result?.mlStatus ??
+      result?.ml_status ??
+      result?.status ??
+      "NORMAL",
+
+    mlConfidence:
+      Number(
+        hd?.mlConfidence ??
+        hd?.ml_confidence ??
+        result?.mlConfidence ??
+        result?.ml_confidence ??
+        result?.confidence ??
+        0
+      ),
+
+    mlNormalScore:
+      Number(
+        hd?.mlNormalScore ??
+        result?.mlNormalScore ??
+        0
+      ),
+
+    mlWarningScore:
+      Number(
+        hd?.mlWarningScore ??
+        result?.mlWarningScore ??
+        0
+      ),
+
+    mlAbnormalScore:
+      Number(
+        hd?.mlAbnormalScore ??
+        result?.mlAbnormalScore ??
+        0
+      ),
+
+    datatimers:
+      result?.datatimers ??
+      hd?.datatimers ??
+      [],
+
+    recommendations:
+      result?.recommendations ??
+      hd?.recommendations ??
+      [],
+  };
+};
+
+// ================================================================
+//                 NORMALIZE ESP32 LOCAL DATA
+// ================================================================
+
+const normalizeLocalData = (data) => {
+  return {
+    deviceId:
+      data?.deviceId ??
+      "ESP32_HEALTH_01",
+
+    heartRate:
+      Number(
+        data?.heartRate ?? 0
+      ),
+
+    rawBPM:
+      Number(
+        data?.rawBPM ?? 0
+      ),
+
+    spo2:
+      Number(
+        data?.spo2 ?? 0
+      ),
+
+    bodyTemperature:
+      Number(
+        data?.bodyTemperature ?? 0
+      ),
+
+    environmentTemperature:
+      Number(
+        data?.environmentTemperature ?? 0
+      ),
+
+    humidity:
+      Number(
+        data?.humidity ?? 0
+      ),
+
+    ecg:
+      Number(
+        data?.ecg ?? 0
+      ),
+
+    ecgLeadOff:
+      Boolean(
+        data?.ecgLeadOff ?? false
+      ),
+
+    dustDensity:
+      Number(
+        data?.dustDensity ?? 0
+      ),
+
+    mlStatus:
+      data?.mlStatus ??
+      "NORMAL",
+
+    mlConfidence:
+      Number(
+        data?.mlConfidence ?? 0
+      ),
+
+    mlNormalScore:
+      Number(
+        data?.mlNormalScore ?? 0
+      ),
+
+    mlWarningScore:
+      Number(
+        data?.mlWarningScore ?? 0
+      ),
+
+    mlAbnormalScore:
+      Number(
+        data?.mlAbnormalScore ?? 0
+      ),
+
+    datatimers: [],
+
+    recommendations: [],
+  };
+};
+
+// ================================================================
+//                         DASHBOARD
+// ================================================================
+
+const Dashboard = () => {
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  // --------------------------------------------------------------
+  // STATE
+  // --------------------------------------------------------------
 
   const [healthData, setHealthData] =
-    useState([]);
+    useState(null);
 
-  const [healthd, setHealthd] =
-    useState({
-      heartRate: 70,
-      spo2: 98,
-      temp: 96,
-    });
+  const [loading, setLoading] =
+    useState(true);
 
-  const [riskScore, setRiskScore] =
-    useState(0);
+  const [refreshing, setRefreshing] =
+    useState(false);
 
-  const [riskLevel, setRiskLevel] =
-    useState("Normal");
+  const [connectionMode, setConnectionMode] =
+    useState("checking");
 
-  const [name, setName] =
-    useState("");
+  const [lastUpdated, setLastUpdated] =
+    useState(null);
 
-  // ==================================================
-  // 🔊 VOICE ALERT STATE
-  // ==================================================
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
 
   const [voiceAlertStopped, setVoiceAlertStopped] =
     useState(false);
 
-  const voiceIntervalRef =
-    useRef(null);
-
-  // ==================================================
-  // 🔊 VOICE ALERT FUNCTION
-  // ==================================================
-
-  const speakRiskAlert = (level) => {
-
-    if (
-      !("speechSynthesis" in window)
-    ) {
-
-      console.log(
-        "❌ Speech synthesis not supported"
-      );
-
-      return;
-    }
-
-    let message = "";
-
-    if (
-      level === "Critical Risk"
-    ) {
-
-      message =
-        "Critical health risk detected. Please take immediate action.";
-
-    }
-
-    else if (
-      level === "High Risk"
-    ) {
-
-      message =
-        "Warning. High health risk detected. Please check your health condition.";
-
-    }
-
-    else {
-
-      return;
-
-    }
-
-    window.speechSynthesis.cancel();
-
-    const speech =
-      new SpeechSynthesisUtterance(
-        message
-      );
-
-    speech.lang = "hi-IN";
-    speech.rate = 0.9;
-    speech.pitch = 1;
-    speech.volume = 1;
-
-    const voices =
-      window.speechSynthesis.getVoices();
-
-    const hindiVoice =
-      voices.find(
-        (voice) =>
-          voice.lang &&
-          voice.lang
-            .toLowerCase()
-            .startsWith("hi")
-      );
-
-    if (hindiVoice) {
-
-      speech.voice =
-        hindiVoice;
-
-    }
-
-    window.speechSynthesis.speak(
-      speech
-    );
-
-    console.log(
-      "🔊 VOICE ALERT:",
-      message
-    );
-  };
-
-  // ==================================================
-  // 🔔 ONESIGNAL
-  // ==================================================
-
-  useEffect(() => {
-
-    if (
-      window._oneSignalInitialized
-    ) {
-
-      return;
-
-    }
-
-    window._oneSignalInitialized =
-      true;
-
-    window.OneSignal =
-      window.OneSignal || [];
-
-    window.OneSignal.push(
-      async function () {
-
-        try {
-
-          await window.OneSignal.init({
-            appId:
-              "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
-
-            allowLocalhostAsSecureOrigin:
-              true,
-          });
-
-          console.log(
-            "OneSignal Initialized Successfully"
-          );
-
-          await window.OneSignal.Slidedown.promptPush();
-
-          const playerId =
-            window.OneSignal
-              .User
-              .PushSubscription
-              .id;
-
-          if (playerId) {
-
-            console.log(
-              "🔥 Player ID Found:",
-              playerId
-            );
-
-            const response =
-              await fetch(
-                `${BACKEND_URL}/api/devicedata/onesignalid`,
-                {
-                  method: "POST",
-
-                  credentials:
-                    "include",
-
-                  headers: {
-                    "Content-Type":
-                      "application/json",
-                  },
-
-                  body:
-                    JSON.stringify({
-                      playerId,
-                    }),
-                }
-              );
-
-            const data =
-              await response.json();
-
-            console.log(
-              "✅ Backend Save Response:",
-              data
-            );
-
-          }
-
-          else {
-
-            console.log(
-              "⚠️ Player ID not generated yet"
-            );
-
-          }
-
-        }
-
-        catch (error) {
-
-          if (
-            !error.message?.includes(
-              "already initialized"
-            )
-          ) {
-
-            console.error(
-              "Error during OneSignal init:",
-              error
-            );
-
-          }
-
-        }
-
-      }
-    );
-
-  }, []);
-
-  // ==================================================
-  // 🔊 START / STOP VOICE ALERT
-  // ==================================================
-
-  useEffect(() => {
-
-    if (
-      voiceIntervalRef.current
-    ) {
-
-      clearInterval(
-        voiceIntervalRef.current
-      );
-
-      voiceIntervalRef.current =
-        null;
-
-    }
-
-    if (
-      "speechSynthesis" in window
-    ) {
-
-      window.speechSynthesis.cancel();
-
-    }
-
-    if (
-      riskLevel !== "High Risk" &&
-      riskLevel !== "Critical Risk"
-    ) {
-
-      setVoiceAlertStopped(false);
-
-      return;
-
-    }
-
-    if (voiceAlertStopped) {
-
-      console.log(
-        "🔇 Voice alert stopped by user"
-      );
-
-      return;
-
-    }
-
-    speakRiskAlert(
-      riskLevel
-    );
-
-    voiceIntervalRef.current =
-      setInterval(
-        () => {
-
-          if (
-            !voiceAlertStopped &&
-            (
-              riskLevel ===
-                "High Risk" ||
-              riskLevel ===
-                "Critical Risk"
-            )
-          ) {
-
-            speakRiskAlert(
-              riskLevel
-            );
-
-          }
-
-        },
-        5000
-      );
-
-    return () => {
-
-      if (
-        voiceIntervalRef.current
-      ) {
-
-        clearInterval(
-          voiceIntervalRef.current
-        );
-
-        voiceIntervalRef.current =
-          null;
-
-      }
-
-      if (
-        "speechSynthesis" in window
-      ) {
-
-        window.speechSynthesis.cancel();
-
-      }
-
-    };
-
-  }, [
-    riskLevel,
-    voiceAlertStopped,
-  ]);
-
-  // ==================================================
-  // 📡 HEALTH DATA
-  //
-  // 3 API ARCHITECTURE
-  //
-  // API 1:
-  // POST /api/health/healthdata
-  //
-  // ESP32 → Backend → MongoDB
-  //
-  // Dashboard does NOT call it.
-  //
-  //
-  // API 2:
-  // GET /api/health/getHealthData
-  //
-  // MongoDB → Backend → Dashboard
-  //
-  //
-  // API 3:
-  // GET http://192.168.4.1/data
-  //
-  // ESP32 → Dashboard
-  //
-  // Online GET has priority.
-  // If online fails → local ESP32.
-  // ==================================================
-
-  useEffect(() => {
-
-    let isMounted = true;
-
-    // ==================================================
-    // FETCH WITH TIMEOUT
-    // ==================================================
-
-    const fetchWithTimeout =
-      async (
-        url,
-        options = {},
-        timeout = 5000
-      ) => {
-
-        const controller =
-          new AbortController();
-
-        const timer =
-          setTimeout(
-            () =>
-              controller.abort(),
-            timeout
-          );
-
-        try {
-
-          const response =
-            await fetch(
-              url,
-              {
-                ...options,
-
-                signal:
-                  controller.signal,
-              }
-            );
-
-          return response;
-
-        }
-
-        finally {
-
-          clearTimeout(
-            timer
-          );
-
-        }
-
-      };
-
-    // ==================================================
-    // CONVERT ESP32 LOCAL DATA
-    // INTO COMMON DASHBOARD FORMAT
-    // ==================================================
-
-    const convertESP32Data =
-      (esp32) => {
-
-        return {
-
-          hd: {
-
-            heartRate:
-              esp32?.heart_rate ??
-              esp32?.heartRate ??
-              esp32?.hr ??
-              0,
-
-            spo2:
-              esp32?.spo2 ??
-              esp32?.SpO2 ??
-              esp32?.oxygen ??
-              0,
-
-            temp:
-              esp32?.temperature ??
-              esp32?.body_temperature ??
-              esp32?.bodyTemperature ??
-              esp32?.temp ??
-              0,
-
-          },
-
-          humidity:
-            esp32?.humidity ??
-            0,
-
-          dust:
-            esp32?.dust ??
-            esp32?.dust_density ??
-            esp32?.dustDensity ??
-            0,
-
-          riskLevel:
-            esp32?.riskLevel ??
-            esp32?.status ??
-            esp32?.ml_status ??
-            esp32?.mlStatus ??
-            "Normal",
-
-          riskScore:
-            esp32?.riskScore ??
-            esp32?.confidence ??
-            esp32?.ml_confidence ??
-            0,
-
-          datatimers:
-            Array.isArray(
-              esp32?.datatimers
-            )
-              ? esp32.datatimers
-              : [],
-
-        };
-
-      };
-
-    // ==================================================
-    // NORMALIZE RISK LEVEL
-    // ==================================================
-
-    const normalizeRiskLevel =
-      (level) => {
-
-        if (!level) {
-
-          return "Normal";
-
-        }
-
-        const normalized =
-          String(level)
-            .trim()
-            .toLowerCase();
-
-        if (
-          normalized ===
-            "critical" ||
-          normalized ===
-            "critical risk" ||
-          normalized ===
-            "abnormal"
-        ) {
-
-          return "Critical Risk";
-
-        }
-
-        if (
-          normalized ===
-            "warning" ||
-          normalized ===
-            "high" ||
-          normalized ===
-            "high risk"
-        ) {
-
-          return "High Risk";
-
-        }
-
-        return "Normal";
-
-      };
-
-    // ==================================================
-    // NORMALIZE RISK SCORE
-    // ==================================================
-
-    const normalizeRiskScore =
-      (value) => {
-
-        let score =
-          Number(value ?? 0);
-
-        if (
-          !Number.isFinite(score)
-        ) {
-
-          score = 0;
-
-        }
-
-        // 0.00 - 1.00 → percentage
-
-        if (
-          score > 0 &&
-          score <= 1
-        ) {
-
-          score =
-            Math.round(
-              score * 100
-            );
-
-        }
-
-        return Math.max(
-          0,
-          Math.min(
-            100,
-            Math.round(score)
-          )
-        );
-
-      };
-
-    // ==================================================
-    // MAIN HEALTH DATA FUNCTION
-    // ==================================================
-
-    const Hdata = async () => {
-
-      let data = null;
-
-      let source = "NONE";
-
-      // ==================================================
-      // 1️⃣ ONLINE BACKEND
-      //
-      // GET /api/health/getHealthData
-      // ==================================================
+  // ==============================================================
+  //                      FETCH HEALTH DATA
+  // ==============================================================
+
+  const fetchHealthData = async () => {
+    try {
+      setRefreshing(true);
+
+      // ----------------------------------------------------------
+      // FIRST TRY ONLINE BACKEND
+      // ----------------------------------------------------------
 
       try {
+        const onlineResponse =
+          await getOnlineData();
 
-        console.log(
-          "🌐 Trying ONLINE BACKEND..."
-        );
-
-        const response =
-          await fetchWithTimeout(
-
-            ONLINE_GET_API,
-
-            {
-              method: "GET",
-
-              credentials:
-                "include",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-            },
-
-            6000
-
+        const onlineData =
+          normalizeOnlineData(
+            onlineResponse
           );
 
-        console.log(
-          "🌐 ONLINE STATUS:",
-          response.status
-        );
+        // Check whether online response
+        // actually contains health data.
 
-        if (!response.ok) {
+        const hasOnlineHealthData =
+          onlineData.heartRate > 0 ||
+          onlineData.spo2 > 0 ||
+          onlineData.bodyTemperature > 0 ||
+          onlineData.humidity > 0 ||
+          onlineData.dustDensity > 0;
 
-          throw new Error(
-            `Online API HTTP ${response.status}`
+        if (hasOnlineHealthData) {
+          setHealthData(
+            onlineData
           );
 
-        }
-
-        const result =
-          await response.json();
-
-        console.log(
-          "🟢 ONLINE RESPONSE:",
-          result
-        );
-
-        // Supports:
-        //
-        // { hd: {...} }
-        //
-        // OR
-        //
-        // { data: {...} }
-
-        data =
-          result?.data ??
-          result;
-
-        source =
-          "ONLINE";
-
-        console.log(
-          "🟢 DATA SOURCE: ONLINE BACKEND"
-        );
-
-      }
-
-      catch (onlineError) {
-
-        console.warn(
-          "🟡 ONLINE API FAILED:",
-          onlineError.message
-        );
-
-        console.log(
-          "📡 Trying LOCAL ESP32..."
-        );
-
-        // ==================================================
-        // 2️⃣ OFFLINE ESP32
-        //
-        // GET /data
-        // ==================================================
-
-        try {
-
-          const localResponse =
-            await fetchWithTimeout(
-
-              ESP32_LOCAL_API,
-
-              {
-                method: "GET",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-              },
-
-              2500
-
-            );
-
-          console.log(
-            "📡 ESP32 LOCAL STATUS:",
-            localResponse.status
+          setConnectionMode(
+            "online"
           );
 
-          if (!localResponse.ok) {
-
-            throw new Error(
-              `ESP32 HTTP ${localResponse.status}`
-            );
-
-          }
-
-          const esp32 =
-            await localResponse.json();
-
-          console.log(
-            "🟢 ESP32 LOCAL RESPONSE:",
-            esp32
+          setLastUpdated(
+            new Date()
           );
 
-          data =
-            convertESP32Data(
-              esp32
-            );
-
-          source =
-            "OFFLINE";
-
-          console.log(
-            "🟡 DATA SOURCE: ESP32 LOCAL /data"
-          );
-
-        }
-
-        catch (localError) {
-
-          console.error(
-            "🔴 BOTH ONLINE AND LOCAL APIs FAILED:",
-            localError.message
-          );
-
-          data = null;
-
-          source = "NONE";
-
-        }
-
-      }
-
-      // ==================================================
-      // 3️⃣ NO DATA
-      // ==================================================
-
-      if (
-        !data ||
-        !isMounted
-      ) {
-
-        if (!isMounted) {
+          setLoading(false);
+          setRefreshing(false);
 
           return;
-
         }
 
-        setHealthd({
+        throw new Error(
+          "Online health data unavailable"
+        );
+      } catch (onlineError) {
+        console.log(
+          "Online API unavailable:",
+          onlineError
+        );
+      }
 
-          heartRate: 0,
+      // ----------------------------------------------------------
+      // FALLBACK TO ESP32 LOCAL API
+      // ----------------------------------------------------------
 
-          spo2: 0,
+      try {
+        const localResponse =
+          await getLocalData();
 
-          temp: 0,
+        const localData =
+          normalizeLocalData(
+            localResponse
+          );
 
-        });
-
-        setRiskScore(0);
-
-        setRiskLevel(
-          "Normal"
+        setHealthData(
+          localData
         );
 
-        setHealthData([]);
+        setConnectionMode(
+          "offline"
+        );
+
+        setLastUpdated(
+          new Date()
+        );
+
+        setLoading(false);
+        setRefreshing(false);
 
         return;
-
-      }
-
-      // ==================================================
-      // 4️⃣ HEART RATE
-      // ==================================================
-
-      const heartRate =
-        Number(
-
-          data?.hd?.heartRate ??
-
-          data?.heart_rate ??
-
-          data?.heartRate ??
-
-          data?.hr ??
-
-          0
-
-        );
-
-      // ==================================================
-      // 5️⃣ SpO2
-      // ==================================================
-
-      const spo2 =
-        Number(
-
-          data?.hd?.spo2 ??
-
-          data?.spo2 ??
-
-          data?.SpO2 ??
-
-          data?.oxygen ??
-
-          0
-
-        );
-
-      // ==================================================
-      // 6️⃣ TEMPERATURE
-      // ==================================================
-
-      const temperature =
-        Number(
-
-          data?.hd?.temp ??
-
-          data?.temperature ??
-
-          data?.body_temperature ??
-
-          data?.bodyTemperature ??
-
-          data?.temp ??
-
-          0
-
-        );
-
-      // ==================================================
-      // 7️⃣ UPDATE HEALTH CARDS
-      // ==================================================
-
-      setHealthd({
-
-        heartRate:
-          Number.isFinite(
-            heartRate
-          )
-            ? heartRate
-            : 0,
-
-        spo2:
-          Number.isFinite(
-            spo2
-          )
-            ? spo2
-            : 0,
-
-        // ESP32 temperature:
-        // Celsius → Fahrenheit
-
-        temp:
-          temperature !== 0 &&
-          Number.isFinite(
-            temperature
-          )
-
-            ? (
-                temperature *
-                  1.8 +
-                32
-              ).toFixed(1)
-
-            : 0,
-
-      });
-
-      // ==================================================
-      // 8️⃣ RISK LEVEL
-      // ==================================================
-
-      const rawRiskLevel =
-        data?.riskLevel ??
-        data?.status ??
-        data?.ml_status ??
-        data?.mlStatus ??
-        "Normal";
-
-      const newRiskLevel =
-        normalizeRiskLevel(
-          rawRiskLevel
-        );
-
-      // ==================================================
-      // 9️⃣ RISK SCORE
-      // ==================================================
-
-      const rawRiskScore =
-        data?.riskScore ??
-        data?.confidence ??
-        data?.ml_confidence ??
-        0;
-
-      const newRiskScore =
-        normalizeRiskScore(
-          rawRiskScore
-        );
-
-      // ==================================================
-      // 🔟 SAVE RISK
-      // ==================================================
-
-      setRiskScore(
-        newRiskScore
-      );
-
-      setRiskLevel(
-        newRiskLevel
-      );
-
-      // ==================================================
-      // 1️⃣1️⃣ HEALTH TREND
-      // ==================================================
-
-      let trendData = [];
-
-      if (
-        Array.isArray(
-          data?.datatimers
-        )
-      ) {
-
-        trendData =
-          data.datatimers;
-
-      }
-
-      else if (
-        Array.isArray(
-          data?.data?.datatimers
-        )
-      ) {
-
-        trendData =
-          data.data.datatimers;
-
-      }
-
-      setHealthData(
-        trendData
-      );
-
-      // ==================================================
-      // 1️⃣2️⃣ SOURCE LOG
-      // ==================================================
-
-      if (
-        source === "ONLINE"
-      ) {
-
+      } catch (localError) {
         console.log(
-          "🌐 FINAL SOURCE: BACKEND / MONGODB"
+          "ESP32 Local API unavailable:",
+          localError
         );
-
       }
 
-      else if (
-        source === "OFFLINE"
-      ) {
+      // ----------------------------------------------------------
+      // BOTH FAILED
+      // ----------------------------------------------------------
 
-        console.log(
-          "📡 FINAL SOURCE: ESP32 /data"
-        );
+      setConnectionMode(
+        "disconnected"
+      );
 
-      }
+      setLoading(false);
 
-    };
+      toast.error(
+        "Unable to connect to online backend or ESP32."
+      );
+    } finally {
+      setRefreshing(false);
+      setLoading(false);
+    }
+  };
 
-    // ==================================================
-    // INITIAL LOAD
-    // ==================================================
+  // ==============================================================
+  //                       INITIAL LOAD
+  // ==============================================================
 
-    Hdata();
-
-    // ==================================================
-    // AUTO REFRESH EVERY 3 SECONDS
-    // ==================================================
+  useEffect(() => {
+    fetchHealthData();
 
     const interval =
       setInterval(
-        () => {
-
-          Hdata();
-
-        },
-        3000
+        fetchHealthData,
+        REFRESH_INTERVAL
       );
-
-    // ==================================================
-    // CLEANUP
-    // ==================================================
 
     return () => {
-
-      isMounted = false;
-
-      clearInterval(
-        interval
-      );
-
+      clearInterval(interval);
     };
-
   }, []);
 
-  // ==================================================
-  // DANGER CHECK
-  // ==================================================
+  // ==============================================================
+  //                  NORMALIZED VALUES
+  // ==============================================================
+
+  const data =
+    healthData ?? {
+      heartRate: 0,
+      rawBPM: 0,
+      spo2: 0,
+      bodyTemperature: 0,
+      environmentTemperature: 0,
+      humidity: 0,
+      ecg: 0,
+      ecgLeadOff: false,
+      dustDensity: 0,
+      mlStatus: "NORMAL",
+      mlConfidence: 0,
+      mlNormalScore: 0,
+      mlWarningScore: 0,
+      mlAbnormalScore: 0,
+      datatimers: [],
+      recommendations: [],
+    };
+
+  // ==============================================================
+  //                  STATUS NORMALIZATION
+  // ==============================================================
+
+  const normalizedStatus =
+    String(
+      data.mlStatus ?? "NORMAL"
+    ).toUpperCase();
 
   const isDangerous =
-    riskLevel === "High Risk" ||
-    riskLevel === "Critical Risk";
+    normalizedStatus === "ABNORMAL" ||
+    normalizedStatus === "CRITICAL" ||
+    normalizedStatus === "DANGER";
 
-  // ==================================================
-  // RENDER
-  // ==================================================
+  const isWarning =
+    normalizedStatus === "WARNING" ||
+    normalizedStatus === "WARN";
+
+  const isNormal =
+    !isDangerous &&
+    !isWarning;
+
+  // ==============================================================
+  //                    CONFIDENCE
+  // ==============================================================
+
+  let confidence =
+    Number(
+      data.mlConfidence ?? 0
+    );
+
+  if (confidence <= 1) {
+    confidence =
+      confidence * 100;
+  }
+
+  confidence =
+    Math.min(
+      100,
+      Math.max(
+        0,
+        confidence
+      )
+    );
+
+  // ==============================================================
+  //                    TEMPERATURE
+  // ==============================================================
+
+  const bodyTempF =
+    data.bodyTemperature
+      ? (
+          data.bodyTemperature *
+            9 /
+            5
+        ) + 32
+      : 0;
+
+  const environmentTempF =
+    data.environmentTemperature
+      ? (
+          data.environmentTemperature *
+            9 /
+            5
+        ) + 32
+      : 0;
+
+  // ==============================================================
+  //                      ECG
+  // ==============================================================
+
+  const ecgText =
+    data.ecgLeadOff
+      ? "LEAD OFF"
+      : data.ecg ?? 0;
+
+  // ==============================================================
+  //                     VOICE ALERT
+  // ==============================================================
+
+  useEffect(() => {
+    if (
+      isDangerous &&
+      !voiceAlertStopped &&
+      typeof window !==
+        "undefined" &&
+      "speechSynthesis" in window
+    ) {
+      const message =
+        new SpeechSynthesisUtterance(
+          "Warning. Abnormal health condition detected. Please check your health immediately."
+        );
+
+      message.rate = 0.9;
+      message.pitch = 1;
+
+      window.speechSynthesis.cancel();
+
+      window.speechSynthesis.speak(
+        message
+      );
+    }
+
+    if (isNormal) {
+      setVoiceAlertStopped(
+        false
+      );
+    }
+  }, [
+    isDangerous,
+    isNormal,
+    voiceAlertStopped,
+  ]);
+
+  // ==============================================================
+  //                      LOGOUT
+  // ==============================================================
+
+  const handleLogout = () => {
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "user"
+    );
+
+    navigate(
+      "/login"
+    );
+  };
+
+  // ==============================================================
+  //                     LOADING
+  // ==============================================================
+
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <RefreshCw
+          size={35}
+          className="loading-spin"
+        />
+
+        <p>
+          Loading health data...
+        </p>
+      </div>
+    );
+  }
+
+  // ==============================================================
+  //                     DASHBOARD UI
+  // ==============================================================
 
   return (
+    <div className="dashboard-page">
 
-    <div className="dashboard">
+      {/* ========================================================
+                         SIDEBAR
+      ========================================================= */}
 
-      {/* SIDEBAR */}
+      <aside
+        className={
+          sidebarOpen
+            ? "dashboard-sidebar open"
+            : "dashboard-sidebar"
+        }
+      >
 
-      <Sidebar
-        isOpen={menuOpen}
-      />
+        <div className="sidebar-logo">
 
-      {/* MAIN */}
+          <div className="logo-icon">
+            <HeartPulse
+              size={25}
+            />
+          </div>
 
-      <main className="main">
+          <div>
+            <h2>
+              HealthTrack
+            </h2>
 
-        {/* HEADER */}
+            <span>
+              AI Health Monitor
+            </span>
+          </div>
 
-        <header className="header">
+        </div>
 
-          <div className="header-left">
+        <nav className="sidebar-nav">
 
-            <button
-              className="menu-btn"
-              onClick={() =>
-                setMenuOpen(
-                  !menuOpen
-                )
-              }
-            >
+          <button
+            className="sidebar-item active"
+            onClick={() =>
+              navigate("/dashboard")
+            }
+          >
+            <Activity
+              size={20}
+            />
 
-              <Menu size={28} />
+            <span>
+              Dashboard
+            </span>
+          </button>
 
-            </button>
+          <button
+            className="sidebar-item"
+            onClick={() =>
+              navigate("/health")
+            }
+          >
+            <HeartPulse
+              size={20}
+            />
 
-            <div>
+            <span>
+              Health Data
+            </span>
+          </button>
 
-              <h1>
+          <button
+            className="sidebar-item"
+            onClick={() =>
+              navigate("/reports")
+            }
+          >
+            <Calendar
+              size={20}
+            />
 
-                Good Morning, Sonu!
+            <span>
+              Reports
+            </span>
+          </button>
 
-                <span>
-                  👋
-                </span>
+          <button
+            className="sidebar-item"
+            onClick={() =>
+              navigate("/profile")
+            }
+          >
+            <User
+              size={20}
+            />
 
-              </h1>
+            <span>
+              Profile
+            </span>
+          </button>
 
-              <p>
-                Here's your health overview
-              </p>
+        </nav>
 
-            </div>
+        <div className="sidebar-bottom">
+
+          <button
+            className="sidebar-item logout-item"
+            onClick={
+              handleLogout
+            }
+          >
+            <LogOut
+              size={20}
+            />
+
+            <span>
+              Logout
+            </span>
+          </button>
+
+        </div>
+
+      </aside>
+
+      {/* ========================================================
+                         MAIN CONTENT
+      ========================================================= */}
+
+      <main className="dashboard-main">
+
+        {/* ======================================================
+                             NAVBAR
+        ======================================================= */}
+
+        <header className="dashboard-navbar">
+
+          <button
+            className="mobile-menu-btn"
+            onClick={() =>
+              setSidebarOpen(
+                !sidebarOpen
+              )
+            }
+          >
+            <Menu
+              size={23}
+            />
+          </button>
+
+          <div className="navbar-title">
+
+            <h1>
+              Health Dashboard
+            </h1>
+
+            <p>
+              Real-time health monitoring
+            </p>
 
           </div>
 
-          <div className="header-right">
+          <div className="navbar-actions">
+
+            {/* CONNECTION STATUS */}
 
             <div
-              onClick={() =>
-                navigate(
-                  "/alerts"
-                )
+              className={
+                connectionMode ===
+                "online"
+                  ? "connection-status online"
+                  : connectionMode ===
+                    "offline"
+                  ? "connection-status offline"
+                  : "connection-status disconnected"
               }
-              className="notification"
             >
 
-              <TriangleAlert
-                size={28}
-              />
+              {connectionMode ===
+              "online" ? (
+                <>
+                  <Wifi
+                    size={17}
+                  />
+
+                  <span>
+                    Online
+                  </span>
+                </>
+              ) : connectionMode ===
+                "offline" ? (
+                <>
+                  <WifiOff
+                    size={17}
+                  />
+
+                  <span>
+                    ESP32 Local
+                  </span>
+                </>
+              ) : (
+                <>
+                  <WifiOff
+                    size={17}
+                  />
+
+                  <span>
+                    Disconnected
+                  </span>
+                </>
+              )}
 
             </div>
 
-            <div className="profile-avatar">
+            {/* REFRESH */}
 
-              A
+            <button
+              className="refresh-btn"
+              onClick={
+                fetchHealthData
+              }
+              disabled={
+                refreshing
+              }
+              title="Refresh"
+            >
+              <RefreshCw
+                size={19}
+                className={
+                  refreshing
+                    ? "loading-spin"
+                    : ""
+                }
+              />
+            </button>
+
+            {/* NOTIFICATION */}
+
+            <button
+              className="navbar-icon-btn"
+              onClick={() =>
+                navigate(
+                  "/notifications"
+                )
+              }
+            >
+              <Bell
+                size={20}
+              />
+            </button>
+
+            {/* PROFILE */}
+
+            <div className="navbar-profile">
+
+              <div className="profile-avatar">
+                <User
+                  size={18}
+                />
+              </div>
 
             </div>
 
@@ -1203,516 +930,577 @@ function Dashboard() {
 
         </header>
 
-        {/* ==================================================
-            TOP HEALTH CARDS
-        ================================================== */}
+        {/* ======================================================
+                       CONTENT
+        ======================================================= */}
 
-        <section className="health-cards">
+        <div className="dashboard-content">
 
-          <HealthCard
-
-            title="Heart Rate"
-
-            value={
-              healthd.heartRate
-            }
-
-            unit="BPM"
-
-            icon={
-              <HeartPulse />
-            }
-
-            type="heart"
-
-            comparison="Live ESP32 data"
-
-            data={[
-              72,
-              75,
-              70,
-              82,
-              78,
-              88,
-              85,
-              92,
-              118,
-            ]}
-
-          />
-
-          <HealthCard
-
-            title="SpO₂"
-
-            value={
-              healthd.spo2
-            }
-
-            unit="%"
-
-            icon={
-              <Droplets />
-            }
-
-            type="spo2"
-
-            comparison="Live ESP32 data"
-
-            data={[
-              96,
-              97,
-              95,
-              96,
-              95,
-              97,
-              94,
-              95,
-              96,
-            ]}
-
-          />
-
-          <HealthCard
-
-            title="Temperature"
-
-            value={
-              healthd.temp
-            }
-
-            unit="F"
-
-            icon={
-              <Thermometer />
-            }
-
-            type="temperature"
-
-            comparison="Live ESP32 data"
-
-            data={[
-              36.8,
-              37,
-              37.2,
-              37.5,
-              37.8,
-              38,
-              38.5,
-              38.7,
-              39.1,
-            ]}
-
-          />
-
-          <HealthCard
-
-            title="Activity"
-
-            value="High"
-
-            unit=""
-
-            icon={
-              <Footprints />
-            }
-
-            type="activity"
-
-            comparison="Activity status"
-
-            data={
-              activityData
-            }
-
-          />
-
-        </section>
-
-        {/* ==================================================
-            SECOND ROW
-        ================================================== */}
-
-        <section className="middle-grid">
-
-          {/* AI RISK SCORE */}
+          {/* ====================================================
+                       CONNECTION INFO
+          ===================================================== */}
 
           <div
-            className={`card risk-card ${
-              isDangerous
-                ? "risk-blink"
-                : ""
-            }`}
+            className={
+              connectionMode ===
+              "online"
+                ? "connection-banner online-banner"
+                : connectionMode ===
+                  "offline"
+                ? "connection-banner offline-banner"
+                : "connection-banner error-banner"
+            }
           >
 
-            <div className="risk-meter">
+            {connectionMode ===
+            "online" ? (
+              <>
+                <Wifi
+                  size={19}
+                />
 
-              <div className="gauge">
+                <span>
+                  Connected to online backend. Health data is being read from MongoDB.
+                </span>
+              </>
+            ) : connectionMode ===
+              "offline" ? (
+              <>
+                <WifiOff
+                  size={19}
+                />
 
-                <div className="gauge-score">
+                <span>
+                  Internet unavailable. Connected directly to ESP32 local API.
+                </span>
+              </>
+            ) : (
+              <>
+                <WifiOff
+                  size={19}
+                />
 
-                  <strong>
-                    {riskScore}
-                  </strong>
-
-                  <small>
-                    /100
-                  </small>
-
-                </div>
-
-                <div className="gauge-label">
-
-                  {riskLevel}
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div
-              className={`risk-warning ${
-                isDangerous
-                  ? "danger-blink"
-                  : ""
-              }`}
-            >
-
-              <strong>
-
-                You are at{" "}
-                {riskLevel}.
-
-              </strong>
-
-              <span>
-
-                {isDangerous
-
-                  ? "Immediate attention recommended!"
-
-                  : "Continue monitoring your health."
-
-                }
-
-              </span>
-
-            </div>
-
-            {isDangerous && (
-
-              <button
-                className="stop-voice-btn"
-                onClick={() => {
-
-                  setVoiceAlertStopped(
-                    true
-                  );
-
-                  if (
-                    "speechSynthesis"
-                    in window
-                  ) {
-
-                    window.speechSynthesis.cancel();
-
-                  }
-
-                  if (
-                    voiceIntervalRef.current
-                  ) {
-
-                    clearInterval(
-                      voiceIntervalRef.current
-                    );
-
-                    voiceIntervalRef.current =
-                      null;
-
-                  }
-
-                }}
-              >
-
-                🔇 Stop Voice Alert
-
-              </button>
-
+                <span>
+                  Unable to connect to ESP32 or online backend.
+                </span>
+              </>
             )}
-
-            <button
-              className="risk-link"
-              onClick={() =>
-                navigate(
-                  "/risk-analysis"
-                )
-              }
-            >
-
-              View Risk Analysis
-
-              <ChevronRight
-                size={14}
-              />
-
-            </button>
 
           </div>
 
           {/* ==================================================
-              HEALTH TREND
-          ================================================== */}
+                         HEALTH STATUS
+          =================================================== */}
 
-          <div className="card trend-card">
+          <section className="health-status-section">
 
-            <div className="trend-header">
+            <div
+              className={
+                isDangerous
+                  ? "health-status-card danger"
+                  : isWarning
+                  ? "health-status-card warning"
+                  : "health-status-card normal"
+              }
+            >
 
-              <h3>
-                Today's Health Trend
-              </h3>
+              <div className="status-icon">
 
-            </div>
-
-            <div className="trend-chart">
-
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
-
-                <AreaChart
-                  data={
-                    healthData
-                  }
-                >
-
-                  <defs>
-
-                    <linearGradient
-                      id="healthGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-
-                      <stop
-                        offset="0%"
-                        stopColor="#ff5d62"
-                        stopOpacity={0.25}
-                      />
-
-                      <stop
-                        offset="100%"
-                        stopColor="#ff5d62"
-                        stopOpacity={0}
-                      />
-
-                    </linearGradient>
-
-                  </defs>
-
-                  <XAxis
-                    dataKey="time"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fontSize: 9,
-                      fill: "#8d95a5",
-                    }}
+                {isDangerous ? (
+                  <AlertTriangle
+                    size={35}
                   />
-
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fontSize: 9,
-                      fill: "#8d95a5",
-                    }}
-                    domain={[
-                      0,
-                      100
-                    ]}
-                    ticks={[
-                      0,
-                      25,
-                      50,
-                      75,
-                      100
-                    ]}
+                ) : isWarning ? (
+                  <AlertTriangle
+                    size={35}
                   />
-
-                  <Tooltip />
-
-                  <Area
-                    type="monotone"
-                    dataKey="score"
-                    stroke="#ed5359"
-                    strokeWidth={2}
-                    fill="url(#healthGradient)"
+                ) : (
+                  <ShieldCheck
+                    size={35}
                   />
-
-                </AreaChart>
-
-              </ResponsiveContainer>
-
-            </div>
-
-            <div className="trend-status">
-
-              <span>
-
-                <i className="low"></i>
-
-                Low (0–53)
-
-              </span>
-
-              <span>
-
-                <i className="moderate"></i>
-
-                Moderate (31–66)
-
-              </span>
-
-              <span>
-
-                <i className="high"></i>
-
-                High (61–100)
-
-              </span>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* ==================================================
-            BOTTOM GRID
-        ================================================== */}
-
-        <section className="bottom-grid">
-
-          {/* ENVIRONMENT */}
-
-          <div className="card environment-card">
-
-            <div className="section-header">
-
-              <div>
-
-                <h3>
-                  Environment Overview
-                </h3>
+                )}
 
               </div>
 
-              <button
-                onClick={() =>
-                  navigate(
-                    "/environment"
-                  )
-                }
-              >
+              <div className="status-content">
 
-                View all
+                <span className="status-label">
+                  AI Health Status
+                </span>
 
-              </button>
+                <h2>
+                  {normalizedStatus}
+                </h2>
+
+                <p>
+                  TinyML confidence:
+                  {" "}
+                  {confidence.toFixed(1)}%
+                </p>
+
+              </div>
+
+              <div className="status-device">
+
+                <span>
+                  Device
+                </span>
+
+                <strong>
+                  {data.deviceId}
+                </strong>
+
+              </div>
 
             </div>
 
-            <div className="environment-items">
+          </section>
 
-              <div className="environment-item">
+          {/* ==================================================
+                       VITAL CARDS
+          =================================================== */}
 
-                <div className="env-icon orange">
+          <section className="vitals-grid">
 
-                  <Sun size={17} />
+            {/* HEART RATE */}
 
+            <div className="vital-card">
+
+              <div className="vital-card-top">
+
+                <div className="vital-icon heart-icon">
+                  <HeartPulse
+                    size={23}
+                  />
                 </div>
 
-                <div>
-
-                  <span>
-                    Heat Index
-                  </span>
-
-                  <strong>
-                    42°C
-                  </strong>
-
-                </div>
+                <span>
+                  Heart Rate
+                </span>
 
               </div>
 
-              <div className="environment-item">
+              <div className="vital-value">
 
-                <div className="env-icon gray">
+                {data.heartRate > 0
+                  ? data.heartRate
+                  : "--"}
 
-                  <Wind size={17} />
-
-                </div>
-
-                <div>
-
-                  <span>
-                    AQI
-                  </span>
-
-                  <strong>
-                    186
-                  </strong>
-
-                </div>
+                <small>
+                  BPM
+                </small>
 
               </div>
 
-              <div className="environment-item">
+              <div className="vital-footer">
+                Latest detected BPM
+              </div>
 
-                <div className="env-icon blue">
+            </div>
 
+            {/* SPO2 */}
+
+            <div className="vital-card">
+
+              <div className="vital-card-top">
+
+                <div className="vital-icon spo2-icon">
                   <Droplets
-                    size={17}
+                    size={23}
                   />
+                </div>
+
+                <span>
+                  SpO₂
+                </span>
+
+              </div>
+
+              <div className="vital-value">
+
+                {data.spo2 > 0
+                  ? data.spo2
+                  : "--"}
+
+                <small>
+                  %
+                </small>
+
+              </div>
+
+              <div className="vital-footer">
+                Blood oxygen saturation
+              </div>
+
+            </div>
+
+            {/* BODY TEMPERATURE */}
+
+            <div className="vital-card">
+
+              <div className="vital-card-top">
+
+                <div className="vital-icon temp-icon">
+                  <Thermometer
+                    size={23}
+                  />
+                </div>
+
+                <span>
+                  Body Temperature
+                </span>
+
+              </div>
+
+              <div className="vital-value">
+
+                {data.bodyTemperature > 0
+                  ? bodyTempF.toFixed(1)
+                  : "--"}
+
+                <small>
+                  °F
+                </small>
+
+              </div>
+
+              <div className="vital-footer">
+
+                {data.bodyTemperature > 0
+                  ? `${data.bodyTemperature.toFixed(
+                      1
+                    )} °C`
+                  : "Waiting for sensor"}
+
+              </div>
+
+            </div>
+
+            {/* HUMIDITY */}
+
+            <div className="vital-card">
+
+              <div className="vital-card-top">
+
+                <div className="vital-icon humidity-icon">
+                  <Droplets
+                    size={23}
+                  />
+                </div>
+
+                <span>
+                  Humidity
+                </span>
+
+              </div>
+
+              <div className="vital-value">
+
+                {data.humidity > 0
+                  ? data.humidity.toFixed(
+                      1
+                    )
+                  : "--"}
+
+                <small>
+                  %
+                </small>
+
+              </div>
+
+              <div className="vital-footer">
+                Environment humidity
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* ==================================================
+                     SECONDARY DATA
+          =================================================== */}
+
+          <section className="dashboard-two-column">
+
+            {/* ENVIRONMENT */}
+
+            <div className="dashboard-card">
+
+              <div className="card-header">
+
+                <div>
+                  <h3>
+                    Environment Overview
+                  </h3>
+
+                  <p>
+                    ESP32 environmental sensors
+                  </p>
+                </div>
+
+                <Wind
+                  size={22}
+                />
+
+              </div>
+
+              <div className="environment-grid">
+
+                <div className="environment-item">
+
+                  <span>
+                    Temperature
+                  </span>
+
+                  <strong>
+                    {environmentTempF > 0
+                      ? `${environmentTempF.toFixed(
+                          1
+                        )} °F`
+                      : "--"}
+
+                  </strong>
+
+                  <small>
+                    {data.environmentTemperature > 0
+                      ? `${data.environmentTemperature.toFixed(
+                          1
+                        )} °C`
+                      : "No data"}
+                  </small>
 
                 </div>
 
-                <div>
+                <div className="environment-item">
 
                   <span>
                     Humidity
                   </span>
 
                   <strong>
-                    71%
+                    {data.humidity > 0
+                      ? `${data.humidity.toFixed(
+                          1
+                        )}%`
+                      : "--"}
                   </strong>
 
-                </div>
-
-              </div>
-
-              <div className="environment-item">
-
-                <div className="env-icon red">
-
-                  <Thermometer
-                    size={17}
-                  />
+                  <small>
+                    DHT22
+                  </small>
 
                 </div>
 
-                <div>
+                <div className="environment-item">
 
                   <span>
-                    Heat Alert
+                    Dust Density
                   </span>
 
                   <strong>
-                    High
+                    {data.dustDensity > 0
+                      ? `${data.dustDensity.toFixed(
+                          1
+                        )}`
+                      : "--"}
+                  </strong>
+
+                  <small>
+                    µg/m³
+                  </small>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* ECG */}
+
+            <div className="dashboard-card">
+
+              <div className="card-header">
+
+                <div>
+                  <h3>
+                    ECG Monitor
+                  </h3>
+
+                  <p>
+                    AD8232 signal
+                  </p>
+                </div>
+
+                <Activity
+                  size={22}
+                />
+
+              </div>
+
+              <div className="ecg-display">
+
+                <div className="ecg-value">
+
+                  {data.ecgLeadOff ? (
+                    <span className="ecg-off">
+                      LEAD OFF
+                    </span>
+                  ) : (
+                    <>
+                      {ecgText}
+
+                      <small>
+                        ADC
+                      </small>
+                    </>
+                  )}
+
+                </div>
+
+                <div className="ecg-status">
+
+                  <span
+                    className={
+                      data.ecgLeadOff
+                        ? "status-dot danger-dot"
+                        : "status-dot"
+                    }
+                  />
+
+                  {data.ecgLeadOff
+                    ? "Check electrodes"
+                    : "Signal connected"}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* ==================================================
+                        TINYML ANALYSIS
+          =================================================== */}
+
+          <section className="dashboard-card tinyml-card">
+
+            <div className="card-header">
+
+              <div>
+
+                <h3>
+                  TinyML Analysis
+                </h3>
+
+                <p>
+                  On-device health classification
+                </p>
+
+              </div>
+
+              <Brain
+                size={25}
+              />
+
+            </div>
+
+            <div className="tinyml-content">
+
+              <div className="tinyml-main">
+
+                <div
+                  className={
+                    isDangerous
+                      ? "ml-status danger"
+                      : isWarning
+                      ? "ml-status warning"
+                      : "ml-status normal"
+                  }
+                >
+                  {normalizedStatus}
+                </div>
+
+                <div className="confidence-bar">
+
+                  <div className="confidence-label">
+
+                    <span>
+                      Confidence
+                    </span>
+
+                    <strong>
+                      {confidence.toFixed(
+                        1
+                      )}%
+                    </strong>
+
+                  </div>
+
+                  <div className="progress-track">
+
+                    <div
+                      className="progress-fill"
+                      style={{
+                        width: `${confidence}%`,
+                      }}
+                    />
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="ml-scores">
+
+                <div className="ml-score">
+
+                  <span>
+                    Normal
+                  </span>
+
+                  <strong>
+                    {(
+                      Number(
+                        data.mlNormalScore
+                      ) * 100
+                    ).toFixed(1)}
+                    %
+                  </strong>
+
+                </div>
+
+                <div className="ml-score">
+
+                  <span>
+                    Warning
+                  </span>
+
+                  <strong>
+                    {(
+                      Number(
+                        data.mlWarningScore
+                      ) * 100
+                    ).toFixed(1)}
+                    %
+                  </strong>
+
+                </div>
+
+                <div className="ml-score">
+
+                  <span>
+                    Abnormal
+                  </span>
+
+                  <strong>
+                    {(
+                      Number(
+                        data.mlAbnormalScore
+                      ) * 100
+                    ).toFixed(1)}
+                    %
                   </strong>
 
                 </div>
@@ -1721,368 +1509,149 @@ function Dashboard() {
 
             </div>
 
-          </div>
+          </section>
 
-          {/* RECENT ALERTS */}
+          {/* ==================================================
+                       RECOMMENDATIONS
+          =================================================== */}
 
-          <div className="card alerts-card">
+          <section className="dashboard-card">
 
-            <div className="section-header">
+            <div className="card-header">
 
-              <h3>
-                Recent Alerts
-              </h3>
+              <div>
 
-              <button
-                onClick={() =>
-                  navigate(
-                    "/alerts"
+                <h3>
+                  Health Recommendations
+                </h3>
+
+                <p>
+                  Based on current monitoring data
+                </p>
+
+              </div>
+
+              <Stethoscope
+                size={23}
+              />
+
+            </div>
+
+            <div className="recommendations-list">
+
+              {data.recommendations &&
+              data.recommendations.length >
+                0 ? (
+                data.recommendations.map(
+                  (
+                    recommendation,
+                    index
+                  ) => (
+                    <div
+                      className="recommendation-item"
+                      key={index}
+                    >
+                      <ShieldCheck
+                        size={18}
+                      />
+
+                      <span>
+                        {typeof recommendation ===
+                        "string"
+                          ? recommendation
+                          : recommendation?.text ??
+                            recommendation?.message ??
+                            "Follow healthy practices."}
+                      </span>
+                    </div>
                   )
-                }
-              >
+                )
+              ) : isDangerous ? (
+                <div className="recommendation-item danger-recommendation">
 
-                View all
+                  <AlertTriangle
+                    size={18}
+                  />
 
-              </button>
+                  <span>
+                    Abnormal health condition detected. Please check the readings and seek medical attention if symptoms persist.
+                  </span>
 
-            </div>
+                </div>
+              ) : isWarning ? (
+                <div className="recommendation-item warning-recommendation">
 
-            <Alert
+                  <AlertTriangle
+                    size={18}
+                  />
 
-              icon={
-                <AlertTriangle />
-              }
+                  <span>
+                    Some readings require attention. Continue monitoring your health data.
+                  </span>
 
-              title="High Heat Stress Risk"
+                </div>
+              ) : (
+                <div className="recommendation-item">
 
-              time="16 May 2025, 08:10 AM"
+                  <ShieldCheck
+                    size={18}
+                  />
 
-              level="High"
+                  <span>
+                    Your current monitored values are within the detected normal classification.
+                  </span>
 
-              high
-
-            />
-
-            <Alert
-
-              icon={
-                <Droplets />
-              }
-
-              title="Hydration Level Low"
-
-              time="16 May 2025, 06:30 AM"
-
-              level="Medium"
-
-            />
-
-            <Alert
-
-              icon={
-                <Activity />
-              }
-
-              title="AQI Level Unhealthy"
-
-              time="16 May 2025, 07:40 AM"
-
-              level="Medium"
-
-            />
-
-          </div>
-
-          {/* QUICK ACTIONS */}
-
-          <div className="card quick-card">
-
-            <div className="section-header">
-
-              <h3>
-                Quick Actions
-              </h3>
+                </div>
+              )}
 
             </div>
 
-            <button
-              className="quick-action"
-            >
+          </section>
 
-              <span className="qa-icon blue">
+          {/* ==================================================
+                        LAST UPDATED
+          =================================================== */}
 
-                <Activity
-                  size={15}
-                />
+          <div className="dashboard-footer-info">
 
+            <div>
+
+              <Clock
+                size={16}
+              />
+
+              <span>
+                Last updated:
+                {" "}
+                {lastUpdated
+                  ? lastUpdated.toLocaleTimeString()
+                  : "--"}
               </span>
 
-              Start Health Scan
+            </div>
 
-            </button>
+            <div>
 
-            <button
-              className="quick-action"
-            >
+              <Activity
+                size={16}
+              />
 
-              <span className="qa-icon blue">
-
-                <Droplets
-                  size={15}
-                />
-
+              <span>
+                Auto refresh:
+                {" "}
+                every 5 seconds
               </span>
 
-              Water Reminder
-
-            </button>
-
-            <button
-              className="quick-action"
-            >
-
-              <span className="qa-icon green">
-
-                <Pill
-                  size={15}
-                />
-
-              </span>
-
-              Medication Reminder
-
-            </button>
-
-            <button
-              className="quick-action"
-            >
-
-              <span className="qa-icon red">
-
-                <FileText
-                  size={15}
-                />
-
-              </span>
-
-              Share Health Report
-
-            </button>
+            </div>
 
           </div>
 
-        </section>
+        </div>
 
       </main>
 
     </div>
-
   );
-}
-
-// ==================================================
-// HEALTH CARD COMPONENT
-// ==================================================
-
-function HealthCard({
-  title,
-  value,
-  unit,
-  icon,
-  type,
-  comparison,
-  data,
-}) {
-
-  const max =
-    Math.max(...data);
-
-  const min =
-    Math.min(...data);
-
-  const points =
-    data
-      .map(
-        (value, index) => {
-
-          const x =
-            data.length > 1
-              ? (
-                  index /
-                  (data.length - 1)
-                ) * 100
-              : 50;
-
-          const y =
-            38 -
-            (
-              (value - min) /
-              (max - min || 1)
-            ) *
-              30;
-
-          return `${x},${y}`;
-
-        }
-      )
-      .join(" ");
-
-  return (
-
-    <div
-      className={`health-card ${type}`}
-    >
-
-      <div className="health-card-top">
-
-        <div className="health-title">
-
-          <span className="metric-icon">
-
-            {React.cloneElement(
-              icon,
-              {
-                size: 17,
-              }
-            )}
-
-          </span>
-
-          <span>
-            {title}
-          </span>
-
-        </div>
-
-      </div>
-
-      <div className="metric-value">
-
-        <strong>
-          {value}
-        </strong>
-
-        <span>
-          {unit}
-        </span>
-
-      </div>
-
-      <div className="comparison">
-
-        {comparison}
-
-      </div>
-
-      <div className="mini-chart">
-
-        {type === "activity" ? (
-
-          <div className="activity-bars">
-
-            {data.map(
-              (height, i) => (
-
-                <span
-                  key={i}
-                  style={{
-                    height:
-                      `${height}%`,
-                  }}
-                ></span>
-
-              )
-            )}
-
-          </div>
-
-        ) : (
-
-          <svg
-            viewBox="0 0 100 45"
-            preserveAspectRatio="none"
-          >
-
-            <polyline
-              points={points}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              vectorEffect="non-scaling-stroke"
-            />
-
-          </svg>
-
-        )}
-
-      </div>
-
-    </div>
-
-  );
-}
-
-// ==================================================
-// ALERT COMPONENT
-// ==================================================
-
-function Alert({
-  icon,
-  title,
-  time,
-  level,
-  high,
-}) {
-
-  return (
-
-    <div className="alert-row">
-
-      <div
-        className={`alert-icon ${
-          high
-            ? "danger"
-            : "warning"
-        }`}
-      >
-
-        {React.cloneElement(
-          icon,
-          {
-            size: 14,
-          }
-        )}
-
-      </div>
-
-      <div className="alert-info">
-
-        <strong>
-          {title}
-        </strong>
-
-        <span>
-          {time}
-        </span>
-
-      </div>
-
-      <span
-        className={`alert-level ${
-          high
-            ? "high-level"
-            : ""
-        }`}
-      >
-
-        {level}
-
-      </span>
-
-    </div>
-
-  );
-
-}
+};
 
 export default Dashboard;
