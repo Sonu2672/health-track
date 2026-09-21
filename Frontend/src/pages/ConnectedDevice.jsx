@@ -93,7 +93,8 @@ const ConnectedDevice = () => {
           </div>
 
           <p className="device-hint">
-            You can find the Device ID on your ESP32 serial monitor.
+            Please enter your device ID. If you don't have one right now, 
+              you can enter any dummy ID (e.g., "ESP3211") to proceed.
           </p>
 
           <button
@@ -125,8 +126,7 @@ const ConnectedDevice = () => {
             <strong>How it works?</strong>
 
             <p>
-             Please enter your device ID. If you don't have one right now, 
-              you can enter any dummy ID (e.g., "ESP3211") to proceed.
+            Connect your ESP32 health device to monitor and analyze your health data in real time.
             </p>
           </div>
         </div>
