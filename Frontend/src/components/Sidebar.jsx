@@ -83,7 +83,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
         <div className="nav-item">
           <Siren size={17} />
-          <Link to="/enviroment">Enviroment</Link>
+          <Link to="/enviroment">Environment</Link>
         </div>
 
         <div className="nav-item">
