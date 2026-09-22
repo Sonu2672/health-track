@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import React from "react";
-// import AppRoutes from "./routes/AppRoutes"
-import Notification from "./pages/Notification"
+import AppRoutes from "./routes/AppRoutes"
+// import Notification from "./pages/Notification"
 import "./App.css"
 
 function App() {
@@ -21,8 +21,8 @@ function App() {
   draggable={false}
   theme="dark"
 />
-     {<Notification/>}
-      {/* <AppRoutes/>  */}
+
+       <AppRoutes/>
       </>  
  )
 }
