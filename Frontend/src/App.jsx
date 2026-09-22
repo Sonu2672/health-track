@@ -21,7 +21,7 @@ function App() {
   draggable={false}
   theme="dark"
 />
-
+       <Notification/>
        <AppRoutes/>
       </>  
  )
