@@ -30,8 +30,8 @@ messaging.onBackgroundMessage((payload) => {
   self.registration
     .showNotification(title, {
       body: body,
-      icon: "/logo192.png",
-      badge: "/logo192.png",
+      // icon: "/logo192.png",
+      // badge: "/logo192.png",
       tag: "healthtrack",
       renotify: true
     })
