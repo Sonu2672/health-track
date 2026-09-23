@@ -5,14 +5,18 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Material Icons -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
 
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- OneSignal -->
+    <!-- ============================= -->
+    <!-- OneSignal Web Push SDK -->
+    <!-- ============================= -->
     <script
       src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
       defer
@@ -22,9 +26,36 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
 
       OneSignalDeferred.push(async function (OneSignal) {
-        await OneSignal.init({
-          appId: "60166177-025f-4658-84e0-2438c7625972",
-        });
+        try {
+          // Initialize OneSignal
+          await OneSignal.init({
+            appId: "60166177-025f-4658-84e0-2438c7625972",
+            allowLocalhostAsSecureOrigin: true,
+          });
+
+          console.log("✅ OneSignal Initialized Successfully");
+
+          // Ask browser notification permission
+          await OneSignal.Notifications.requestPermission();
+
+          console.log(
+            "🔔 Notification Permission:",
+            OneSignal.Notifications.permission
+          );
+
+          // Get Push Subscription ID
+          const playerId = OneSignal.User.PushSubscription.id;
+
+          console.log("🔥 OneSignal Subscription ID:", playerId);
+
+          if (playerId) {
+            console.log("✅ Browser is subscribed to OneSignal");
+          } else {
+            console.log("⚠️ Browser is not subscribed yet");
+          }
+        } catch (error) {
+          console.error("❌ OneSignal Initialization Error:", error);
+        }
       });
     </script>
 
