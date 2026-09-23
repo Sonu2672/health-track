@@ -3,26 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import {
   HeartPulse,
-  Bell,
-  AlertTriangle,
   Droplets,
   Thermometer,
-  Footprints,
-  Activity,
-  Wind,
-  Pill,
-  FileText,
   ChevronRight,
-  Sun,
   TriangleAlert,
   Menu,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  ResponsiveContainer,
   Tooltip,
   AreaChart,
   Area,
@@ -30,19 +20,13 @@ import {
 import Sidebar from "../components/Sidebar";
 import "../App.css";
 
-const activityData = [
-  15, 22, 17, 31, 24, 38,
-  25, 43, 30, 35, 28, 45
-];
-
 // ==================================================
 // API CONFIG
 // ==================================================
 const ONLINE_HEALTH_API =
   "https://healthtrackb.onrender.com/api/health/getHealthData";
 
-const ESP32_LOCAL_API =
-  "http://192.168.4.1/data";
+const ESP32_LOCAL_API = "http://192.168.4.1/data";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -239,11 +223,11 @@ function Dashboard() {
           applyOnlineData(onlineData.data);
           return;
         }
-      } catch (onlineError) {
+      } catch {
         try {
           const localData = await fetchESP32LocalData();
           applyLocalData(localData);
-        } catch (localError) {
+        } catch {
           if (!isMounted) return;
           setHealthd({ heartRate: 0, spo2: 0, temp: 0 });
           setRiskScore(0);
@@ -256,7 +240,6 @@ function Dashboard() {
     Hdata();
     const interval = setInterval(Hdata, 3000);
 
-    // Socket.io Setup
     const socket = io("https://healthtrackb.onrender.com", {
       withCredentials: true,
       transports: ["websocket", "polling"],
@@ -336,8 +319,29 @@ function Dashboard() {
           </div>
         </header>
 
+        {/* Health Metric Cards */}
         <section className="health-cards">
-          {/* Health Cards omitted for brevity in snippet view or include standard cards */}
+          <div className="card metric-card">
+            <HeartPulse className="metric-icon red" size={24} />
+            <div>
+              <h3>Heart Rate</h3>
+              <p><strong>{healthd.heartRate}</strong> BPM</p>
+            </div>
+          </div>
+          <div className="card metric-card">
+            <Droplets className="metric-icon blue" size={24} />
+            <div>
+              <h3>SpO2</h3>
+              <p><strong>{healthd.spo2}</strong>%</p>
+            </div>
+          </div>
+          <div className="card metric-card">
+            <Thermometer className="metric-icon orange" size={24} />
+            <div>
+              <h3>Temperature</h3>
+              <p><strong>{healthd.temp}</strong> °F</p>
+            </div>
+          </div>
         </section>
 
         <section className="middle-grid">
