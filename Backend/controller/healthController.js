@@ -68,9 +68,20 @@ export const healthData = async (req, res) => {
 
     console.log("💾 SAVING HEALTH DATA:", healthPayload);
 
+    // const newHealthData = await health.create(healthPayload);
+
+    // console.log("✅ SAVED TO MONGODB:", newHealthData);
+
     const newHealthData = await health.create(healthPayload);
 
-    console.log("✅ SAVED TO MONGODB:", newHealthData);
+console.log("✅ SAVED TO MONGODB:", newHealthData);
+
+// 🔥 SEND LIVE DATA TO FRONTEND USING SOCKET.IO
+const io = req.app.get("io");
+
+io.emit("healthData", newHealthData);
+
+console.log("📡 LIVE DATA SENT THROUGH SOCKET.IO");
 
     // ==========================================
     // 🔔 ONESIGNAL BACKGROUND NOTIFICATION TRIGGER
@@ -108,6 +119,17 @@ export const healthData = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 export const gethealthdata = async (req, res) => {
   try {

@@ -1,5 +1,7 @@
 
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import "./auth/google.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -26,8 +28,33 @@ dotenv.config();
 const app = express();
 
 // ---------------- DB CONNECT ----------------
+// connectDB().then(() => {
+//   app.listen(process.env.PORT,"0.0.0.0", () => {
+//     console.log("Server running on port", process.env.PORT);
+//   });
+// });
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "https://healthtrackf.onrender.com",
+    credentials: true,
+  },
+});
+
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  console.log("🟢 Socket connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Socket disconnected:", socket.id);
+  });
+});
+
 connectDB().then(() => {
-  app.listen(process.env.PORT,"0.0.0.0", () => {
+  server.listen(process.env.PORT, "0.0.0.0", () => {
     console.log("Server running on port", process.env.PORT);
   });
 });
