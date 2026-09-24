@@ -1098,7 +1098,7 @@ function Dashboard() {
           Hdata();
 
         },
-        3000
+        10000
       );
 
 
