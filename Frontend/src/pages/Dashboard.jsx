@@ -171,121 +171,121 @@ function Dashboard() {
   // ONESIGNAL
   // ==================================================
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (window._oneSignalInitialized)
-      return;
+  //   if (window._oneSignalInitialized)
+  //     return;
 
-    window._oneSignalInitialized = true;
+  //   window._oneSignalInitialized = true;
 
-    window.OneSignal =
-      window.OneSignal || [];
+  //   window.OneSignal =
+  //     window.OneSignal || [];
 
-    window.OneSignal.push(
-      async function () {
+  //   window.OneSignal.push(
+  //     async function () {
 
-        try {
+  //       try {
 
-          await window.OneSignal.init({
+  //         await window.OneSignal.init({
 
-            appId:
-              "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
+  //           appId:
+  //             "af67ac4c-cfc1-4a6b-baab-fe6bc959ed3e",
 
-            allowLocalhostAsSecureOrigin:
-              true,
+  //           allowLocalhostAsSecureOrigin:
+  //             true,
 
-          });
+  //         });
 
-          console.log(
-            "OneSignal Initialized Successfully"
-          );
-
-
-          // Notification permission
-          await window.OneSignal.Slidedown.promptPush();
+  //         console.log(
+  //           "OneSignal Initialized Successfully"
+  //         );
 
 
-          // Player ID
-          const playerId =
-            window.OneSignal
-              ?.User
-              ?.PushSubscription
-              ?.id;
+  //         // Notification permission
+  //         await window.OneSignal.Slidedown.promptPush();
 
 
-          if (playerId) {
-
-            console.log(
-              "🔥 Player ID Found:",
-              playerId
-            );
-
-
-            const response =
-              await fetch(
-                "https://healthtrackb.onrender.com/api/devicedata/onesignalid",
-                {
-
-                  method: "POST",
-
-                  credentials: "include",
-
-                  headers: {
-
-                    "Content-Type":
-                      "application/json",
-
-                  },
-
-                  body:
-                    JSON.stringify({
-                      playerId,
-                    }),
-
-                }
-              );
+  //         // Player ID
+  //         const playerId =
+  //           window.OneSignal
+  //             ?.User
+  //             ?.PushSubscription
+  //             ?.id;
 
 
-            const data =
-              await response.json();
+  //         if (playerId) {
+
+  //           console.log(
+  //             "🔥 Player ID Found:",
+  //             playerId
+  //           );
 
 
-            console.log(
-              "✅ Backend Save Response:",
-              data
-            );
+  //           const response =
+  //             await fetch(
+  //               "https://healthtrackb.onrender.com/api/devicedata/onesignalid",
+  //               {
 
-          }
-          else {
+  //                 method: "POST",
 
-            console.log(
-              "⚠️ Player ID not generated yet."
-            );
+  //                 credentials: "include",
 
-          }
+  //                 headers: {
 
-        }
-        catch (error) {
+  //                   "Content-Type":
+  //                     "application/json",
 
-          if (
-            !error.message?.includes(
-              "already initialized"
-            )
-          ) {
+  //                 },
 
-            console.error(
-              "Error during OneSignal init:",
-              error
-            );
+  //                 body:
+  //                   JSON.stringify({
+  //                     playerId,
+  //                   }),
 
-          }
+  //               }
+  //             );
 
-        }
 
-      }
-    );
+  //           const data =
+  //             await response.json();
 
-  }, []);
+
+  //           console.log(
+  //             "✅ Backend Save Response:",
+  //             data
+  //           );
+
+  //         }
+  //         else {
+
+  //           console.log(
+  //             "⚠️ Player ID not generated yet."
+  //           );
+
+  //         }
+
+  //       }
+  //       catch (error) {
+
+  //         if (
+  //           !error.message?.includes(
+  //             "already initialized"
+  //           )
+  //         ) {
+
+  //           console.error(
+  //             "Error during OneSignal init:",
+  //             error
+  //           );
+
+  //         }
+
+  //       }
+
+  //     }
+  //   );
+
+  // }, []);
 
 
   // ==================================================
