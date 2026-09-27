@@ -42,7 +42,7 @@ const activityData = [
 
 // ONLINE BACKEND → MongoDB saved ESP32 data
 const ONLINE_HEALTH_API =
-  "https://healthtrackb.onrender.com/api/health/getHealthData";
+  "https://healthtrackb.onrender.com/api/health/gethealthdata";
 
 // OFFLINE ESP32 → direct local data
 const ESP32_LOCAL_API =
