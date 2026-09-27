@@ -26,24 +26,24 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
 
-        icons: [
-          {
-            src: '/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: '/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
+        // icons: [
+        //   {
+        //     // src: '/pwa-192x192.png',
+        //     sizes: '192x192',
+        //     type: 'image/png'
+        //   },
+        //   {
+        //     // src: '/pwa-512x512.png',
+        //     sizes: '512x512',
+        //     type: 'image/png'
+        //   }
+        // ]
       },
 
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/health-track-2b\.onrender\.com\/api\/.*/i,
+            urlPattern: /^https:\/\/healthtrackb\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'health-api-cache',
