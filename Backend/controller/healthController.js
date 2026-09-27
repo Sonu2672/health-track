@@ -76,12 +76,12 @@ export const healthData = async (req, res) => {
 
 console.log("✅ SAVED TO MONGODB:", newHealthData);
 
-// 🔥 SEND LIVE DATA TO FRONTEND USING SOCKET.IO
-const io = req.app.get("io");
+// // 🔥 SEND LIVE DATA TO FRONTEND USING SOCKET.IO
+// const io = req.app.get("io");
 
-io.emit("healthData", newHealthData);
+// io.emit("healthData", newHealthData);
 
-console.log("📡 LIVE DATA SENT THROUGH SOCKET.IO");
+// console.log("📡 LIVE DATA SENT THROUGH SOCKET.IO");
 
     // ==========================================
     // 🔔 ONESIGNAL BACKGROUND NOTIFICATION TRIGGER
@@ -93,15 +93,15 @@ console.log("📡 LIVE DATA SENT THROUGH SOCKET.IO");
     const numericSpo2 = Number(spo2 ?? 0);
     const numericTemp = Number(temp ?? 0);
 
-    if (numericHeartRate > 100 || numericSpo2 > 92 || numericTemp > 100) {
-        console.log("🚨 Emergency Alert Notification Triggered!");
-      await sendPushNotification(
-        userid, 
-        "⚠️ Emergency Health Alert!", 
-        `Warning! High risk detected. Heart Rate: ${numericHeartRate}, SpO2: ${numericSpo2}%`
-      );
-      console.log("🚨 Emergency Alert Notification Triggered!");
-    }
+    // if (numericHeartRate > 100 || numericSpo2 > 92 || numericTemp > 100) {
+    //     console.log("🚨 Emergency Alert Notification Triggered!");
+    //   await sendPushNotification(
+    //     userid, 
+    //     "⚠️ Emergency Health Alert!", 
+    //     `Warning! High risk detected. Heart Rate: ${numericHeartRate}, SpO2: ${numericSpo2}%`
+    //   );
+    //   console.log("🚨 Emergency Alert Notification Triggered!");
+    // }
     // ==========================================
 
     return res.status(200).json({
